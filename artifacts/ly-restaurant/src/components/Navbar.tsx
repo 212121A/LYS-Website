@@ -20,11 +20,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" data-testid="link-logo" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="Ly Asiatische Spezialitäten" className="h-10 w-auto" />
-            <span className="hidden sm:block text-sm font-medium text-muted-foreground tracking-wider uppercase">
-              Asiatische Spezialitäten
-            </span>
+          <Link href="/" data-testid="link-logo" className="flex items-center hover:opacity-80 transition-opacity">
+            <img src="/logo.png" alt="Ly Asiatische Spezialitäten" className="h-12 w-auto" />
           </Link>
 
           {/* Desktop nav */}

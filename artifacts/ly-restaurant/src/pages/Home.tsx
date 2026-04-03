@@ -13,17 +13,11 @@ export default function Home() {
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
           <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-xs font-medium tracking-wider uppercase mb-6 border border-primary/20">
-              Asiatische Spezialitäten · Schwäbisch Gmünd
-            </div>
-
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6">
-              Ly
-              <br />
-              <span className="text-primary">Asiatische</span>
-              <br />
-              Spezialitäten
-            </h1>
+            <img
+              src="/logo.png"
+              alt="Ly Asiatische Spezialitäten"
+              className="h-48 md:h-60 lg:h-72 w-auto mb-8 -ml-2"
+            />
 
             <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-lg">
               Authentische asiatische Küche — von knusprigen Frühlingsrollen über gebratenen Reis 
