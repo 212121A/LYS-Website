@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Ly Asiatische Spezialitäten"
+version = "1.0.0"
+id = "artifacts/ly-restaurant"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22968
+
+[services.development]
+run = "pnpm --filter @workspace/ly-restaurant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ly-restaurant", "run", "build" ]
+publicDir = "artifacts/ly-restaurant/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22968"
+BASE_PATH = "/"
