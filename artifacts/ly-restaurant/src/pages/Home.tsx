@@ -12,31 +12,31 @@ export default function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
-          <div className="max-w-xl">
+          <div className="flex flex-col items-center text-center">
             <img
               src="/logo.png"
               alt="Ly Asiatische Spezialitäten"
-              className="h-48 md:h-60 lg:h-72 w-auto mb-8 -ml-2"
+              className="h-64 md:h-80 lg:h-96 w-auto mb-10"
             />
 
-            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-lg">
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-12 max-w-2xl">
               Authentische asiatische Küche — von knusprigen Frühlingsrollen über gebratenen Reis 
               bis zu aromatischen Thai-Curries. Frisch zubereitet, mit Liebe serviert.
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/order"
                 data-testid="button-hero-order"
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-full font-medium hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
               >
                 Jetzt bestellen
-                <ArrowRight size={16} />
+                <ArrowRight size={18} />
               </Link>
               <Link
                 href="/menu"
                 data-testid="button-hero-menu"
-                className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-7 py-3.5 rounded-full font-medium hover:bg-accent transition-all"
+                className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-9 py-4 rounded-full font-medium text-lg hover:bg-accent transition-all"
               >
                 Menü ansehen
               </Link>
