@@ -18,9 +18,6 @@ export default function Contact() {
     <div>
       {/* Header */}
       <section className="bg-card border-b border-border py-20 pattern-bg relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-end opacity-[0.04] select-none pointer-events-none pr-8">
-          <span className="font-serif text-[20rem] leading-none text-foreground">話</span>
-        </div>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Schreiben Sie uns</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Kontakt</h1>

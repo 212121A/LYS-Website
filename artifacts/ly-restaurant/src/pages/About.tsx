@@ -1,57 +1,72 @@
 import { Link } from "wouter";
 import { Heart, Leaf, Users, MapPin, ArrowRight } from "lucide-react";
+import restaurantExteriorImg from "@assets/IMG_7821_1775241763325.JPG";
+import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
+import foodSpreadImg from "@assets/IMG_0767_1775241763325.jpg";
 
 export default function About() {
   return (
     <div>
-      {/* Header */}
-      <section className="bg-card border-b border-border py-20 pattern-bg relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-end opacity-[0.04] select-none pointer-events-none pr-8">
-          <span className="font-serif text-[20rem] leading-none text-foreground">心</span>
+      {/* Header with real restaurant photo */}
+      <section className="relative overflow-hidden min-h-[60vh] flex items-end bg-foreground">
+        <img
+          src={restaurantExteriorImg}
+          alt="Ly Restaurant Außenansicht"
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 pt-32">
+          <p className="text-background/70 text-xs font-medium tracking-[0.3em] uppercase mb-3">Unsere Geschichte</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-bold text-background mb-4 leading-tight">
+            Über uns &amp;<br />unsere Küche
+          </h1>
+          <p className="text-background/75 max-w-lg leading-relaxed">
+            Ein kleines, familiäres Restaurant in Schwäbisch Gmünd — mit großer Leidenschaft für authentische asiatische Küche.
+          </p>
         </div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      </section>
+
+      {/* Story with kitchen image */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Unsere Geschichte</p>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-              Über uns &amp;<br />unsere Küche
-            </h1>
-            <p className="text-muted-foreground leading-relaxed text-lg">
-              Wir sind <strong className="text-foreground">Ly Asiatische Spezialitäten</strong> — ein kleines, 
-              familiäres Restaurant in Schwäbisch Gmünd mit großer Leidenschaft für authentische asiatische Küche.
-            </p>
-          </div>
-          <div className="flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="w-64 h-64 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
-                <img src="/logo.png" alt="Ly Logo" className="w-44 h-auto" />
-              </div>
-              {/* Decorative petals */}
-              <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-primary/20 float-anim" />
-              <div className="absolute -bottom-6 -left-6 w-8 h-8 rounded-full bg-primary/15 float-anim" style={{ animationDelay: "2s" }} />
+            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Wer wir sind</p>
+            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">Mit Leidenschaft für Geschmack</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <p>
+                Unser Restaurant entstand aus dem Wunsch, den Menschen in Schwäbisch Gmünd die vielfältigen 
+                Aromen Asiens näherzubringen — nicht in einer verwässerten Version, sondern so, wie wir 
+                es selbst von zu Hause kennen und lieben.
+              </p>
+              <p>
+                Jedes Gericht auf unserer Speisekarte wird mit frischen, sorgfältig ausgewählten Zutaten 
+                zubereitet. Vom klassischen Nem Ran über unsere beliebten gebratenen Nudelboxen bis hin zu 
+                den cremigen Thaicurries — hinter jedem Teller steckt eine Geschichte und echte Hingabe.
+              </p>
+              <p>
+                Als Familienbetrieb legen wir besonderen Wert auf Gastfreundschaft, Qualität und 
+                Authentizität. Wir freuen uns, Sie bei uns begrüßen zu dürfen!
+              </p>
             </div>
+          </div>
+          <div className="rounded-2xl overflow-hidden h-80 shadow-lg">
+            <img
+              src={kitchenImg}
+              alt="Frische Zutaten täglich vorbereitet"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </section>
 
-      {/* Story */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="max-w-3xl mx-auto">
-          <div className="prose prose-lg prose-stone max-w-none">
-            <p className="text-muted-foreground leading-relaxed text-base mb-6">
-              Unser Restaurant entstand aus dem Wunsch, den Menschen in Schwäbisch Gmünd die vielfältigen 
-              Aromen Asiens näherzubringen — nicht in einer verwässerten Version, sondern so, wie wir 
-              es selbst von zu Hause kennen und lieben.
-            </p>
-            <p className="text-muted-foreground leading-relaxed text-base mb-6">
-              Jedes Gericht auf unserer Speisekarte wird mit frischen, sorgfältig ausgewählten Zutaten 
-              zubereitet. Vom klassischen Nem Ran über unsere beliebten gebratenen Nudelboxen bis hin zu 
-              den cremigen Thaicurries — hinter jedem Teller steckt eine Geschichte und echte Hingabe.
-            </p>
-            <p className="text-muted-foreground leading-relaxed text-base">
-              Als Familienbetrieb legen wir besonderen Wert auf Gastfreundschaft, Qualität und 
-              Authentizität. Wir freuen uns, Sie bei uns begrüßen zu dürfen!
-            </p>
-          </div>
+      {/* Food spread full-width image */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="rounded-3xl overflow-hidden h-64 md:h-80 shadow-lg">
+          <img
+            src={foodSpreadImg}
+            alt="Unsere frischen Gerichte täglich zubereitet"
+            className="w-full h-full object-cover object-center"
+          />
         </div>
       </section>
 

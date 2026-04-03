@@ -1,25 +1,29 @@
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
+import restaurantFoodImg from "@assets/IMG_0771_1775241763325.jpg";
+import springRollsImg from "@assets/F7C3641B-3647-4B49-BA2C-BB1DAC79A504_1775241763325.PNG";
+import curryImg from "@assets/52E8C510-830F-40FA-B773-ADA071B6847A_1775241763325.PNG";
+import chickenRiceImg from "@assets/2B3F8F4C-9785-4E35-8C8B-FF905937040C_1775241763325.PNG";
+import restaurantExteriorImg from "@assets/IMG_7821_1775241763325.JPG";
+import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
 
 export default function Home() {
   return (
-    <div className="pattern-bg">
-      {/* Hero */}
-      <section className="relative overflow-hidden min-h-[80vh] flex items-center">
-        {/* Decorative kanji / japanese symbols background */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] select-none pointer-events-none">
-          <span className="font-serif text-[32rem] leading-none text-foreground">麗</span>
+    <div>
+      {/* Hero — split layout with real photo */}
+      <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-card">
+        <div className="absolute inset-0 lg:left-[50%] overflow-hidden">
+          <img
+            src={restaurantFoodImg}
+            alt="Frische asiatische Gerichte bei Ly"
+            className="w-full h-full object-cover opacity-90"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-card via-card/60 to-transparent" />
         </div>
 
-        {/* Decorative circles */}
-        <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-48 h-48 rounded-full bg-primary/8 blur-2xl" />
-
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
-          <div className="max-w-2xl">
-            {/* Decorative tag */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
+          <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-xs font-medium tracking-wider uppercase mb-6 border border-primary/20">
-              <span className="font-serif text-base">麗</span>
               Asiatische Spezialitäten · Schwäbisch Gmünd
             </div>
 
@@ -31,7 +35,7 @@ export default function Home() {
               Spezialitäten
             </h1>
 
-            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-lg">
               Authentische asiatische Küche — von knusprigen Frühlingsrollen über gebratenen Reis 
               bis zu aromatischen Thai-Curries. Frisch zubereitet, mit Liebe serviert.
             </p>
@@ -48,7 +52,7 @@ export default function Home() {
               <Link
                 href="/menu"
                 data-testid="button-hero-menu"
-                className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-7 py-3.5 rounded-full font-medium hover:bg-accent transition-all"
+                className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-7 py-3.5 rounded-full font-medium hover:bg-accent transition-all"
               >
                 Menü ansehen
               </Link>
@@ -58,7 +62,7 @@ export default function Home() {
       </section>
 
       {/* Info bar */}
-      <section className="border-y border-border bg-card">
+      <section className="border-y border-border bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
             <div className="flex items-center gap-3 py-5 px-4 sm:px-8">
@@ -88,7 +92,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured categories */}
+      {/* Featured categories — real food photos */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-12">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Unsere Spezialitäten</p>
@@ -98,37 +102,64 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              emoji: "🥟",
+              img: springRollsImg,
               title: "Knusprige Vorspeisen",
               desc: "Unsere handgemachten Nem Ran und Frühlingsrollen sind nach traditionellem vietnamesischen Rezept — knusprig außen, saftig innen.",
-              link: "/menu",
             },
             {
-              emoji: "🍜",
+              img: chickenRiceImg,
               title: "Wok-Gerichte",
               desc: "Gebratener Reis und Nudeln mit frischem Gemüse, zartem Hühnerfleisch oder knuspriger Ente — direkt aus dem heißen Wok.",
-              link: "/menu",
             },
             {
-              emoji: "🍛",
+              img: curryImg,
               title: "Thai-Curries",
               desc: "Cremige Thaicurries mit Kokosmilch, zart scharf und aromatisch — mit Tofu, Garnelen, Ente oder Hühnerfleisch.",
-              link: "/menu",
             },
           ].map((item) => (
-            <Link key={item.title} href={item.link} data-testid={`card-category-${item.title}`}>
-              <div className="group bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full cursor-pointer">
-                <div className="text-4xl mb-4 float-anim">{item.emoji}</div>
-                <h3 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                <div className="mt-4 flex items-center gap-1 text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  Zum Menü <ArrowRight size={12} />
+            <Link key={item.title} href="/menu" data-testid={`card-category-${item.title}`}>
+              <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full cursor-pointer">
+                <div className="h-48 overflow-hidden bg-muted">
+                  <img
+                    src={item.img}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  <div className="mt-4 flex items-center gap-1 text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    Zum Menü <ArrowRight size={12} />
+                  </div>
                 </div>
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Kitchen / behind the scenes */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="rounded-3xl overflow-hidden relative h-72 md:h-96">
+          <img
+            src={kitchenImg}
+            alt="Frische Zutaten in der Küche"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 to-transparent flex items-center">
+            <div className="px-8 md:px-14 max-w-lg">
+              <p className="text-background/80 text-xs uppercase tracking-widest font-medium mb-2">Jeden Tag frisch</p>
+              <h2 className="font-serif text-2xl md:text-3xl font-bold text-background mb-3 leading-tight">
+                Frische Zutaten, täglich zubereitet
+              </h2>
+              <p className="text-background/70 text-sm leading-relaxed">
+                Wir verarbeiten täglich frisches Gemüse, hochwertiges Fleisch und ausgesuchte Gewürze — kein Kompromiss bei der Qualität.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -185,26 +216,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonial / quote */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <div className="flex items-center justify-center gap-1 mb-4">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} size={16} className="fill-primary text-primary" />
-          ))}
-        </div>
-        <blockquote className="font-serif text-2xl md:text-3xl text-foreground max-w-3xl mx-auto leading-relaxed italic mb-6">
-          "Das beste asiatische Restaurant in Schwäbisch Gmünd — die Frühlingsrollen sind einfach unschlagbar!"
-        </blockquote>
-        <p className="text-muted-foreground text-sm">— Begeisterte Gäste aus der Region</p>
-
-        <div className="mt-12">
-          <Link
-            href="/about"
-            data-testid="button-learn-more"
-            className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:gap-3 transition-all"
-          >
-            Mehr über uns erfahren <ArrowRight size={14} />
-          </Link>
+      {/* Restaurant exterior + quote */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="rounded-2xl overflow-hidden h-72 lg:h-80 shadow-lg">
+            <img
+              src={restaurantExteriorImg}
+              alt="Ly Restaurant Außenansicht Schwäbisch Gmünd"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <div className="flex items-center gap-1 mb-5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={16} className="fill-primary text-primary" />
+              ))}
+            </div>
+            <blockquote className="font-serif text-2xl md:text-3xl text-foreground leading-relaxed italic mb-5">
+              "Das beste asiatische Restaurant in Schwäbisch Gmünd — die Frühlingsrollen sind einfach unschlagbar!"
+            </blockquote>
+            <p className="text-muted-foreground text-sm mb-8">— Begeisterte Gäste aus der Region</p>
+            <Link
+              href="/about"
+              data-testid="button-learn-more"
+              className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:gap-3 transition-all"
+            >
+              Mehr über uns erfahren <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
       </section>
     </div>
