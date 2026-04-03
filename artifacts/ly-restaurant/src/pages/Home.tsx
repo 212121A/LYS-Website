@@ -1,6 +1,5 @@
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-import restaurantFoodImg from "@assets/IMG_0771_1775241763325.jpg";
 import springRollsImg from "@assets/F7C3641B-3647-4B49-BA2C-BB1DAC79A504_1775241763325.PNG";
 import curryImg from "@assets/52E8C510-830F-40FA-B773-ADA071B6847A_1775241763325.PNG";
 import chickenRiceImg from "@assets/2B3F8F4C-9785-4E35-8C8B-FF905937040C_1775241763325.PNG";
@@ -10,17 +9,8 @@ import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
 export default function Home() {
   return (
     <div>
-      {/* Hero — split layout with real photo */}
+      {/* Hero */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-card">
-        <div className="absolute inset-0 lg:left-[50%] overflow-hidden">
-          <img
-            src={restaurantFoodImg}
-            alt="Frische asiatische Gerichte bei Ly"
-            className="w-full h-full object-cover opacity-90"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-card via-card/60 to-transparent" />
-        </div>
-
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-xs font-medium tracking-wider uppercase mb-6 border border-primary/20">
