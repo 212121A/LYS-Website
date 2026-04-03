@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" data-testid="link-logo" className="flex items-center hover:opacity-80 transition-opacity">
