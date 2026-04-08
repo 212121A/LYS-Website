@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ShoppingCart, Plus, Minus, Trash2, Phone, CheckCircle, X } from "lucide-react";
+import { useLocation } from "wouter";
+import { ShoppingCart, Plus, Minus, Trash2, Phone, X, ArrowRight } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 
 interface CartItem extends MenuItem {
@@ -9,9 +10,7 @@ interface CartItem extends MenuItem {
 
 export default function Order() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [note, setNote] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [name, setName] = useState("");
+  const [, navigate] = useLocation();
 
   const orderable = menuCategories.filter((c) => c.id !== "getraenke");
 
@@ -38,48 +37,16 @@ export default function Order() {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const goToCheckout = () => {
     if (cart.length === 0) return;
-    setSubmitted(true);
+    localStorage.setItem("lys_cart", JSON.stringify(cart));
+    navigate("/checkout");
   };
-
-  if (submitted) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle size={40} className="text-primary" />
-          </div>
-          <h2 className="font-serif text-2xl font-bold text-foreground mb-3">Bestellung eingegangen!</h2>
-          <p className="text-muted-foreground mb-2">
-            Danke, <strong>{name}</strong>! Wir rufen Sie zurück, um die Bestellung zu bestätigen.
-          </p>
-          <p className="text-sm text-muted-foreground mb-8">
-            Oder rufen Sie uns direkt an:{" "}
-            <a href="tel:071719994828" className="text-primary font-medium hover:underline">
-              07171 / 9994828
-            </a>
-          </p>
-          <button
-            onClick={() => { setSubmitted(false); setCart([]); setName(""); setNote(""); }}
-            data-testid="button-new-order"
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium hover:opacity-90 transition-all"
-          >
-            Neue Bestellung
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div>
       {/* Header */}
       <section className="bg-card border-b border-border py-16 pattern-bg relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-end opacity-[0.04] select-none pointer-events-none pr-8">
-          <span className="font-serif text-[20rem] leading-none text-foreground">注</span>
-        </div>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Online</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Bestellen</h1>
@@ -233,40 +200,13 @@ export default function Order() {
                         <span className="font-bold text-foreground" data-testid="text-total">{formatPrice(total)}</span>
                       </div>
 
-                      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-                        <div>
-                          <label htmlFor="order-name" className="text-xs font-medium text-foreground mb-1 block">Ihr Name *</label>
-                          <input
-                            id="order-name"
-                            data-testid="input-name"
-                            type="text"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Max Mustermann"
-                            className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="order-note" className="text-xs font-medium text-foreground mb-1 block">Anmerkungen</label>
-                          <textarea
-                            id="order-note"
-                            data-testid="input-note"
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            placeholder="z.B. ohne Schärfe, extra Soße..."
-                            rows={2}
-                            className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors resize-none"
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          data-testid="button-submit-order"
-                          className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-medium text-sm hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-[0.99]"
-                        >
-                          Bestellung absenden
-                        </button>
-                      </form>
+                      <button
+                        onClick={goToCheckout}
+                        data-testid="button-submit-order"
+                        className="mt-4 w-full bg-primary text-primary-foreground py-3 rounded-xl font-medium text-sm hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-[0.99] flex items-center justify-center gap-2"
+                      >
+                        Zur Kasse <ArrowRight size={15} />
+                      </button>
                     </>
                   )}
                 </div>

@@ -16,10 +16,10 @@ export default function Home() {
             <img
               src="/logo.png"
               alt="Ly Asiatische Spezialitäten"
-              className="w-full max-w-2xl h-auto mb-10"
+              className="w-full max-w-2xl h-auto mb-0"
             />
 
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-12 max-w-2xl">
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-12 max-w-2xl -mt-4">
               Authentische asiatische Küche — von knusprigen Frühlingsrollen über gebratenen Reis 
               bis zu aromatischen Thai-Curries. Frisch zubereitet, mit Liebe serviert.
             </p>
