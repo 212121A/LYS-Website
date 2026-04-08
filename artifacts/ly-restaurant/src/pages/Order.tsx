@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
+import menuT from "@/i18n/menuTranslations";
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -10,7 +11,8 @@ interface CartItem extends MenuItem {
 }
 
 export default function Order() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const mt = menuT[lang];
   const [cart, setCart] = useState<CartItem[]>([]);
   const [, navigate] = useLocation();
 
@@ -67,7 +69,9 @@ export default function Order() {
             {orderable.map((category) => (
               <div key={category.id}>
                 <div className="flex items-center gap-4 mb-5">
-                  <h2 className="font-serif text-xl font-bold text-foreground">{category.name}</h2>
+                  <h2 className="font-serif text-xl font-bold text-foreground">
+                    {mt[category.nameKey as keyof typeof mt] || category.name}
+                  </h2>
                   <div className="flex-1 h-px bg-border" />
                 </div>
 
@@ -90,9 +94,13 @@ export default function Order() {
                             <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.number}</span>
                           )}
                         </div>
-                        <p className="text-sm font-medium text-foreground">{item.name}</p>
-                        {item.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {mt[item.nameKey as keyof typeof mt] || item.name}
+                        </p>
+                        {item.descKey && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {mt[item.descKey as keyof typeof mt] || item.description}
+                          </p>
                         )}
                       </div>
 
@@ -163,7 +171,9 @@ export default function Order() {
                       {cart.map((item) => (
                         <div key={item.id} className="flex items-center gap-3" data-testid={`cart-item-${item.id}`}>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-foreground leading-snug truncate">{item.name}</p>
+                            <p className="text-xs font-medium text-foreground leading-snug truncate">
+                              {mt[item.nameKey as keyof typeof mt] || item.name}
+                            </p>
                             {item.size && (
                               <p className="text-[10px] text-muted-foreground capitalize">
                                 {item.size === "small" ? t.order.small : t.order.large}

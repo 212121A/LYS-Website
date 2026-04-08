@@ -3,22 +3,24 @@ import { Link } from "wouter";
 import { Flame, Leaf, ShoppingCart } from "lucide-react";
 import { menuCategories, formatPrice } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
+import menuT from "@/i18n/menuTranslations";
 
 export default function Menu() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const mt = menuT[lang];
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
     { id: "all", label: t.menu.filterAll },
-    { id: "vorspeisen", label: t.menu.filterStarters },
-    { id: "reis-gebraten", label: t.menu.filterRice },
-    { id: "nudel-gebraten", label: t.menu.filterNoodles },
-    { id: "huhnerfleisch-gebraten", label: t.menu.filterChicken },
-    { id: "huhnerfleisch-paniert", label: t.menu.filterBreaded },
-    { id: "ente", label: t.menu.filterDuck },
-    { id: "thaicurry", label: t.menu.filterCurry },
-    { id: "nudel-reisboxen", label: t.menu.filterBoxes },
-    { id: "getraenke", label: t.menu.filterDrinks },
+    { id: "vorspeisen", label: mt.catStarters },
+    { id: "reis-gebraten", label: mt.catFriedRice },
+    { id: "nudel-gebraten", label: mt.catFriedNoodles },
+    { id: "huhnerfleisch-gebraten", label: mt.catFriedChicken },
+    { id: "huhnerfleisch-paniert", label: mt.catBreaded },
+    { id: "ente", label: mt.catDuck },
+    { id: "thaicurry", label: mt.catThaiCurry },
+    { id: "nudel-reisboxen", label: mt.catBoxes },
+    { id: "getraenke", label: mt.catDrinks },
   ];
 
   const visibleCategories = activeCategory === "all"
@@ -69,7 +71,9 @@ export default function Menu() {
             <div key={category.id} id={category.id}>
               {/* Category header */}
               <div className="flex items-center gap-4 mb-8">
-                <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">{category.name}</h2>
+                <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
+                  {mt[category.nameKey as keyof typeof mt] || category.name}
+                </h2>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
@@ -101,9 +105,13 @@ export default function Menu() {
                             {item.vegetarian && <Leaf size={12} className="text-primary shrink-0" />}
                           </div>
                         </div>
-                        <h3 className="font-medium text-foreground text-sm leading-snug">{item.name}</h3>
-                        {item.description && (
-                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.description}</p>
+                        <h3 className="font-medium text-foreground text-sm leading-snug">
+                          {mt[item.nameKey as keyof typeof mt] || item.name}
+                        </h3>
+                        {item.descKey && (
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                            {mt[item.descKey as keyof typeof mt] || item.description}
+                          </p>
                         )}
                       </div>
                       <div className="text-right shrink-0">
