@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CheckCircle, Briefcase, Heart, Coffee, Users, ChevronDown, ChevronUp, Send } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const positions = [
   {
@@ -30,6 +31,7 @@ const benefits = [
 ];
 
 export default function Careers() {
+  const { t } = useLanguage();
   const [openPosition, setOpenPosition] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", position: "", message: "" });

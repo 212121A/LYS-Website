@@ -3,8 +3,10 @@ import { Heart, Leaf, Users, MapPin, ArrowRight } from "lucide-react";
 import restaurantExteriorImg from "@assets/IMG_7821_1775241763325.JPG";
 import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
 import foodSpreadImg from "@assets/IMG_0767_1775241763325.jpg";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function About() {
+  const { t } = useLanguage();
   return (
     <div>
       {/* Header with real restaurant photo */}
@@ -16,9 +18,9 @@ export default function About() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 pt-32">
-          <p className="text-background/70 text-xs font-medium tracking-[0.3em] uppercase mb-3">Unsere Geschichte</p>
+          <p className="text-background/70 text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.about.storyTag}</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-background mb-4 leading-tight">
-            Über uns &amp;<br />unsere Küche
+            {t.about.title}
           </h1>
           <p className="text-background/75 max-w-lg leading-relaxed">
             Ein kleines, familiäres Restaurant in Schwäbisch Gmünd — mit großer Leidenschaft für authentische asiatische Küche.

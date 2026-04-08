@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Flame, Leaf, ArrowRight, ShoppingCart } from "lucide-react";
 import { menuCategories, formatPrice } from "@/data/menu";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Menu() {
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
@@ -29,7 +31,7 @@ export default function Menu() {
       <section className="bg-card border-b border-border py-16 pattern-bg relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Ly Asiatische Spezialitäten</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Speisekarte</h1>
+          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.menu.title}</h1>
           <p className="text-muted-foreground max-w-lg">
             Alle Preise inkl. MwSt. Allergiker-Informationen auf Anfrage beim Personal.
           </p>

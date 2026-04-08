@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { ShoppingCart, Plus, Minus, Trash2, Phone, X, ArrowRight } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -9,6 +10,7 @@ interface CartItem extends MenuItem {
 }
 
 export default function Order() {
+  const { t } = useLanguage();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [, navigate] = useLocation();
 
@@ -49,13 +51,11 @@ export default function Order() {
       <section className="bg-card border-b border-border py-16 pattern-bg relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Online</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Bestellen</h1>
-          <p className="text-muted-foreground">
-            Wählen Sie Ihre Gerichte und wir melden uns telefonisch zur Bestätigung.
-          </p>
+          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.order.title}</h1>
+          <p className="text-muted-foreground">{t.order.subtitle}</p>
           <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
             <Phone size={14} className="text-primary" />
-            Direkt anrufen: <a href="tel:071719994828" className="text-primary font-medium hover:underline">07171 / 9994828</a>
+            {t.order.phoneDirect} <a href="tel:071719994828" className="text-primary font-medium hover:underline">07171 / 9994828</a>
           </p>
         </div>
       </section>

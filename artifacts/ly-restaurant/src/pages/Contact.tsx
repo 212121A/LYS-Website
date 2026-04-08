@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Phone, MapPin, Mail, Clock, CheckCircle, Send } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Contact() {
+  const { t } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
@@ -20,7 +22,7 @@ export default function Contact() {
       <section className="bg-card border-b border-border py-20 pattern-bg relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Schreiben Sie uns</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">Kontakt</h1>
+          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.contact.title}</h1>
           <p className="text-muted-foreground max-w-lg">
             Haben Sie Fragen, Anregungen oder möchten einen Tisch reservieren? Wir freuen uns von Ihnen zu hören.
           </p>
