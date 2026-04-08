@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand */}
           <div>
-            <img src="/logo.png" alt="Ly" className="h-16 w-auto mb-4 invert" />
+            <img src="/logo.png" alt="Ly" className="h-16 w-auto mb-4 brightness-0 invert" />
             <p className="text-background/60 text-sm leading-relaxed">
               Authentische asiatische Küche mit frischen Zutaten — gekocht mit Leidenschaft und serviert mit Herz.
             </p>
