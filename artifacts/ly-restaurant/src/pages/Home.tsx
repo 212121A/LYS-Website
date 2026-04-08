@@ -31,12 +31,12 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-4">
             {/* Text side */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
+            <div className="flex flex-col items-center text-center order-2 lg:order-1">
               <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0" />
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-md mt-5">
                 {t.home.heroDesc}
               </p>
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+              <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5">
                   {t.common.orderNow} <ArrowRight size={18} />
                 </Link>
