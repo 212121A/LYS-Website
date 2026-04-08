@@ -21,7 +21,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" data-testid="link-logo" className="flex items-center hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="Ly Asiatische Spezialitäten" className="h-12 w-auto" />
+            <img src="/logo.png" alt="Ly Asiatische Spezialitäten" className="h-9 w-auto" />
           </Link>
 
           {/* Desktop nav */}

@@ -16,7 +16,7 @@ export default function Home() {
             <img
               src="/logo.png"
               alt="Ly Asiatische Spezialitäten"
-              className="h-64 md:h-80 lg:h-96 w-auto mb-10"
+              className="h-36 md:h-44 w-auto mb-10"
             />
 
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-12 max-w-2xl">
