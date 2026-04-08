@@ -5,6 +5,7 @@ import curryImg from "@assets/52E8C510-830F-40FA-B773-ADA071B6847A_1775241763325
 import chickenRiceImg from "@assets/2B3F8F4C-9785-4E35-8C8B-FF905937040C_1775241763325.PNG";
 import restaurantExteriorImg from "@assets/image_1775647522456.png";
 import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
+import heroFoodImg from "@assets/hero-food.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Home() {
@@ -27,19 +28,31 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-card">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10 w-full">
-          <div className="flex flex-col items-center text-center">
-            <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-2xl h-auto mb-0" />
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mt-6">
-              {t.home.heroDesc}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5">
-                {t.common.orderNow} <ArrowRight size={18} />
-              </Link>
-              <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-9 py-4 rounded-full font-medium text-lg hover:bg-accent transition-all">
-                {t.common.viewMenu}
-              </Link>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-4">
+            {/* Text side */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
+              <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0" />
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-md mt-5">
+                {t.home.heroDesc}
+              </p>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5">
+                  {t.common.orderNow} <ArrowRight size={18} />
+                </Link>
+                <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-9 py-4 rounded-full font-medium text-lg hover:bg-accent transition-all">
+                  {t.common.viewMenu}
+                </Link>
+              </div>
+            </div>
+            {/* Food image side */}
+            <div className="flex justify-center lg:justify-end items-end order-1 lg:order-2 relative">
+              <img
+                src={heroFoodImg}
+                alt="LYS Noodle Box & Getränk"
+                className="w-full max-w-sm sm:max-w-md lg:max-w-lg h-auto object-contain drop-shadow-2xl"
+                style={{ filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.15))" }}
+              />
             </div>
           </div>
         </div>
