@@ -76,53 +76,53 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  /* Background: warm off-white / parchment */
-  --background: 68 22% 93%;
-  /* Foreground: deep dark ink */
-  --foreground: 30 15% 15%;
+  /* Background: warm sandy beige (from LYS logo) */
+  --background: 27 18% 84%;
+  /* Foreground: dark warm brown */
+  --foreground: 20 25% 18%;
 
-  --border: 68 12% 78%;
+  --border: 27 14% 70%;
 
-  --card: 68 25% 96%;
-  --card-foreground: 30 15% 15%;
-  --card-border: 68 12% 82%;
+  --card: 27 20% 88%;
+  --card-foreground: 20 25% 18%;
+  --card-border: 27 14% 74%;
 
-  --sidebar: 68 20% 90%;
-  --sidebar-foreground: 30 15% 15%;
-  --sidebar-border: 68 12% 78%;
-  --sidebar-primary: 88 35% 42%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 68 22% 85%;
-  --sidebar-accent-foreground: 30 15% 15%;
-  --sidebar-ring: 88 35% 42%;
+  --sidebar: 27 18% 82%;
+  --sidebar-foreground: 20 25% 18%;
+  --sidebar-border: 27 14% 70%;
+  --sidebar-primary: 20 28% 32%;
+  --sidebar-primary-foreground: 27 25% 92%;
+  --sidebar-accent: 27 18% 78%;
+  --sidebar-accent-foreground: 20 25% 18%;
+  --sidebar-ring: 20 28% 32%;
 
-  --popover: 68 25% 97%;
-  --popover-foreground: 30 15% 15%;
-  --popover-border: 68 12% 82%;
+  --popover: 27 20% 90%;
+  --popover-foreground: 20 25% 18%;
+  --popover-border: 27 14% 74%;
 
-  /* Primary: the logo green */
-  --primary: 88 35% 42%;
-  --primary-foreground: 0 0% 100%;
+  /* Primary: warm dark taupe/brown (from logo text) */
+  --primary: 20 28% 32%;
+  --primary-foreground: 27 25% 92%;
 
-  --secondary: 68 22% 88%;
-  --secondary-foreground: 30 15% 20%;
+  --secondary: 27 18% 80%;
+  --secondary-foreground: 20 25% 22%;
 
-  --muted: 68 15% 88%;
-  --muted-foreground: 30 8% 45%;
+  --muted: 27 15% 78%;
+  --muted-foreground: 25 12% 46%;
 
-  --accent: 68 28% 86%;
-  --accent-foreground: 30 15% 15%;
+  --accent: 27 22% 76%;
+  --accent-foreground: 20 25% 18%;
 
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 68 12% 80%;
-  --ring: 88 35% 42%;
-  --chart-1: 88 35% 42%;
-  --chart-2: 68 22% 60%;
-  --chart-3: 30 40% 50%;
-  --chart-4: 200 50% 50%;
-  --chart-5: 340 50% 50%;
+  --input: 27 14% 72%;
+  --ring: 20 28% 32%;
+  --chart-1: 20 28% 32%;
+  --chart-2: 27 18% 55%;
+  --chart-3: 15 35% 45%;
+  --chart-4: 200 30% 45%;
+  --chart-5: 340 40% 45%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: 'Playfair Display', Georgia, serif;
@@ -222,7 +222,7 @@
   }
 }
 
-/* Anime-inspired decorative line elements */
+/* Decorative line elements */
 .anime-line {
   position: relative;
 }
@@ -233,10 +233,10 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, hsl(88, 35%, 42%), transparent);
+  background: linear-gradient(90deg, hsl(20, 28%, 32%), transparent);
 }
 
-/* Sakura petal float animation */
+/* Float animation */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   33% { transform: translateY(-8px) rotate(2deg); }
@@ -246,11 +246,11 @@
   animation: float 6s ease-in-out infinite;
 }
 
-/* Subtle Japanese-inspired pattern overlay */
+/* Subtle warm pattern overlay */
 .pattern-bg {
   background-image: 
-    radial-gradient(circle at 25% 25%, rgba(142, 181, 100, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(142, 181, 100, 0.04) 0%, transparent 50%);
+    radial-gradient(circle at 25% 25%, rgba(160, 130, 110, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(160, 130, 110, 0.04) 0%, transparent 50%);
 }
 
 /* Brushstroke underline effect */
@@ -265,7 +265,7 @@
   left: -4px;
   right: -4px;
   height: 8px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='8'%3E%3Cpath d='M0 4 Q25 1 50 4 Q75 7 100 4' stroke='%238eb564' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x center bottom;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='8'%3E%3Cpath d='M0 4 Q25 1 50 4 Q75 7 100 4' stroke='%236b4e3a' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x center bottom;
   opacity: 0.7;
 }
 
