@@ -18,10 +18,10 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="w-full px-4 sm:px-8 lg:px-12">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-24">
           {/* Logo */}
           <Link href="/" data-testid="link-logo" className="flex items-center hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="Ly Asiatische Spezialitäten" className="h-9 w-auto" />
+            <img src="/logo.png" alt="Ly Asiatische Spezialitäten" className="h-20 w-auto" />
           </Link>
 
           {/* Desktop nav */}
