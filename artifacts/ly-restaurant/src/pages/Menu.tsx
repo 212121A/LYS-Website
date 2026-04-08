@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Flame, Leaf, ArrowRight, ShoppingCart } from "lucide-react";
+import { Flame, Leaf, ShoppingCart } from "lucide-react";
 import { menuCategories, formatPrice } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -9,16 +9,16 @@ export default function Menu() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
-    { id: "all", label: "Alle" },
-    { id: "vorspeisen", label: "Vorspeisen" },
-    { id: "reis-gebraten", label: "Reis" },
-    { id: "nudel-gebraten", label: "Nudeln" },
-    { id: "huhnerfleisch-gebraten", label: "Hühnerfleisch" },
-    { id: "huhnerfleisch-paniert", label: "Paniert" },
-    { id: "ente", label: "Ente" },
-    { id: "thaicurry", label: "Thai-Curry" },
-    { id: "nudel-reisboxen", label: "Boxen" },
-    { id: "getraenke", label: "Getränke" },
+    { id: "all", label: t.menu.filterAll },
+    { id: "vorspeisen", label: t.menu.filterStarters },
+    { id: "reis-gebraten", label: t.menu.filterRice },
+    { id: "nudel-gebraten", label: t.menu.filterNoodles },
+    { id: "huhnerfleisch-gebraten", label: t.menu.filterChicken },
+    { id: "huhnerfleisch-paniert", label: t.menu.filterBreaded },
+    { id: "ente", label: t.menu.filterDuck },
+    { id: "thaicurry", label: t.menu.filterCurry },
+    { id: "nudel-reisboxen", label: t.menu.filterBoxes },
+    { id: "getraenke", label: t.menu.filterDrinks },
   ];
 
   const visibleCategories = activeCategory === "all"
@@ -32,12 +32,10 @@ export default function Menu() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Ly Asiatische Spezialitäten</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.menu.title}</h1>
-          <p className="text-muted-foreground max-w-lg">
-            Alle Preise inkl. MwSt. Allergiker-Informationen auf Anfrage beim Personal.
-          </p>
+          <p className="text-muted-foreground max-w-lg">{t.menu.pricesNote}</p>
           <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5"><Flame size={12} className="text-orange-500" /> Leicht scharf</span>
-            <span className="flex items-center gap-1.5"><Leaf size={12} className="text-primary" /> Vegetarisch</span>
+            <span className="flex items-center gap-1.5"><Flame size={12} className="text-orange-500" /> {t.menu.spicy}</span>
+            <span className="flex items-center gap-1.5"><Leaf size={12} className="text-primary" /> {t.menu.vegetarian}</span>
           </div>
         </div>
       </section>
@@ -78,7 +76,7 @@ export default function Menu() {
               {/* Special note for boxes */}
               {category.id === "nudel-reisboxen" && (
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 text-sm text-muted-foreground">
-                  <strong className="text-foreground">Soßen inklusive:</strong> Sojasoße, Süßsauersoße oder Thaicurry (mit Kokosmilch, leicht scharf)
+                  <strong className="text-foreground">{t.menu.boxSaucesStrong}</strong> {t.menu.boxSaucesNote}
                 </div>
               )}
 
@@ -112,12 +110,12 @@ export default function Menu() {
                         <span className="font-semibold text-foreground text-sm">{formatPrice(item.price)}</span>
                         {item.priceSmall !== undefined && (
                           <p className="text-[10px] text-muted-foreground mt-0.5">
-                            Klein: {formatPrice(item.priceSmall)}
+                            {t.menu.sizeSmall}: {formatPrice(item.priceSmall)}
                           </p>
                         )}
                         {item.priceSmall !== undefined && item.price > 0 && (
                           <p className="text-[10px] text-muted-foreground">
-                            Groß: {formatPrice(item.price)}
+                            {t.menu.sizeLarge}: {formatPrice(item.price)}
                           </p>
                         )}
                       </div>
@@ -131,12 +129,8 @@ export default function Menu() {
 
         {/* Allergen note */}
         <div className="mt-16 bg-card border border-border rounded-2xl p-6">
-          <h3 className="font-medium text-foreground mb-2 text-sm">Allergiker-Information</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Über die in unseren enthaltenen allergenen Zutaten geben wir Ihnen gerne mündlich Auskunft 
-            oder eine schriftliche Dokumentation kann jederzeit eingesehen werden. Bei Fragen steht unser 
-            Team Ihnen gerne zur Verfügung.
-          </p>
+          <h3 className="font-medium text-foreground mb-2 text-sm">{t.menu.allergenTitle}</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">{t.menu.allergenText}</p>
         </div>
 
         {/* CTA */}
@@ -147,7 +141,7 @@ export default function Menu() {
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
           >
             <ShoppingCart size={16} />
-            Jetzt bestellen
+            {t.menu.orderCta}
           </Link>
         </div>
       </div>

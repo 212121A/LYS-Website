@@ -7,6 +7,20 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function About() {
   const { t } = useLanguage();
+
+  const values = [
+    { icon: Heart, title: t.about.valueHeart, desc: t.about.valueHeartDesc },
+    { icon: Leaf, title: t.about.valueFresh, desc: t.about.valueFreshDesc },
+    { icon: Users, title: t.about.valueFamily, desc: t.about.valueFamilyDesc },
+    { icon: MapPin, title: t.about.valueLocal, desc: t.about.valueLocalDesc },
+  ];
+
+  const schedule = [
+    { day: t.about.mondayFriday, hours: "11:00 – 20:30 Uhr", closed: false },
+    { day: t.about.saturdayHours, hours: "11:00 – 20:30 Uhr", closed: false },
+    { day: t.about.sundayClosed, hours: t.common.closed, closed: true },
+  ];
+
   return (
     <div>
       {/* Header with real restaurant photo */}
@@ -23,7 +37,7 @@ export default function About() {
             {t.about.title}
           </h1>
           <p className="text-background/75 max-w-lg leading-relaxed">
-            Ein kleines, familiäres Restaurant in Schwäbisch Gmünd — mit großer Leidenschaft für authentische asiatische Küche.
+            {t.about.heroSubtitle}
           </p>
         </div>
       </section>
@@ -32,23 +46,12 @@ export default function About() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Wer wir sind</p>
-            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">Mit Leidenschaft für Geschmack</h2>
+            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.about.whoTag}</p>
+            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">{t.about.whoTitle}</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
-                Unser Restaurant entstand aus dem Wunsch, den Menschen in Schwäbisch Gmünd die vielfältigen 
-                Aromen Asiens näherzubringen — nicht in einer verwässerten Version, sondern so, wie wir 
-                es selbst von zu Hause kennen und lieben.
-              </p>
-              <p>
-                Jedes Gericht auf unserer Speisekarte wird mit frischen, sorgfältig ausgewählten Zutaten 
-                zubereitet. Vom klassischen Nem Ran über unsere beliebten gebratenen Nudelboxen bis hin zu 
-                den cremigen Thaicurries — hinter jedem Teller steckt eine Geschichte und echte Hingabe.
-              </p>
-              <p>
-                Als Familienbetrieb legen wir besonderen Wert auf Gastfreundschaft, Qualität und 
-                Authentizität. Wir freuen uns, Sie bei uns begrüßen zu dürfen!
-              </p>
+              <p>{t.about.whoP1}</p>
+              <p>{t.about.whoP2}</p>
+              <p>{t.about.whoP3}</p>
             </div>
           </div>
           <div className="rounded-2xl overflow-hidden h-80 shadow-lg">
@@ -76,31 +79,11 @@ export default function About() {
       <section className="bg-primary/5 border-y border-primary/10 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-foreground">Was uns antreibt</h2>
+            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.about.drivesTag}</p>
+            <h2 className="font-serif text-3xl font-bold text-foreground">{t.about.drivesTitle}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: Heart,
-                title: "Mit Herz",
-                desc: "Jedes Gericht wird mit echter Leidenschaft und Sorgfalt zubereitet — kein Fast Food, sondern echte Küche.",
-              },
-              {
-                icon: Leaf,
-                title: "Frische Zutaten",
-                desc: "Wir setzen auf frische, qualitativ hochwertige Zutaten — täglich und ohne Kompromisse.",
-              },
-              {
-                icon: Users,
-                title: "Familiär",
-                desc: "Als Familienbetrieb stehen Wärme und persönliche Gastfreundschaft an erster Stelle.",
-              },
-              {
-                icon: MapPin,
-                title: "Regional verankert",
-                desc: "Mitten in Schwäbisch Gmünd — Ihr Nachbar für asiatische Spezialitäten seit Jahren.",
-              },
-            ].map((value) => (
+            {values.map((value) => (
               <div
                 key={value.title}
                 className="bg-card border border-border rounded-2xl p-6 text-center hover:border-primary/30 hover:shadow-sm transition-all duration-200"
@@ -121,18 +104,14 @@ export default function About() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Immer für Sie da</p>
-            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">Öffnungszeiten</h2>
+            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.about.hoursTag}</p>
+            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">{t.about.hoursTitle}</h2>
 
             <div className="space-y-3">
-              {[
-                { day: "Montag – Freitag", hours: "11:00 – 20:30 Uhr" },
-                { day: "Samstag", hours: "11:00 – 20:30 Uhr" },
-                { day: "Sonntag", hours: "Geschlossen" },
-              ].map((slot) => (
-                <div key={slot.day} className={`flex items-center justify-between py-3 px-4 rounded-xl border transition-colors ${slot.hours === "Geschlossen" ? "bg-muted/50 border-border text-muted-foreground" : "bg-card border-border"}`}>
+              {schedule.map((slot) => (
+                <div key={slot.day} className={`flex items-center justify-between py-3 px-4 rounded-xl border transition-colors ${slot.closed ? "bg-muted/50 border-border text-muted-foreground" : "bg-card border-border"}`}>
                   <span className="text-sm font-medium">{slot.day}</span>
-                  <span className={`text-sm font-semibold ${slot.hours === "Geschlossen" ? "text-muted-foreground" : "text-primary"}`}>
+                  <span className={`text-sm font-semibold ${slot.closed ? "text-muted-foreground" : "text-primary"}`}>
                     {slot.hours}
                   </span>
                 </div>
@@ -141,8 +120,8 @@ export default function About() {
           </div>
 
           <div>
-            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Finden Sie uns</p>
-            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">Adresse</h2>
+            <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.about.addressTag}</p>
+            <h2 className="font-serif text-3xl font-bold text-foreground mb-6">{t.about.addressTitle}</h2>
 
             <div className="bg-card border border-border rounded-2xl p-6">
               <div className="flex items-start gap-3 mb-4">
@@ -160,7 +139,7 @@ export default function About() {
                 data-testid="link-maps"
                 className="inline-flex items-center gap-1.5 text-primary text-sm font-medium hover:underline mt-2"
               >
-                In Google Maps öffnen <ArrowRight size={12} />
+                {t.common.mapsBtn} <ArrowRight size={12} />
               </a>
             </div>
 
@@ -170,7 +149,7 @@ export default function About() {
                 data-testid="button-contact-from-about"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium text-sm hover:opacity-90 transition-all"
               >
-                Kontakt aufnehmen <ArrowRight size={14} />
+                {t.about.contactBtn} <ArrowRight size={14} />
               </Link>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ShoppingCart, Plus, Minus, Trash2, Phone, X, ArrowRight } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -73,7 +73,7 @@ export default function Order() {
 
                 {category.id === "nudel-reisboxen" && (
                   <p className="text-xs text-muted-foreground mb-4 bg-primary/5 border border-primary/15 rounded-lg px-3 py-2">
-                    Inkl. Soße: Sojasoße, Süßsauersoße oder Thaicurry mit Kokosmilch
+                    {t.order.sauceNote}
                   </p>
                 )}
 
@@ -106,7 +106,7 @@ export default function Order() {
                               className="flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors border border-primary/20"
                             >
                               <Plus size={10} />
-                              Klein {formatPrice(item.priceSmall)}
+                              {t.order.small} {formatPrice(item.priceSmall)}
                             </button>
                             <button
                               onClick={() => addToCart(item, "large")}
@@ -114,7 +114,7 @@ export default function Order() {
                               className="flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors border border-primary/20"
                             >
                               <Plus size={10} />
-                              Groß {formatPrice(item.price)}
+                              {t.order.large} {formatPrice(item.price)}
                             </button>
                           </div>
                         </div>
@@ -143,7 +143,7 @@ export default function Order() {
               <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg">
                 <div className="bg-primary/5 border-b border-border px-5 py-4 flex items-center gap-2">
                   <ShoppingCart size={16} className="text-primary" />
-                  <h3 className="font-semibold text-foreground">Warenkorb</h3>
+                  <h3 className="font-semibold text-foreground">{t.order.cartTitle}</h3>
                   {cart.length > 0 && (
                     <span className="ml-auto bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
                       {cart.reduce((s, i) => s + i.quantity, 0)}
@@ -155,8 +155,8 @@ export default function Order() {
                   {cart.length === 0 ? (
                     <div className="text-center py-8">
                       <ShoppingCart size={32} className="text-muted-foreground/30 mx-auto mb-3" />
-                      <p className="text-sm text-muted-foreground">Noch nichts im Warenkorb</p>
-                      <p className="text-xs text-muted-foreground mt-1">Wählen Sie Gerichte aus</p>
+                      <p className="text-sm text-muted-foreground">{t.order.cartEmpty}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{t.order.cartEmptyHint}</p>
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-80 overflow-y-auto">
@@ -165,7 +165,9 @@ export default function Order() {
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-foreground leading-snug truncate">{item.name}</p>
                             {item.size && (
-                              <p className="text-[10px] text-muted-foreground capitalize">{item.size === "small" ? "Klein" : "Groß"}</p>
+                              <p className="text-[10px] text-muted-foreground capitalize">
+                                {item.size === "small" ? t.order.small : t.order.large}
+                              </p>
                             )}
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
@@ -196,7 +198,7 @@ export default function Order() {
                   {cart.length > 0 && (
                     <>
                       <div className="border-t border-border mt-4 pt-4 flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">Gesamt</span>
+                        <span className="text-sm font-medium text-foreground">{t.order.total}</span>
                         <span className="font-bold text-foreground" data-testid="text-total">{formatPrice(total)}</span>
                       </div>
 
@@ -205,7 +207,7 @@ export default function Order() {
                         data-testid="button-submit-order"
                         className="mt-4 w-full bg-primary text-primary-foreground py-3 rounded-xl font-medium text-sm hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-[0.99] flex items-center justify-center gap-2"
                       >
-                        Zur Kasse <ArrowRight size={15} />
+                        {t.order.checkout} <ArrowRight size={15} />
                       </button>
                     </>
                   )}
@@ -214,7 +216,7 @@ export default function Order() {
 
               {/* Phone alternative */}
               <div className="mt-4 bg-card border border-border rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground mb-2">Lieber telefonisch bestellen?</p>
+                <p className="text-xs text-muted-foreground mb-2">{t.order.phoneAlt}</p>
                 <a
                   href="tel:071719994828"
                   data-testid="link-phone-order"

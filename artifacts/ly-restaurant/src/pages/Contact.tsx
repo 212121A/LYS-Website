@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Phone, MapPin, Mail, Clock, CheckCircle, Send } from "lucide-react";
+import { Phone, MapPin, Clock, CheckCircle, Send } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Contact() {
@@ -21,11 +21,9 @@ export default function Contact() {
       {/* Header */}
       <section className="bg-card border-b border-border py-20 pattern-bg relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Schreiben Sie uns</p>
+          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.contact.title}</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.contact.title}</h1>
-          <p className="text-muted-foreground max-w-lg">
-            Haben Sie Fragen, Anregungen oder möchten einen Tisch reservieren? Wir freuen uns von Ihnen zu hören.
-          </p>
+          <p className="text-muted-foreground max-w-lg">{t.contact.subtitle}</p>
         </div>
       </section>
 
@@ -33,7 +31,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Contact info */}
           <div>
-            <h2 className="font-serif text-2xl font-bold text-foreground mb-8">So erreichen Sie uns</h2>
+            <h2 className="font-serif text-2xl font-bold text-foreground mb-8">{t.contact.reachTitle}</h2>
 
             <div className="space-y-5">
               <div className="flex items-start gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors">
@@ -41,11 +39,11 @@ export default function Contact() {
                   <Phone size={16} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Telefon</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t.contact.phoneLabel}</p>
                   <a href="tel:071719994828" data-testid="link-phone" className="font-medium text-foreground hover:text-primary transition-colors">
                     07171 / 9994828
                   </a>
-                  <p className="text-xs text-muted-foreground mt-0.5">Am schnellsten erreichen Sie uns per Telefon</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{t.contact.phoneHint}</p>
                 </div>
               </div>
 
@@ -54,7 +52,7 @@ export default function Contact() {
                   <MapPin size={16} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Adresse</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t.contact.addressLabel}</p>
                   <p className="font-medium text-foreground">Ledergasse 44–46</p>
                   <p className="text-sm text-muted-foreground">73525 Schwäbisch Gmünd</p>
                 </div>
@@ -65,9 +63,9 @@ export default function Contact() {
                   <Clock size={16} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Öffnungszeiten</p>
-                  <p className="font-medium text-foreground">Mo–Sa: 11:00–20:30 Uhr</p>
-                  <p className="text-sm text-muted-foreground">Sonntag geschlossen</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t.contact.hoursLabel}</p>
+                  <p className="font-medium text-foreground">{t.contact.hoursMoSa}</p>
+                  <p className="text-sm text-muted-foreground">{t.contact.hoursSun}</p>
                 </div>
               </div>
             </div>
@@ -84,7 +82,7 @@ export default function Contact() {
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <MapPin size={20} className="text-primary" />
                 </div>
-                <span className="text-sm font-medium">In Google Maps öffnen</span>
+                <span className="text-sm font-medium">{t.common.mapsBtn}</span>
                 <span className="text-xs text-muted-foreground">Ledergasse 44–46, Schwäbisch Gmünd</span>
               </a>
             </div>
@@ -92,30 +90,28 @@ export default function Contact() {
 
           {/* Contact form */}
           <div>
-            <h2 className="font-serif text-2xl font-bold text-foreground mb-8">Nachricht schreiben</h2>
+            <h2 className="font-serif text-2xl font-bold text-foreground mb-8">{t.contact.msgTitle}</h2>
 
             {submitted ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                   <CheckCircle size={28} className="text-primary" />
                 </div>
-                <h3 className="font-serif text-xl font-bold text-foreground mb-2">Danke für Ihre Nachricht!</h3>
-                <p className="text-muted-foreground text-sm mb-6">
-                  Wir melden uns baldmöglichst bei Ihnen zurück.
-                </p>
+                <h3 className="font-serif text-xl font-bold text-foreground mb-2">{t.contact.thankYouTitle}</h3>
+                <p className="text-muted-foreground text-sm mb-6">{t.contact.thankYouDesc}</p>
                 <button
                   onClick={() => { setSubmitted(false); setForm({ name: "", email: "", message: "" }); }}
                   data-testid="button-new-message"
                   className="text-primary text-sm font-medium hover:underline"
                 >
-                  Neue Nachricht senden
+                  {t.contact.newMsg}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="contact-name" className="block text-sm font-medium text-foreground mb-1.5">
-                    Ihr Name *
+                    {t.contact.nameLabel}
                   </label>
                   <input
                     id="contact-name"
@@ -125,14 +121,14 @@ export default function Contact() {
                     value={form.name}
                     onChange={handleChange}
                     data-testid="input-contact-name"
-                    placeholder="Max Mustermann"
+                    placeholder={t.contact.namePlaceholder}
                     className="w-full border border-border rounded-xl px-4 py-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="contact-email" className="block text-sm font-medium text-foreground mb-1.5">
-                    E-Mail-Adresse *
+                    {t.contact.emailLabel}
                   </label>
                   <input
                     id="contact-email"
@@ -142,14 +138,14 @@ export default function Contact() {
                     value={form.email}
                     onChange={handleChange}
                     data-testid="input-contact-email"
-                    placeholder="max@beispiel.de"
+                    placeholder={t.contact.emailPlaceholder}
                     className="w-full border border-border rounded-xl px-4 py-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="contact-message" className="block text-sm font-medium text-foreground mb-1.5">
-                    Ihre Nachricht *
+                    {t.contact.msgLabel}
                   </label>
                   <textarea
                     id="contact-message"
@@ -158,7 +154,7 @@ export default function Contact() {
                     value={form.message}
                     onChange={handleChange}
                     data-testid="input-contact-message"
-                    placeholder="Wie können wir Ihnen helfen?"
+                    placeholder={t.contact.msgPlaceholder}
                     rows={5}
                     className="w-full border border-border rounded-xl px-4 py-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors resize-none"
                   />
@@ -170,11 +166,11 @@ export default function Contact() {
                   className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3.5 rounded-xl font-medium hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-[0.99]"
                 >
                   <Send size={15} />
-                  Nachricht senden
+                  {t.contact.sendBtn}
                 </button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  Für schnelle Antworten empfehlen wir einen Anruf unter{" "}
+                  {t.contact.quickCallNote}{" "}
                   <a href="tel:071719994828" className="text-primary hover:underline">07171 / 9994828</a>
                 </p>
               </form>

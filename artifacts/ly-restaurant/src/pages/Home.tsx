@@ -11,9 +11,16 @@ export default function Home() {
   const { t } = useLanguage();
 
   const categories = [
-    { img: springRollsImg, title: t.home.springRolls, desc: "Unsere handgemachten Nem Ran und Frühlingsrollen — knusprig außen, saftig innen." },
-    { img: chickenRiceImg, title: "Wok-Gerichte", desc: "Gebratener Reis und Nudeln mit frischem Gemüse, zartem Hühnerfleisch oder knuspriger Ente." },
-    { img: curryImg, title: t.home.curry, desc: "Cremige Thaicurries mit Kokosmilch, zart scharf — mit Tofu, Garnelen, Ente oder Hühnerfleisch." },
+    { img: springRollsImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
+    { img: chickenRiceImg, title: t.home.wokTitle, desc: t.home.wokDesc },
+    { img: curryImg, title: t.home.curry, desc: t.home.curryDesc },
+  ];
+
+  const boxes = [
+    { name: t.home.box1Name, price: t.home.box1Price, tag: t.home.box1Tag },
+    { name: t.home.box2Name, price: t.home.box2Price, tag: t.home.box2Tag },
+    { name: t.home.box3Name, price: t.home.box3Price, tag: t.home.box3Tag },
+    { name: t.home.box4Name, price: t.home.box4Price, tag: t.home.box4Tag },
   ];
 
   return (
@@ -70,7 +77,7 @@ export default function Home() {
       {/* Featured categories */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-12">
-          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Unsere Spezialitäten</p>
+          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.home.specTag}</p>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">{t.home.categoriesTitle}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -99,7 +106,7 @@ export default function Home() {
           <img src={kitchenImg} alt="Frische Zutaten in der Küche" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 to-transparent flex items-center">
             <div className="px-8 md:px-14 max-w-lg">
-              <p className="text-background/80 text-xs uppercase tracking-widest font-medium mb-2">Jeden Tag frisch</p>
+              <p className="text-background/80 text-xs uppercase tracking-widest font-medium mb-2">{t.home.freshTag}</p>
               <h2 className="font-serif text-2xl md:text-3xl font-bold text-background mb-3 leading-tight">{t.home.freshTitle}</h2>
               <p className="text-background/70 text-sm leading-relaxed">{t.home.freshDesc}</p>
             </div>
@@ -112,31 +119,24 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Neu & Beliebt</p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">Nudel- & Reisboxen</h2>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Perfekt für unterwegs: Unsere leckeren Boxen mit Nudeln oder Reis, frischem Gemüse und Deiner Lieblingssoße.
-              </p>
+              <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.home.boxTag}</p>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">{t.home.boxTitle}</h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">{t.home.boxDesc}</p>
               <div className="flex flex-wrap gap-3 mb-8">
-                {["Sojasoße", "Süßsauersoße", "Thaicurry & Kokosmilch"].map((sauce) => (
+                {[t.home.boxSauce1, t.home.boxSauce2, t.home.boxSauce3].map((sauce) => (
                   <span key={sauce} className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-full border border-primary/20 font-medium">{sauce}</span>
                 ))}
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <Utensils size={14} className="text-primary" />
-                <span>Bereits ab <strong className="text-foreground">4,00 €</strong> (klein)</span>
+                <span>{t.home.boxPriceFrom}</span>
               </div>
               <Link href="/order" data-testid="button-boxes-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium text-sm hover:opacity-90 transition-all mt-4">
                 {t.common.orderNow} <ArrowRight size={14} />
               </Link>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {[
-                { name: "Mit Gemüse", price: "ab 4,00 €", tag: "Vegan möglich" },
-                { name: "Mit Hühnerfleisch", price: "ab 4,50 €", tag: "Beliebt" },
-                { name: "Mit pan. Fisch", price: "6,00 €", tag: "Frisch" },
-                { name: "Mit Frühlingsrollen", price: "6,00 €", tag: "Vegetarisch" },
-              ].map((box) => (
+              {boxes.map((box) => (
                 <div key={box.name} className="bg-card border border-border rounded-xl p-4 hover:border-primary/30 transition-all">
                   <span className="inline-block bg-primary/10 text-primary text-[10px] font-medium px-2 py-0.5 rounded-full mb-2">{box.tag}</span>
                   <p className="text-sm font-medium text-foreground">{box.name}</p>
