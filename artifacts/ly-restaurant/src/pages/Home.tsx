@@ -3,7 +3,7 @@ import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
 import springRollsImg from "@assets/F7C3641B-3647-4B49-BA2C-BB1DAC79A504_1775241763325.PNG";
 import curryImg from "@assets/52E8C510-830F-40FA-B773-ADA071B6847A_1775241763325.PNG";
 import chickenRiceImg from "@assets/2B3F8F4C-9785-4E35-8C8B-FF905937040C_1775241763325.PNG";
-import restaurantExteriorImg from "@assets/IMG_7821_1775241763325.JPG";
+import restaurantExteriorImg from "@assets/image_1775647522456.png";
 import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
 
 export default function Home() {
