@@ -13,14 +13,23 @@ export default function Menu() {
   const categories = [
     { id: "all", label: t.menu.filterAll },
     { id: "vorspeisen", label: mt.catStarters },
-    { id: "reis-gebraten", label: mt.catFriedRice },
-    { id: "nudel-gebraten", label: mt.catFriedNoodles },
-    { id: "huhnerfleisch-gebraten", label: mt.catFriedChicken },
-    { id: "huhnerfleisch-paniert", label: mt.catBreaded },
-    { id: "ente", label: mt.catDuck },
     { id: "thaicurry", label: mt.catThaiCurry },
+    { id: "suesssauer", label: mt.catSweetSour },
+    { id: "soja", label: mt.catSoy },
+    { id: "erdnuss", label: mt.catPeanut },
+    { id: "matcha-sosse", label: mt.catMatchaSauce },
+    { id: "mango-sosse", label: mt.catMangoSauce },
+    { id: "gebratener-reis", label: mt.catFriedRice },
     { id: "nudel-reisboxen", label: mt.catBoxes },
     { id: "getraenke", label: mt.catDrinks },
+    { id: "matcha", label: mt.catMatcha },
+    { id: "ca-phe", label: mt.catCoffee },
+    { id: "tra-eistee", label: mt.catTea },
+    { id: "soda", label: mt.catSoda },
+    { id: "sinh-to", label: mt.catSmoothie },
+    { id: "bowls", label: mt.catBowls },
+    { id: "kem", label: mt.catIceCream },
+    { id: "kids", label: mt.catKids },
   ];
 
   const visibleCategories = activeCategory === "all"
@@ -70,18 +79,18 @@ export default function Menu() {
           {visibleCategories.map((category) => (
             <div key={category.id} id={category.id}>
               {/* Category header */}
-              <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-4 mb-2">
                 <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
                   {mt[category.nameKey as keyof typeof mt] || category.name}
                 </h2>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
-              {/* Special note for boxes */}
-              {category.id === "nudel-reisboxen" && (
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 text-sm text-muted-foreground">
-                  <strong className="text-foreground">{t.menu.boxSaucesStrong}</strong> {t.menu.boxSaucesNote}
-                </div>
+              {/* Category subtitle */}
+              {category.subtitleKey && (
+                <p className="text-sm text-muted-foreground mb-6 italic">
+                  {mt[category.subtitleKey as keyof typeof mt] || category.subtitle}
+                </p>
               )}
 
               {/* Items grid */}
@@ -115,16 +124,13 @@ export default function Menu() {
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="font-semibold text-foreground text-sm">{formatPrice(item.price)}</span>
-                        {item.priceSmall !== undefined && (
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
-                            {t.menu.sizeSmall}: {formatPrice(item.priceSmall)}
-                          </p>
-                        )}
-                        {item.priceSmall !== undefined && item.price > 0 && (
-                          <p className="text-[10px] text-muted-foreground">
-                            {t.menu.sizeLarge}: {formatPrice(item.price)}
-                          </p>
+                        {item.priceSmall !== undefined ? (
+                          <>
+                            <p className="text-[10px] text-muted-foreground">{t.menu.sizeSmall}: {formatPrice(item.priceSmall)}</p>
+                            <p className="text-[10px] text-muted-foreground">{t.menu.sizeLarge}: {formatPrice(item.price)}</p>
+                          </>
+                        ) : (
+                          <span className="font-semibold text-foreground text-sm">{formatPrice(item.price)}</span>
                         )}
                       </div>
                     </div>
