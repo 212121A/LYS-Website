@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, ChevronDown, Globe } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Instagram } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { languages } from "@/i18n/translations";
 
@@ -100,6 +100,15 @@ export default function Navbar() {
               </Link>
             ))}
             <LangPicker />
+            <a
+              href="https://www.instagram.com/lys.noodlebox/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-1 p-2 rounded-full text-foreground/60 hover:text-primary hover:bg-accent transition-all"
+              aria-label="Instagram"
+            >
+              <Instagram size={18} />
+            </a>
           </div>
 
           {/* Mobile: lang + hamburger */}
