@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Phone, MapPin, Instagram, Facebook } from "lucide-react";
+import { Phone, MapPin, Instagram } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Footer() {
@@ -49,11 +49,8 @@ export default function Footer() {
               </li>
             </ul>
             <div className="flex items-center gap-4 mt-6">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" data-testid="link-instagram">
+              <a href="https://www.instagram.com/lys.noodlebox/" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" data-testid="link-instagram">
                 <Instagram size={18} />
-              </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" data-testid="link-facebook">
-                <Facebook size={18} />
               </a>
             </div>
           </div>
