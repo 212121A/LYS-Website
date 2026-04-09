@@ -16,9 +16,9 @@ export default function About() {
   ];
 
   const schedule = [
-    { day: t.about.mondayFriday, hours: "11:00 – 20:30 Uhr", closed: false },
-    { day: t.about.saturdayHours, hours: "11:00 – 20:30 Uhr", closed: false },
-    { day: t.about.sundayClosed, hours: t.common.closed, closed: true },
+    { day: t.about.mondayFriday, hours: "11:00 – 21:30 Uhr", closed: false },
+    { day: t.about.saturdayHours, hours: "11:00 – 22:00 Uhr", closed: false },
+    { day: t.about.sundayClosed, hours: "13:00 – 20:00 Uhr", closed: false },
   ];
 
   return (
@@ -128,12 +128,13 @@ export default function About() {
                 <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
                 <div>
                   <p className="font-medium text-foreground">Ly Asiatische Spezialitäten</p>
-                  <p className="text-muted-foreground text-sm mt-1">Ledergasse 44–46</p>
+                  <p className="text-muted-foreground text-sm mt-1">Kappelgasse 2</p>
                   <p className="text-muted-foreground text-sm">73525 Schwäbisch Gmünd</p>
+                  <p className="text-muted-foreground text-xs">Am Marktplatz gegenüber der Bibliothek</p>
                 </div>
               </div>
               <a
-                href="https://maps.google.com/?q=Ledergasse+44+73525+Schwäbisch+Gmünd"
+                href="https://maps.google.com/?q=Kappelgasse+2+73525+Schwäbisch+Gmünd"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="link-maps"

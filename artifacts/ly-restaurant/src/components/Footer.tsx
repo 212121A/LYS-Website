@@ -41,7 +41,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-background/60 text-sm">
                 <MapPin size={15} className="mt-0.5 shrink-0 text-primary" />
-                <span>Ledergasse 44–46<br />73525 Schwäbisch Gmünd</span>
+                <span>Kappelgasse 2<br />73525 Schwäbisch Gmünd</span>
               </li>
               <li className="flex items-center gap-2 text-background/60 text-sm">
                 <Phone size={15} className="shrink-0 text-primary" />

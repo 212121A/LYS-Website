@@ -53,8 +53,9 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t.contact.addressLabel}</p>
-                  <p className="font-medium text-foreground">Ledergasse 44–46</p>
+                  <p className="font-medium text-foreground">Kappelgasse 2</p>
                   <p className="text-sm text-muted-foreground">73525 Schwäbisch Gmünd</p>
+                  <p className="text-xs text-muted-foreground">Am Marktplatz gegenüber der Bibliothek</p>
                 </div>
               </div>
 
@@ -65,6 +66,7 @@ export default function Contact() {
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t.contact.hoursLabel}</p>
                   <p className="font-medium text-foreground">{t.contact.hoursMoSa}</p>
+                  <p className="text-sm text-foreground">{t.contact.hoursFrSa}</p>
                   <p className="text-sm text-muted-foreground">{t.contact.hoursSun}</p>
                 </div>
               </div>
@@ -73,7 +75,7 @@ export default function Contact() {
             {/* Map placeholder */}
             <div className="mt-8 bg-card border border-border rounded-2xl overflow-hidden h-48 flex items-center justify-center">
               <a
-                href="https://maps.google.com/?q=Ledergasse+44+73525+Schwäbisch+Gmünd"
+                href="https://maps.google.com/?q=Kappelgasse+2+73525+Schwäbisch+Gmünd"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="link-map-open"
