@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @workspace/ly-restaurant... build",
+  "outputDirectory": "artifacts/ly-restaurant/dist/public",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": null
+}
