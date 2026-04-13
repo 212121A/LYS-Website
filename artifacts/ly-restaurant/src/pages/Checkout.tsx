@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { CheckCircle, ArrowLeft, Lock } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { ArrowLeft, Lock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface CartItem {
@@ -12,27 +12,46 @@ interface CartItem {
   size?: "small" | "large";
 }
 
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ?? ""
+).replace(/\/$/, "");
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "sb";
+const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
 
 export default function Checkout() {
   const { t } = useLanguage();
+  const [, navigate] = useLocation();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customer, setCustomer] = useState({ name: "", email: "", phone: "", note: "" });
-  const [orderType, setOrderType] = useState<"pickup" | "delivery">("pickup");
-  const [address, setAddress] = useState({ street: "", city: "", zip: "" });
   const [step, setStep] = useState<"details" | "payment">("details");
-  const [success, setSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "paypal">(
+    "stripe",
+  );
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("lys_cart");
     if (saved) {
       try { setCart(JSON.parse(saved)); } catch {}
     }
-  }, []);
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const status = searchParams.get("status");
+
+    if (status === "success") {
+      navigate("/checkout/success", { replace: true });
+      return;
+    }
+
+    if (status === "cancel") {
+      setStep("payment");
+      setCheckoutError("Zahlung wurde abgebrochen. Bitte versuchen Sie es erneut.");
+    }
+  }, [navigate]);
 
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const deliveryFee = orderType === "delivery" ? 2 : 0;
-  const grandTotal = subtotal + deliveryFee;
+  const grandTotal = subtotal;
 
   const fmt = (v: number) => v.toFixed(2).replace(".", ",") + " €";
 
@@ -42,28 +61,54 @@ export default function Checkout() {
     setStep("payment");
   };
 
-  if (success) {
-    localStorage.removeItem("lys_cart");
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle size={40} className="text-primary" />
-          </div>
-          <h2 className="font-serif text-3xl font-bold text-foreground mb-3">{t.checkout.thankYou}</h2>
-          <p className="text-muted-foreground mb-2">
-            {t.checkout.thankYouMsg}, <strong>{customer.name}</strong>.
-          </p>
-          <p className="text-sm text-muted-foreground mb-8">
-            {t.checkout.thankYouPhone} <strong>{customer.phone}</strong>.
-          </p>
-          <Link href="/" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium hover:opacity-90 transition-all">
-            {t.checkout.backHome}
-          </Link>
-        </div>
-      </div>
+  const handleStripeCheckout = async () => {
+    if (isRedirectingToStripe) return;
+    setCheckoutError(null);
+    setIsRedirectingToStripe(true);
+    localStorage.setItem(
+      CHECKOUT_CONTEXT_KEY,
+      JSON.stringify({
+        customerName: customer.name,
+        customerPhone: customer.phone,
+        orderType: "pickup",
+        total: grandTotal,
+        createdAt: Date.now(),
+      }),
     );
-  }
+
+    try {
+      const endpoint = `${API_BASE_URL}/api/stripe/create-checkout-session`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cart,
+          customer,
+          orderType: "pickup",
+          note: customer.note,
+          origin: window.location.origin,
+          currency: "eur",
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error ?? "Checkout session konnte nicht erstellt werden.");
+      }
+
+      const data = await response.json();
+      if (!data?.url || typeof data.url !== "string") {
+        throw new Error("Stripe Checkout URL fehlt.");
+      }
+
+      window.location.href = data.url;
+    } catch (error: any) {
+      setCheckoutError(error?.message ?? "Fehler beim Starten von Stripe Checkout.");
+      setIsRedirectingToStripe(false);
+    }
+  };
 
   if (cart.length === 0) {
     return (
@@ -139,55 +184,6 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Pickup / Delivery */}
-              <div className="bg-card border border-border rounded-2xl p-6">
-                <h2 className="font-serif text-xl font-bold text-foreground mb-5">{t.checkout.pickupOrDelivery}</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {(["pickup", "delivery"] as const).map(type => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setOrderType(type)}
-                      className={`py-3 rounded-xl border text-sm font-medium transition-all ${
-                        orderType === type
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background border-border text-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {type === "pickup" ? t.checkout.pickup : t.checkout.delivery}
-                    </button>
-                  ))}
-                </div>
-
-                {orderType === "delivery" && (
-                  <div className="mt-4 space-y-3">
-                    <input
-                      required
-                      value={address.street}
-                      onChange={e => setAddress(p => ({ ...p, street: e.target.value }))}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-                      placeholder={t.checkout.streetPlaceholder}
-                    />
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        required
-                        value={address.zip}
-                        onChange={e => setAddress(p => ({ ...p, zip: e.target.value }))}
-                        className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-                        placeholder={t.checkout.zipPlaceholder}
-                      />
-                      <input
-                        required
-                        value={address.city}
-                        onChange={e => setAddress(p => ({ ...p, city: e.target.value }))}
-                        className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-                        placeholder={t.checkout.cityPlaceholder}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
               <button
                 type="submit"
                 className="w-full bg-primary text-primary-foreground py-4 rounded-full font-medium text-base hover:opacity-90 transition-all flex items-center justify-center gap-2"
@@ -207,26 +203,95 @@ export default function Checkout() {
                   <Lock size={16} className="text-primary" /> {t.checkout.securePayment}
                 </h2>
                 <p className="text-sm text-muted-foreground mb-5">{t.checkout.payment}</p>
-
-                <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "EUR" }}>
-                  <PayPalButtons
-                    style={{ layout: "vertical", shape: "pill", color: "gold" }}
-                    createOrder={(_data, actions) =>
-                      actions.order.create({
-                        intent: "CAPTURE",
-                        purchase_units: [{
-                          amount: { value: grandTotal.toFixed(2), currency_code: "EUR" },
-                          description: `LYS Noodle Box – ${customer.name}`,
-                        }],
-                      })
-                    }
-                    onApprove={async (_data, actions) => {
-                      await actions.order!.capture();
-                      setSuccess(true);
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaymentMethod("stripe");
+                      setCheckoutError(null);
                     }}
-                    onError={() => alert("PayPal-Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.")}
-                  />
-                </PayPalScriptProvider>
+                    className={`py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                      paymentMethod === "stripe"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-border text-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      Karte / <span className="text-base leading-none"></span> Apple Pay
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaymentMethod("paypal");
+                      setCheckoutError(null);
+                    }}
+                    className={`py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                      paymentMethod === "paypal"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-border text-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    PayPal
+                  </button>
+                </div>
+
+                {paymentMethod === "stripe" ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleStripeCheckout}
+                      disabled={isRedirectingToStripe}
+                      className="w-full bg-primary text-primary-foreground py-4 rounded-full font-medium text-base hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <Lock size={16} />
+                      {isRedirectingToStripe
+                        ? "Weiterleitung zu Stripe..."
+                        : `Mit Karte /  Apple Pay bezahlen (${fmt(grandTotal)})`}
+                    </button>
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Apple Pay wird bei unterstuetzten Geraeten automatisch in Stripe Checkout angezeigt.
+                    </p>
+                  </>
+                ) : (
+                  <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "EUR" }}>
+                    <PayPalButtons
+                      style={{ layout: "vertical", shape: "pill", color: "gold" }}
+                      createOrder={(_data, actions) =>
+                        actions.order.create({
+                          intent: "CAPTURE",
+                          purchase_units: [{
+                            amount: { value: grandTotal.toFixed(2), currency_code: "EUR" },
+                            description: `LYS Noodle Box - ${customer.name}`,
+                          }],
+                        })
+                      }
+                      onApprove={async (_data, actions) => {
+                        await actions.order?.capture();
+                        localStorage.setItem(
+                          CHECKOUT_CONTEXT_KEY,
+                          JSON.stringify({
+                            customerName: customer.name,
+                            customerPhone: customer.phone,
+                            orderType: "pickup",
+                            total: grandTotal,
+                            createdAt: Date.now(),
+                          }),
+                        );
+                        localStorage.removeItem("lys_cart");
+                        navigate("/checkout/success");
+                      }}
+                      onError={() =>
+                        setCheckoutError(
+                          "PayPal-Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+                        )
+                      }
+                    />
+                  </PayPalScriptProvider>
+                )}
+                {checkoutError && (
+                  <p className="mt-4 text-sm text-destructive">{checkoutError}</p>
+                )}
               </div>
             </div>
           )}
@@ -260,12 +325,6 @@ export default function Checkout() {
                 <span>{t.checkout.subtotal}</span>
                 <span>{fmt(subtotal)}</span>
               </div>
-              {orderType === "delivery" && (
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>{t.checkout.deliveryFee}</span>
-                  <span>2,00 €</span>
-                </div>
-              )}
               <div className="flex justify-between text-base font-semibold text-foreground pt-1 border-t border-border">
                 <span>{t.checkout.total}</span>
                 <span>{fmt(grandTotal)}</span>

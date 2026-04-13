@@ -54,11 +54,6 @@ export default function Order() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Online</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.order.title}</h1>
-          <p className="text-muted-foreground">{t.order.subtitle}</p>
-          <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
-            <Phone size={14} className="text-primary" />
-            {t.order.phoneDirect} <a href="tel:071719994828" className="text-primary font-medium hover:underline">07171 / 9994828</a>
-          </p>
         </div>
       </section>
 

@@ -1,4 +1,5 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,9 +13,26 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Careers from "@/pages/Careers";
 import Checkout from "@/pages/Checkout";
+import CheckoutSuccess from "@/pages/CheckoutSuccess";
+import Success from "@/pages/Success";
+import Cancel from "@/pages/Cancel";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
+
+function LegacyCheckoutReturn({
+  status,
+}: {
+  status: "cancel";
+}) {
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    navigate("/checkout?status=cancel", { replace: true });
+  }, [navigate, status]);
+
+  return null;
+}
 
 function Router() {
   return (
@@ -29,6 +47,12 @@ function Router() {
           <Route path="/contact" component={Contact} />
           <Route path="/careers" component={Careers} />
           <Route path="/checkout" component={Checkout} />
+          <Route path="/checkout/success" component={CheckoutSuccess} />
+          <Route path="/success" component={Success} />
+          <Route path="/cancel" component={Cancel} />
+          <Route path="/bestellung">
+            {() => <LegacyCheckoutReturn status="cancel" />}
+          </Route>
           <Route component={NotFound} />
         </Switch>
       </main>
