@@ -44,8 +44,13 @@ router.post("/create-checkout-session", async (req, res) => {
       origin,
       metadata: requestMetadata = {},
     } = req.body ?? {};
+    const itemsFromBody = Array.isArray(cartItems)
+      ? cartItems
+      : Array.isArray(req.body?.items)
+        ? req.body.items
+        : [];
 
-    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+    if (itemsFromBody.length === 0) {
       return res.status(400).json({ error: "Cart is empty" });
     }
 
@@ -54,7 +59,7 @@ router.post("/create-checkout-session", async (req, res) => {
         ? origin
         : `${req.protocol}://${req.get("host")}`;
 
-    const lineItems = cartItems
+    const lineItems = itemsFromBody
       .filter((item) => item && typeof item.name === "string")
       .map((item) => {
         const rawPrice = Number(item.price);
@@ -118,7 +123,7 @@ router.post("/create-checkout-session", async (req, res) => {
               city: address?.city ?? "",
             })
           : ""),
-      items: requestMetadata.items ?? JSON.stringify(cartItems),
+      items: requestMetadata.items ?? JSON.stringify(itemsFromBody),
       pickup_time: requestMetadata.pickup_time ?? "",
     };
 
