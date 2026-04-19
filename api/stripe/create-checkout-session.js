@@ -1,5 +1,4 @@
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
 
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
@@ -158,14 +157,17 @@ function getStripe() {
   return new Stripe(key, { apiVersion: "2025-03-31.basil" });
 }
 
-// Supabase ist optional. Wenn ENV-Vars fehlen, wird der Insert
-// uebersprungen statt zu crashen.
-function getSupabase() {
+// Supabase ist optional. Wenn ENV-Vars fehlen oder das Paket nicht
+// geladen werden kann, wird der Insert uebersprungen statt zu crashen.
+// Dynamic import verhindert, dass ein Modul-Loading-Fehler die ganze
+// Vercel Function killt (FUNCTION_INVOCATION_FAILED beim Cold Start).
+async function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
   try {
-    return createClient(url, key);
+    const mod = await import("@supabase/supabase-js");
+    return mod.createClient(url, key);
   } catch {
     return null;
   }
@@ -307,7 +309,7 @@ export default async function handler(req, res) {
     });
 
     // Pending Order in Supabase loggen (best-effort, kein Crash bei Fehler).
-    const supabase = getSupabase();
+    const supabase = await getSupabase();
     if (supabase) {
       try {
         const { error: insertErr } = await supabase
