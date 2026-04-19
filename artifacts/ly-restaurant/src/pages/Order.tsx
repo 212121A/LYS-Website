@@ -20,7 +20,7 @@ export default function Order() {
 
   const addToCart = (item: MenuItem, size?: "small" | "large") => {
     const price = size === "small" && item.priceSmall !== undefined ? item.priceSmall : item.price;
-    const cartId = `${item.id}-${size ?? "regular"}`;
+    const cartId = size ? `${item.id}-${size}` : item.id;
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
@@ -40,6 +40,10 @@ export default function Order() {
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const getItemLabel = (item: MenuItem) => {
+    const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
+    return item.number ? `${item.number} ${translatedName}` : translatedName;
+  };
 
   const goToCheckout = () => {
     if (cart.length === 0) return;
@@ -90,7 +94,7 @@ export default function Order() {
                           )}
                         </div>
                         <p className="text-sm font-medium text-foreground">
-                          {mt[item.nameKey as keyof typeof mt] || item.name}
+                          {getItemLabel(item)}
                         </p>
                         {item.descKey && (
                           <p className="text-xs text-muted-foreground mt-0.5">
@@ -167,7 +171,7 @@ export default function Order() {
                         <div key={item.id} className="flex items-center gap-3" data-testid={`cart-item-${item.id}`}>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-foreground leading-snug truncate">
-                              {mt[item.nameKey as keyof typeof mt] || item.name}
+                              {getItemLabel(item)}
                             </p>
                             {item.size && (
                               <p className="text-[10px] text-muted-foreground capitalize">
@@ -230,6 +234,16 @@ export default function Order() {
                   <Phone size={14} />
                   07171 / 9994828
                 </a>
+              </div>
+
+              <div className="mt-4 bg-card border border-border rounded-xl p-4 text-center">
+                <p className="text-sm font-medium text-foreground">
+                  🌍 Wir sprechen Ihre Sprache!
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                  Bestellen Sie auch auf Englisch, Turkisch, Vietnamesisch oder
+                  einer anderen Sprache - einfach anrufen.
+                </p>
               </div>
             </div>
           </div>
