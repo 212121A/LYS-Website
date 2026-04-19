@@ -292,10 +292,41 @@ export default async function handler(req, res) {
               city: address?.city ?? "",
             })
           : ""),
-      items: requestMetadata.items ?? JSON.stringify(normalizedItems),
       pickup_time: requestMetadata.pickup_time ?? "",
       app: requestMetadata.app ?? "lys-website",
     };
+
+    // Stripe-Metadata erlaubt max 500 Zeichen pro Wert (und max 50 Keys).
+    // Items kompakt als "id*qty" speichern und ggf. auf items_1, items_2,
+    // ... aufteilen, damit die Liste auch bei vielen Positionen passt.
+    if (requestMetadata.items) {
+      sessionMetadata.items = String(requestMetadata.items).slice(0, 500);
+    } else {
+      const itemTokens = normalizedItems.map(
+        (i) => `${i.id}*${i.quantity}`,
+      );
+      const chunks = [];
+      let current = "";
+      for (const tok of itemTokens) {
+        const next = current ? `${current},${tok}` : tok;
+        if (next.length > 500) {
+          if (current) chunks.push(current);
+          current = tok.length > 500 ? tok.slice(0, 500) : tok;
+        } else {
+          current = next;
+        }
+      }
+      if (current) chunks.push(current);
+
+      if (chunks.length === 1) {
+        sessionMetadata.items = chunks[0];
+      } else {
+        sessionMetadata.items_count = String(chunks.length);
+        chunks.forEach((chunk, i) => {
+          sessionMetadata[`items_${i + 1}`] = chunk;
+        });
+      }
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
