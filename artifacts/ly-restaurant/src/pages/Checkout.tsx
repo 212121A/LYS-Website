@@ -17,6 +17,8 @@ const API_BASE_URL = (
 ).replace(/\/$/, "");
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "sb";
 const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
+const CART_STORAGE_KEY = "lys_cart_v2";
+const LEGACY_CART_STORAGE_KEY = "lys_cart";
 
 export default function Checkout() {
   const { t } = useLanguage();
@@ -31,9 +33,19 @@ export default function Checkout() {
   const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("lys_cart");
+    localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
     if (saved) {
-      try { setCart(JSON.parse(saved)); } catch {}
+      try {
+        const parsed = JSON.parse(saved) as CartItem[];
+        const sanitized = Array.isArray(parsed)
+          ? parsed
+              .map((item) => ({ ...item, id: item.id?.replace(/-regular$/, "") }))
+              .filter((item) => typeof item.id === "string" && item.id.length > 0)
+          : [];
+        setCart(sanitized);
+      } catch {}
     }
 
     const searchParams = new URLSearchParams(window.location.search);
@@ -84,7 +96,11 @@ export default function Checkout() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          items: cart,
+          cartItems: cart.map((item) => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+          })),
           customer,
           orderType: "pickup",
           note: customer.note,
@@ -278,7 +294,8 @@ export default function Checkout() {
                             createdAt: Date.now(),
                           }),
                         );
-                        localStorage.removeItem("lys_cart");
+                        localStorage.removeItem(CART_STORAGE_KEY);
+                        localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
                         navigate("/checkout/success");
                       }}
                       onError={() =>

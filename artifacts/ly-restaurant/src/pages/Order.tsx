@@ -5,6 +5,8 @@ import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
 
+const CART_STORAGE_KEY = "lys_cart_v2";
+
 interface CartItem extends MenuItem {
   quantity: number;
   size?: "small" | "large";
@@ -47,7 +49,7 @@ export default function Order() {
 
   const goToCheckout = () => {
     if (cart.length === 0) return;
-    localStorage.setItem("lys_cart", JSON.stringify(cart));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
     navigate("/checkout");
   };
 

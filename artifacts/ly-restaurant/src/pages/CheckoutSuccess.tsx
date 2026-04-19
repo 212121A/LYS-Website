@@ -4,6 +4,8 @@ import { CheckCircle, Home, ShoppingBag } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
+const CART_STORAGE_KEY = "lys_cart_v2";
+const LEGACY_CART_STORAGE_KEY = "lys_cart";
 
 interface CheckoutContext {
   customerName?: string;
@@ -27,7 +29,8 @@ export default function CheckoutSuccess() {
   }, []);
 
   useEffect(() => {
-    localStorage.removeItem("lys_cart");
+    localStorage.removeItem(CART_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
   }, []);
 
   const total =
