@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { createClient } from "@supabase/supabase-js";
 
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
@@ -105,12 +106,69 @@ const PRODUCTS = {
   "kids-schoko": { name: "Schoko Latte", price: 450 },
 };
 
+// In-Memory Rate Limit (pro Function-Instance / pro Vercel-Region).
+// Vercel KV waere robuster, vermeidet aber zusaetzliches Setup.
+// Limit: max 20 Requests pro 60 Sekunden pro IP.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 20;
+const rateLimitBuckets = new Map();
+
+function getClientIp(req) {
+  const fwd = req.headers["x-forwarded-for"];
+  if (typeof fwd === "string" && fwd.length > 0) {
+    return fwd.split(",")[0].trim();
+  }
+  if (Array.isArray(fwd) && fwd.length > 0) {
+    return String(fwd[0]).split(",")[0].trim();
+  }
+  return req.socket?.remoteAddress || "unknown";
+}
+
+function checkRateLimit(req) {
+  const ip = getClientIp(req);
+  const now = Date.now();
+  const bucket = rateLimitBuckets.get(ip);
+
+  if (!bucket || now >= bucket.resetAt) {
+    rateLimitBuckets.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    cleanupExpiredBuckets(now);
+    return { allowed: true };
+  }
+
+  if (bucket.count >= RATE_LIMIT_MAX) {
+    return { allowed: false, retryAfterSec: Math.ceil((bucket.resetAt - now) / 1000) };
+  }
+
+  bucket.count += 1;
+  return { allowed: true };
+}
+
+function cleanupExpiredBuckets(now) {
+  if (rateLimitBuckets.size < 1000) return;
+  for (const [ip, bucket] of rateLimitBuckets) {
+    if (now >= bucket.resetAt) rateLimitBuckets.delete(ip);
+  }
+}
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) {
     throw new Error("STRIPE_SECRET_KEY not set");
   }
   return new Stripe(key, { apiVersion: "2025-03-31.basil" });
+}
+
+// Supabase ist optional. Wenn ENV-Vars fehlen, wird der Insert
+// uebersprungen statt zu crashen.
+function getSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  try {
+    return createClient(url, key);
+  } catch {
+    return null;
+  }
 }
 
 function normalizeQuantity(value) {
@@ -122,6 +180,12 @@ function normalizeQuantity(value) {
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  const rate = checkRateLimit(req);
+  if (!rate.allowed) {
+    res.setHeader("Retry-After", String(rate.retryAfterSec));
+    return res.status(429).json({ error: "Zu viele Anfragen. Bitte warte kurz." });
   }
 
   try {
@@ -194,6 +258,19 @@ export default async function handler(req, res) {
       });
     }
 
+    const normalizedItems = itemsFromBody.map((item) => {
+      const id = typeof item?.id === "string" ? item.id : "";
+      const product = PRODUCTS[id];
+      return {
+        id,
+        name:
+          (typeof item?.name === "string" && item.name.trim()) ||
+          product?.name ||
+          id,
+        quantity: normalizeQuantity(item?.quantity),
+      };
+    });
+
     const sessionMetadata = {
       ...requestMetadata,
       customerName:
@@ -213,22 +290,7 @@ export default async function handler(req, res) {
               city: address?.city ?? "",
             })
           : ""),
-      items:
-        requestMetadata.items ??
-        JSON.stringify(
-          itemsFromBody.map((item) => {
-            const id = typeof item?.id === "string" ? item.id : "";
-            const product = PRODUCTS[id];
-            return {
-              id,
-              name:
-                (typeof item?.name === "string" && item.name.trim()) ||
-                product?.name ||
-                id,
-              quantity: normalizeQuantity(item?.quantity),
-            };
-          }),
-        ),
+      items: requestMetadata.items ?? JSON.stringify(normalizedItems),
       pickup_time: requestMetadata.pickup_time ?? "",
       app: requestMetadata.app ?? "lys-website",
     };
@@ -243,6 +305,26 @@ export default async function handler(req, res) {
         typeof customer.email === "string" ? customer.email : undefined,
       metadata: sessionMetadata,
     });
+
+    // Pending Order in Supabase loggen (best-effort, kein Crash bei Fehler).
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        const { error: insertErr } = await supabase
+          .from("pending_orders")
+          .insert({
+            session_id: session.id,
+            items: JSON.stringify(normalizedItems),
+          });
+        if (insertErr && process.env.NODE_ENV !== "production") {
+          console.error("pending_orders insert failed:", insertErr.message);
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error("pending_orders insert threw:", err?.message ?? err);
+        }
+      }
+    }
 
     return res.status(200).json({ url: session.url });
   } catch (error) {
