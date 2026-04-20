@@ -128,10 +128,13 @@ const PRODUCTS = {
 // Box-Soßen: Cart-IDs wie `box-huehnchen-large-nudel-soja` werden auf die
 // Basis-Box gemappt. Preis bleibt identisch (Soßen sind inklusive), Name und
 // Kitchen-Dashboard-Kürzel bekommen ein Suffix mit der gewählten Soße.
+// Soßen-Suffix wird 1:1 an den Kitchen-Dashboard-Code angehaengt
+// (z.B. "GN4-Sojasoße"), damit keine Kurzcodes (S/SS/C) missverstanden
+// werden koennen.
 const BOX_SAUCE_SUFFIXES = {
-  "-soja": { code: "S", label: "Sojasoße" },
-  "-suesssauer": { code: "SS", label: "Süßsauersoße" },
-  "-curry": { code: "C", label: "Thaicurry mit Kokosmilch" },
+  "-soja": { code: "Sojasoße", label: "Sojasoße" },
+  "-suesssauer": { code: "Süßsauersoße", label: "Süßsauersoße" },
+  "-curry": { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
 };
 
 function resolveProduct(id) {

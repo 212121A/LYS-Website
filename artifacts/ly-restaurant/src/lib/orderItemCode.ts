@@ -19,11 +19,15 @@ export const BOX_SAUCE_LABEL: Record<BoxSauce, string> = {
   curry: "Thaicurry mit Kokosmilch",
 };
 
-/** Kurzcode für das Kitchen-Dashboard (z.B. GN2-S für Sojasoße). */
+/**
+ * Soßen-Suffix für das Kitchen-Dashboard. Vollständig ausgeschrieben,
+ * damit das Dashboard konsistent "GN2-Sojasoße" statt eines uneinheitlichen
+ * Buchstabencodes (S/SS/C) rendert.
+ */
 export const BOX_SAUCE_CODE: Record<BoxSauce, string> = {
-  soja: "S",
-  suesssauer: "SS",
-  curry: "C",
+  soja: "Sojasoße",
+  suesssauer: "Süßsauersoße",
+  curry: "Thaicurry mit Kokosmilch",
 };
 
 /** Auswahl-Reihenfolge im Dialog (stabile Reihenfolge). */
