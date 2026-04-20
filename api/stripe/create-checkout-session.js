@@ -2,65 +2,66 @@ import Stripe from "stripe";
 
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
+// number = Menue-Abkuerzung (wird ans Kitchen-Dashboard durchgereicht).
 const PRODUCTS = {
-  v1: { name: "Nem Ran", price: 400 },
-  v2: { name: "Mini Frühlingsrollen (vegan)", price: 200 },
+  v1: { number: "1", name: "Nem Ran", price: 400 },
+  v2: { number: "2", name: "Mini Frühlingsrollen (vegan)", price: 200 },
 
-  c1: { name: "Gemüse Thai Curry", price: 700 },
-  c2: { name: "Hähnchenfleisch Thai Curry", price: 900 },
-  c3: { name: "Paniertes Hähnchenfleisch Thai Curry", price: 1050 },
-  c4: { name: "Fisch Thai Curry", price: 1050 },
-  c5: { name: "Ente Thai Curry", price: 1150 },
-  c6: { name: "Garnelen Thai Curry", price: 1150 },
-  c7: { name: "Tofu Thai Curry", price: 850 },
+  c1: { number: "c1", name: "Gemüse Thai Curry", price: 700 },
+  c2: { number: "c2", name: "Hähnchenfleisch Thai Curry", price: 900 },
+  c3: { number: "c3", name: "Paniertes Hähnchenfleisch Thai Curry", price: 1050 },
+  c4: { number: "c4", name: "Fisch Thai Curry", price: 1050 },
+  c5: { number: "c5", name: "Ente Thai Curry", price: 1150 },
+  c6: { number: "c6", name: "Garnelen Thai Curry", price: 1150 },
+  c7: { number: "c7", name: "Tofu Thai Curry", price: 850 },
 
-  s1: { name: "Gemüse Süß-Sauer", price: 700 },
-  s2: { name: "Hähnchenfleisch Süß-Sauer", price: 900 },
-  s3: { name: "Paniertes Hähnchenfleisch Süß-Sauer", price: 1050 },
-  s4: { name: "Fisch Süß-Sauer", price: 1050 },
-  s5: { name: "Ente Süß-Sauer", price: 1150 },
-  s6: { name: "Garnelen Süß-Sauer", price: 1150 },
-  s7: { name: "Tofu Süß-Sauer", price: 850 },
+  s1: { number: "s1", name: "Gemüse Süß-Sauer", price: 700 },
+  s2: { number: "s2", name: "Hähnchenfleisch Süß-Sauer", price: 900 },
+  s3: { number: "s3", name: "Paniertes Hähnchenfleisch Süß-Sauer", price: 1050 },
+  s4: { number: "s4", name: "Fisch Süß-Sauer", price: 1050 },
+  s5: { number: "s5", name: "Ente Süß-Sauer", price: 1150 },
+  s6: { number: "s6", name: "Garnelen Süß-Sauer", price: 1150 },
+  s7: { number: "s7", name: "Tofu Süß-Sauer", price: 850 },
 
-  b1: { name: "Gemüse Soja", price: 700 },
-  b2: { name: "Hähnchenfleisch Soja", price: 900 },
-  b3: { name: "Paniertes Hähnchenfleisch Soja", price: 1050 },
-  b4: { name: "Fisch Soja", price: 1050 },
-  b5: { name: "Ente Soja", price: 1150 },
-  b6: { name: "Garnelen Soja", price: 1150 },
-  b7: { name: "Tofu Soja", price: 850 },
+  b1: { number: "b1", name: "Gemüse Soja", price: 700 },
+  b2: { number: "b2", name: "Hähnchenfleisch Soja", price: 900 },
+  b3: { number: "b3", name: "Paniertes Hähnchenfleisch Soja", price: 1050 },
+  b4: { number: "b4", name: "Fisch Soja", price: 1050 },
+  b5: { number: "b5", name: "Ente Soja", price: 1150 },
+  b6: { number: "b6", name: "Garnelen Soja", price: 1150 },
+  b7: { number: "b7", name: "Tofu Soja", price: 850 },
 
-  e1: { name: "Gemüse Erdnuss", price: 700 },
-  e2: { name: "Hähnchenfleisch Erdnuss", price: 900 },
-  e3: { name: "Paniertes Hähnchenfleisch Erdnuss", price: 1050 },
-  e4: { name: "Fisch Erdnuss", price: 1050 },
-  e5: { name: "Ente Erdnuss", price: 1150 },
-  e6: { name: "Garnelen Erdnuss", price: 1150 },
-  e7: { name: "Tofu Erdnuss", price: 850 },
+  e1: { number: "e1", name: "Gemüse Erdnuss", price: 700 },
+  e2: { number: "e2", name: "Hähnchenfleisch Erdnuss", price: 900 },
+  e3: { number: "e3", name: "Paniertes Hähnchenfleisch Erdnuss", price: 1050 },
+  e4: { number: "e4", name: "Fisch Erdnuss", price: 1050 },
+  e5: { number: "e5", name: "Ente Erdnuss", price: 1150 },
+  e6: { number: "e6", name: "Garnelen Erdnuss", price: 1150 },
+  e7: { number: "e7", name: "Tofu Erdnuss", price: 850 },
 
-  m1: { name: "Gemüse Matcha Soße", price: 700 },
-  m2: { name: "Hähnchenfleisch Matcha Soße", price: 900 },
-  m3: { name: "Paniertes Hähnchenfleisch Matcha Soße", price: 1050 },
-  m4: { name: "Fisch Matcha Soße", price: 1050 },
-  m5: { name: "Ente Matcha Soße", price: 1150 },
-  m6: { name: "Garnelen Matcha Soße", price: 1150 },
-  m7: { name: "Tofu Matcha Soße", price: 850 },
+  m1: { number: "m1", name: "Gemüse Matcha Soße", price: 700 },
+  m2: { number: "m2", name: "Hähnchenfleisch Matcha Soße", price: 900 },
+  m3: { number: "m3", name: "Paniertes Hähnchenfleisch Matcha Soße", price: 1050 },
+  m4: { number: "m4", name: "Fisch Matcha Soße", price: 1050 },
+  m5: { number: "m5", name: "Ente Matcha Soße", price: 1150 },
+  m6: { number: "m6", name: "Garnelen Matcha Soße", price: 1150 },
+  m7: { number: "m7", name: "Tofu Matcha Soße", price: 850 },
 
-  m8: { name: "Gemüse Mango Soße", price: 700 },
-  m9: { name: "Hähnchenfleisch Mango Soße", price: 900 },
-  m10: { name: "Paniertes Hähnchenfleisch Mango Soße", price: 1050 },
-  m11: { name: "Fisch Mango Soße", price: 1050 },
-  m12: { name: "Ente Mango Soße", price: 1150 },
-  m13: { name: "Garnelen Mango Soße", price: 1150 },
-  m14: { name: "Tofu Mango Soße", price: 850 },
+  m8: { number: "m8", name: "Gemüse Mango Soße", price: 700 },
+  m9: { number: "m9", name: "Hähnchenfleisch Mango Soße", price: 900 },
+  m10: { number: "m10", name: "Paniertes Hähnchenfleisch Mango Soße", price: 1050 },
+  m11: { number: "m11", name: "Fisch Mango Soße", price: 1050 },
+  m12: { number: "m12", name: "Ente Mango Soße", price: 1150 },
+  m13: { number: "m13", name: "Garnelen Mango Soße", price: 1150 },
+  m14: { number: "m14", name: "Tofu Mango Soße", price: 850 },
 
-  a1: { name: "Gebratener Reis mit Ei & Gemüse", price: 700 },
-  a2: { name: "Gebratener Reis Hähnchenfleisch", price: 850 },
-  a3: { name: "Gebratener Reis Paniertes Hähnchenfleisch", price: 1050 },
-  a4: { name: "Gebratener Reis Fisch", price: 1050 },
-  a5: { name: "Gebratener Reis Ente", price: 1150 },
-  a6: { name: "Gebratener Reis Garnelen", price: 1000 },
-  a7: { name: "Gebratener Reis Tofu", price: 850 },
+  a1: { number: "a1", name: "Gebratener Reis mit Ei & Gemüse", price: 700 },
+  a2: { number: "a2", name: "Gebratener Reis Hähnchenfleisch", price: 850 },
+  a3: { number: "a3", name: "Gebratener Reis Paniertes Hähnchenfleisch", price: 1050 },
+  a4: { number: "a4", name: "Gebratener Reis Fisch", price: 1050 },
+  a5: { number: "a5", name: "Gebratener Reis Ente", price: 1150 },
+  a6: { number: "a6", name: "Gebratener Reis Garnelen", price: 1000 },
+  a7: { number: "a7", name: "Gebratener Reis Tofu", price: 850 },
 
   "box-gemuse-small": { name: "Nudel-/Reisbox Gemüse (klein)", price: 400 },
   "box-gemuse-large": { name: "Nudel-/Reisbox Gemüse (groß)", price: 500 },
@@ -72,37 +73,45 @@ const PRODUCTS = {
   "box-tofu": { name: "Nudel-/Reisbox Tofu", price: 800 },
   "box-garnelen": { name: "Nudel-/Reisbox Garnelen", price: 1000 },
 
-  "g-soft": { name: "Softgetränke", price: 300 },
-  "g-wasser": { name: "Wasser", price: 200 },
-  "m-latte": { name: "Matcha Latte (warm/kalt)", price: 450 },
-  "m-dau": { name: "Matcha dâu (Erdbeere)", price: 500 },
-  "m-xoai": { name: "Matcha xoài (Mango)", price: 500 },
-  "m-rasp": { name: "Matcha Raspberry (Himbeere)", price: 500 },
-  "m-vietquat": { name: "Matcha việt quất (Blaubeere)", price: 500 },
-  "m-dua-ananas": { name: "Matcha dứa (Ananas)", price: 500 },
-  "m-vani": { name: "Matcha vani (Vanille)", price: 500 },
-  "m-dua-cloud": { name: "Matcha dừa (Coconut Cloud)", price: 550 },
-  "cp-den": { name: "Cà phê đen", price: 450 },
-  "cp-sua-da": { name: "Cà phê sữa đá", price: 500 },
-  "cp-den-da": { name: "Cà phê đen đá", price: 450 },
-  "cp-nau-da": { name: "Cà phê nâu đá", price: 500 },
-  "cp-dua": { name: "Cà phê dừa", price: 500 },
-  "cp-bac-xiu": { name: "Bạc xỉu", price: 600 },
-  "t-chanh-leo": { name: "Trà chanh leo", price: 600 },
-  "t-vai": { name: "Trà vải", price: 600 },
-  "t-dao": { name: "Trà đào cam sả", price: 600 },
-  "t-chanh-simple": { name: "Trà chanh", price: 600 },
-  "soda-chanh": { name: "Soda chanh", price: 600 },
-  "soda-dao": { name: "Soda đào", price: 600 },
-  "soda-vai": { name: "Soda vải", price: 600 },
-  "soda-dua": { name: "Soda dứa", price: 600 },
-  "smoothie-all": { name: "Smoothie", price: 650 },
-  "bowl-oats1": { name: "Overnight Oats", price: 650 },
-  "bowl-oats2": { name: "Overnight Oats mit Chia", price: 650 },
-  "bowl-chia": { name: "Chia Pudding", price: 650 },
-  "kem-matcha": { name: "Matcha Latte mit Matcha Eis", price: 650 },
-  "kem-vani": { name: "Matcha Latte mit Vanilleeis", price: 650 },
-  "kids-schoko": { name: "Schoko Latte", price: 450 },
+  "g-soft": { number: "g1", name: "Softgetränke", price: 300 },
+  "g-wasser": { number: "g2", name: "Wasser", price: 200 },
+
+  "m-latte": { number: "01", name: "Matcha Latte (warm/kalt)", price: 450 },
+  "m-dau": { number: "02", name: "Matcha dâu (Erdbeere)", price: 500 },
+  "m-xoai": { number: "03", name: "Matcha xoài (Mango)", price: 500 },
+  "m-rasp": { number: "04", name: "Matcha Raspberry (Himbeere)", price: 500 },
+  "m-vietquat": { number: "05", name: "Matcha việt quất (Blaubeere)", price: 500 },
+  "m-dua-ananas": { number: "06", name: "Matcha dứa (Ananas)", price: 500 },
+  "m-vani": { number: "07", name: "Matcha vani (Vanille)", price: 500 },
+  "m-dua-cloud": { number: "08", name: "Matcha dừa (Coconut Cloud)", price: 550 },
+
+  "cp-den": { number: "09", name: "Cà phê đen", price: 450 },
+  "cp-sua-da": { number: "10", name: "Cà phê sữa đá", price: 500 },
+  "cp-den-da": { number: "11", name: "Cà phê đen đá", price: 450 },
+  "cp-nau-da": { number: "12", name: "Cà phê nâu đá", price: 500 },
+  "cp-dua": { number: "13", name: "Cà phê dừa", price: 500 },
+  "cp-bac-xiu": { number: "14", name: "Bạc xỉu", price: 600 },
+
+  "t-chanh-leo": { number: "15", name: "Trà chanh leo", price: 600 },
+  "t-vai": { number: "16", name: "Trà vải", price: 600 },
+  "t-dao": { number: "17", name: "Trà đào cam sả", price: 600 },
+  "t-chanh-simple": { number: "18", name: "Trà chanh", price: 600 },
+
+  "soda-chanh": { number: "19", name: "Soda chanh", price: 600 },
+  "soda-dao": { number: "20", name: "Soda đào", price: 600 },
+  "soda-vai": { number: "21", name: "Soda vải", price: 600 },
+  "soda-dua": { number: "22", name: "Soda dứa", price: 600 },
+
+  "smoothie-all": { number: "23", name: "Smoothie", price: 650 },
+
+  "bowl-oats1": { number: "24", name: "Overnight Oats", price: 650 },
+  "bowl-oats2": { number: "25", name: "Overnight Oats mit Chia", price: 650 },
+  "bowl-chia": { number: "29", name: "Chia Pudding", price: 650 },
+
+  "kem-matcha": { number: "30", name: "Matcha Latte mit Matcha Eis", price: 650 },
+  "kem-vani": { number: "31", name: "Matcha Latte mit Vanilleeis", price: 650 },
+
+  "kids-schoko": { number: "32", name: "Schoko Latte", price: 450 },
 };
 
 // In-Memory Rate Limit (pro Function-Instance / pro Vercel-Region).
@@ -273,12 +282,23 @@ export default async function handler(req, res) {
     const normalizedItems = itemsFromBody.map((item) => {
       const id = typeof item?.id === "string" ? item.id : "";
       const product = PRODUCTS[id];
+      const number =
+        (typeof item?.number === "string" && item.number.trim()) ||
+        product?.number ||
+        "";
+      const baseName =
+        (typeof item?.name === "string" && item.name.trim()) ||
+        product?.name ||
+        id;
+      // Abkuerzung ans Kitchen-Dashboard durchreichen: einerseits als
+      // eigenes Feld `number`, andererseits dem Display-Name voranstellen
+      // (z.B. "01 Matcha Latte (warm/kalt)"), damit sie auch dann sichtbar
+      // ist, wenn das Dashboard nur `name` rendert.
+      const displayName = number ? `${number} ${baseName}` : baseName;
       return {
         id,
-        name:
-          (typeof item?.name === "string" && item.name.trim()) ||
-          product?.name ||
-          id,
+        number,
+        name: displayName,
         quantity: normalizeQuantity(item?.quantity),
       };
     });

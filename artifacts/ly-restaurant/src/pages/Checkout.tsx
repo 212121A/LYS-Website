@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 interface CartItem {
   id: string;
   name: string;
+  number?: string;
   price: number;
   quantity: number;
   size?: "small" | "large";
@@ -17,8 +18,6 @@ const API_BASE_URL = (
 ).replace(/\/$/, "");
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "sb";
 const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
-const CART_STORAGE_KEY = "lys_cart_v2";
-const LEGACY_CART_STORAGE_KEY = "lys_cart";
 
 export default function Checkout() {
   const { t } = useLanguage();
@@ -33,19 +32,9 @@ export default function Checkout() {
   const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
 
   useEffect(() => {
-    localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
-
-    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    const saved = localStorage.getItem("lys_cart");
     if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as CartItem[];
-        const sanitized = Array.isArray(parsed)
-          ? parsed
-              .map((item) => ({ ...item, id: item.id?.replace(/-regular$/, "") }))
-              .filter((item) => typeof item.id === "string" && item.id.length > 0)
-          : [];
-        setCart(sanitized);
-      } catch {}
+      try { setCart(JSON.parse(saved)); } catch {}
     }
 
     const searchParams = new URLSearchParams(window.location.search);
@@ -99,6 +88,7 @@ export default function Checkout() {
           cartItems: cart.map((item) => ({
             id: item.id,
             name: item.name,
+            number: item.number,
             quantity: item.quantity,
           })),
           customer,
@@ -294,8 +284,7 @@ export default function Checkout() {
                             createdAt: Date.now(),
                           }),
                         );
-                        localStorage.removeItem(CART_STORAGE_KEY);
-                        localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+                        localStorage.removeItem("lys_cart");
                         navigate("/checkout/success");
                       }}
                       onError={() =>

@@ -126,11 +126,19 @@ router.post("/create-checkout-session", async (req, res) => {
       items:
         requestMetadata.items ??
         JSON.stringify(
-          itemsFromBody.map((item: any) => ({
-            id: item?.id,
-            name: item?.name,
-            quantity: Math.max(1, Number(item?.quantity ?? 1)),
-          })),
+          itemsFromBody.map((item: any) => {
+            const number =
+              typeof item?.number === "string" ? item.number.trim() : "";
+            const baseName =
+              typeof item?.name === "string" ? item.name : String(item?.id ?? "");
+            const displayName = number ? `${number} ${baseName}` : baseName;
+            return {
+              id: item?.id,
+              number,
+              name: displayName,
+              quantity: Math.max(1, Number(item?.quantity ?? 1)),
+            };
+          }),
         ),
       pickup_time: requestMetadata.pickup_time ?? "",
     };
