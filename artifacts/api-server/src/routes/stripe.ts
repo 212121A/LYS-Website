@@ -123,7 +123,15 @@ router.post("/create-checkout-session", async (req, res) => {
               city: address?.city ?? "",
             })
           : ""),
-      items: requestMetadata.items ?? JSON.stringify(itemsFromBody),
+      items:
+        requestMetadata.items ??
+        JSON.stringify(
+          itemsFromBody.map((item: any) => ({
+            id: item?.id,
+            name: item?.name,
+            quantity: Math.max(1, Number(item?.quantity ?? 1)),
+          })),
+        ),
       pickup_time: requestMetadata.pickup_time ?? "",
     };
 

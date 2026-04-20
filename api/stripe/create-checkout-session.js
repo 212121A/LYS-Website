@@ -307,34 +307,41 @@ export default async function handler(req, res) {
     };
 
     // Stripe-Metadata erlaubt max 500 Zeichen pro Wert (und max 50 Keys).
-    // Items kompakt als "id*qty" speichern und ggf. auf items_1, items_2,
-    // ... aufteilen, damit die Liste auch bei vielen Positionen passt.
+    // Items als JSON-Array speichern, damit das Kitchen Dashboard sie
+    // direkt parsen kann ([{id,name,quantity}, ...]). Wenn der JSON-String
+    // > 500 Zeichen ist, auf items_1, items_2, ... aufteilen. Jedes Chunk
+    // ist selbst ein gueltiges JSON-Array, damit Konsumenten die Chunks
+    // einzeln parsen und zusammenfuehren koennen.
     if (requestMetadata.items) {
       sessionMetadata.items = String(requestMetadata.items).slice(0, 500);
     } else {
-      const itemTokens = normalizedItems.map(
-        (i) => `${i.id}*${i.quantity}`,
-      );
-      const chunks = [];
-      let current = "";
-      for (const tok of itemTokens) {
-        const next = current ? `${current},${tok}` : tok;
-        if (next.length > 500) {
-          if (current) chunks.push(current);
-          current = tok.length > 500 ? tok.slice(0, 500) : tok;
-        } else {
-          current = next;
-        }
-      }
-      if (current) chunks.push(current);
-
-      if (chunks.length === 1) {
-        sessionMetadata.items = chunks[0];
+      const fullJson = JSON.stringify(normalizedItems);
+      if (fullJson.length <= 500) {
+        sessionMetadata.items = fullJson;
       } else {
-        sessionMetadata.items_count = String(chunks.length);
-        chunks.forEach((chunk, i) => {
-          sessionMetadata[`items_${i + 1}`] = chunk;
-        });
+        const chunks = [];
+        let currentChunk = [];
+        for (const item of normalizedItems) {
+          const candidate = JSON.stringify([...currentChunk, item]);
+          if (candidate.length > 500 && currentChunk.length > 0) {
+            chunks.push(JSON.stringify(currentChunk));
+            currentChunk = [item];
+          } else {
+            currentChunk.push(item);
+          }
+        }
+        if (currentChunk.length > 0) {
+          chunks.push(JSON.stringify(currentChunk));
+        }
+
+        if (chunks.length === 1) {
+          sessionMetadata.items = chunks[0];
+        } else {
+          sessionMetadata.items_count = String(chunks.length);
+          chunks.forEach((chunk, i) => {
+            sessionMetadata[`items_${i + 1}`] = chunk;
+          });
+        }
       }
     }
 
