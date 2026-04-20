@@ -73,8 +73,8 @@ const PRODUCTS = {
   "box-tofu": { name: "Nudel-/Reisbox Tofu", price: 800 },
   "box-garnelen": { name: "Nudel-/Reisbox Garnelen", price: 1000 },
 
-  "g-soft": { number: "g1", name: "Softgetränke", price: 300 },
-  "g-wasser": { number: "g2", name: "Wasser", price: 200 },
+  "g-soft": { number: "GD1", name: "Softgetränke", price: 300 },
+  "g-wasser": { number: "GD2", name: "Wasser", price: 200 },
 
   "m-latte": { number: "01", name: "Matcha Latte (warm/kalt)", price: 450 },
   "m-dau": { number: "02", name: "Matcha dâu (Erdbeere)", price: 500 },

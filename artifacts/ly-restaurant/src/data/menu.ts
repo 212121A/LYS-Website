@@ -162,11 +162,11 @@ export const menuCategories: MenuCategory[] = [
   },
   {
     id: "getraenke",
-    name: "Getränke",
+    name: "Softgetränke",
     nameKey: "catDrinks",
     items: [
-      { id: "g-soft", number: "g1", name: "Softgetränke (inkl. Pfand)", nameKey: "softDrinks", price: 3, category: "getraenke" },
-      { id: "g-wasser", number: "g2", name: "Wasser (inkl. Pfand)", nameKey: "water", price: 2, category: "getraenke" },
+      { id: "g-soft", number: "GD1", name: "Softgetränke (inkl. Pfand)", nameKey: "softDrinks", price: 3, category: "getraenke" },
+      { id: "g-wasser", number: "GD2", name: "Wasser (inkl. Pfand)", nameKey: "water", price: 2, category: "getraenke" },
     ],
   },
   {
