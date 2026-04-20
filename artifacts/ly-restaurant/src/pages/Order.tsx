@@ -1,35 +1,117 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
+import {
+  boxCartId,
+  boxCode,
+  boxDisplayName,
+  isBoxBaseId,
+  BOX_SAUCE_LABEL,
+  BOX_SAUCES,
+  type BoxSauce,
+  type BoxSize,
+  type BoxType,
+} from "@/lib/orderItemCode";
 
 interface CartItem extends MenuItem {
   quantity: number;
-  size?: "small" | "large";
+  size?: BoxSize;
+  sauce?: BoxSauce;
+}
+
+interface PendingBox {
+  item: MenuItem;
+  size: BoxSize;
+  type: BoxType;
 }
 
 export default function Order() {
   const { t, lang } = useLanguage();
   const mt = menuT[lang];
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [boxTypeChoice, setBoxTypeChoice] = useState<Record<string, BoxType>>({});
+  const [pendingBox, setPendingBox] = useState<PendingBox | null>(null);
+  const [sauceChoice, setSauceChoice] = useState<BoxSauce | null>(null);
   const [, navigate] = useLocation();
 
   const orderable = menuCategories;
 
-  const addToCart = (item: MenuItem, size?: "small" | "large") => {
-    const price = size === "small" && item.priceSmall !== undefined ? item.priceSmall : item.price;
-    const cartId = size ? `${item.id}-${size}` : item.id;
+  const getBoxType = (baseId: string): BoxType => boxTypeChoice[baseId] ?? "nudel";
+
+  const addBoxToCart = (
+    item: MenuItem,
+    size: BoxSize,
+    type: BoxType,
+    sauce: BoxSauce,
+  ) => {
+    const priceForSize =
+      size === "small" && item.priceSmall !== undefined ? item.priceSmall : item.price;
+    const code = boxCode(item.id, size, type, sauce);
+    const displayName = boxDisplayName(item.id, size, type, sauce) ?? item.name;
+    const cartId = boxCartId(item.id, size, type, sauce);
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
       if (existing) {
-        return prev.map((i) => i.id === cartId ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map((i) => (i.id === cartId ? { ...i, quantity: i.quantity + 1 } : i));
       }
-      return [...prev, { ...item, id: cartId, price, quantity: 1, size }];
+      return [
+        ...prev,
+        {
+          ...item,
+          id: cartId,
+          name: displayName,
+          number: code ?? undefined,
+          price: priceForSize,
+          quantity: 1,
+          size,
+          sauce,
+        },
+      ];
     });
   };
+
+  const addToCart = (item: MenuItem, size?: BoxSize) => {
+    if (isBoxBaseId(item.id)) {
+      const effectiveSize: BoxSize = size ?? "large";
+      const type = getBoxType(item.id);
+      setPendingBox({ item, size: effectiveSize, type });
+      setSauceChoice(null);
+      return;
+    }
+
+    const priceForSize =
+      size === "small" && item.priceSmall !== undefined ? item.priceSmall : item.price;
+    const cartId = size ? `${item.id}-${size}` : item.id;
+    setCart((prev) => {
+      const existing = prev.find((i) => i.id === cartId);
+      if (existing) {
+        return prev.map((i) => (i.id === cartId ? { ...i, quantity: i.quantity + 1 } : i));
+      }
+      return [...prev, { ...item, id: cartId, price: priceForSize, quantity: 1, size }];
+    });
+  };
+
+  const confirmSauce = () => {
+    if (!pendingBox || !sauceChoice) return;
+    addBoxToCart(pendingBox.item, pendingBox.size, pendingBox.type, sauceChoice);
+    setPendingBox(null);
+    setSauceChoice(null);
+  };
+
+  const cancelSauce = () => {
+    setPendingBox(null);
+    setSauceChoice(null);
+  };
+
+  const sauceHeading =
+    pendingBox &&
+    `${mt[pendingBox.item.nameKey as keyof typeof mt] || pendingBox.item.name} · ${
+      pendingBox.type === "nudel" ? "Nudel" : "Reis"
+    } ${pendingBox.size === "small" ? t.order.small : t.order.large}`;
 
   const updateQty = (cartId: string, delta: number) => {
     setCart((prev) =>
@@ -43,6 +125,15 @@ export default function Order() {
   const getItemLabel = (item: MenuItem) => {
     const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
     return item.number ? `${item.number} ${translatedName}` : translatedName;
+  };
+
+  /**
+   * Kürzel-Anzeige im Warenkorb – identisch zum Voice-Agent-Format:
+   * `{quantity}x {number}` (z.B. "1x GN2"). Ohne `number` Fallback auf Name.
+   */
+  const getCartPrimaryLabel = (item: CartItem): string => {
+    if (item.number) return item.number;
+    return mt[item.nameKey as keyof typeof mt] || item.name;
   };
 
   const goToCheckout = () => {
@@ -81,7 +172,10 @@ export default function Order() {
                 )}
 
                 <div className="space-y-3">
-                  {category.items.map((item) => (
+                  {category.items.map((item) => {
+                    const isBox = isBoxBaseId(item.id);
+                    const activeBoxType = getBoxType(item.id);
+                    return (
                     <div
                       key={item.id}
                       data-testid={`order-item-${item.id}`}
@@ -100,6 +194,32 @@ export default function Order() {
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {mt[item.descKey as keyof typeof mt] || item.description}
                           </p>
+                        )}
+                        {isBox && (
+                          <div
+                            role="group"
+                            aria-label="Nudel oder Reis"
+                            className="mt-2 inline-flex rounded-full border border-border bg-background p-0.5 text-[11px] font-medium"
+                          >
+                            {(["nudel", "reis"] as BoxType[]).map((typeOpt) => (
+                              <button
+                                key={typeOpt}
+                                type="button"
+                                onClick={() =>
+                                  setBoxTypeChoice((prev) => ({ ...prev, [item.id]: typeOpt }))
+                                }
+                                data-testid={`button-boxtype-${item.id}-${typeOpt}`}
+                                aria-pressed={activeBoxType === typeOpt}
+                                className={`px-3 py-1 rounded-full transition-colors ${
+                                  activeBoxType === typeOpt
+                                    ? "bg-primary text-primary-foreground"
+                                    : "text-muted-foreground hover:text-foreground"
+                                }`}
+                              >
+                                {typeOpt === "nudel" ? "Nudel" : "Reis"}
+                              </button>
+                            ))}
+                          </div>
                         )}
                       </div>
 
@@ -138,7 +258,8 @@ export default function Order() {
                         </div>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -167,15 +288,24 @@ export default function Order() {
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-80 overflow-y-auto">
-                      {cart.map((item) => (
+                      {cart.map((item) => {
+                        const primary = getCartPrimaryLabel(item);
+                        const details = item.number
+                          ? mt[item.nameKey as keyof typeof mt] || item.name
+                          : item.size
+                            ? item.size === "small"
+                              ? t.order.small
+                              : t.order.large
+                            : null;
+                        return (
                         <div key={item.id} className="flex items-center gap-3" data-testid={`cart-item-${item.id}`}>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-foreground leading-snug truncate">
-                              {getItemLabel(item)}
+                            <p className="text-xs font-semibold text-foreground leading-snug truncate font-mono">
+                              {item.quantity}x {primary}
                             </p>
-                            {item.size && (
-                              <p className="text-[10px] text-muted-foreground capitalize">
-                                {item.size === "small" ? t.order.small : t.order.large}
+                            {details && (
+                              <p className="text-[10px] text-muted-foreground truncate">
+                                {details}
                               </p>
                             )}
                           </div>
@@ -200,7 +330,8 @@ export default function Order() {
                             {formatPrice(item.price * item.quantity)}
                           </span>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 
@@ -249,6 +380,102 @@ export default function Order() {
           </div>
         </div>
       </div>
+
+      {pendingBox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sauce-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          onClick={cancelSauce}
+        >
+          <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" />
+          <div
+            className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+            data-testid="sauce-dialog"
+          >
+            <div className="px-6 pt-6 pb-4 relative">
+              <button
+                type="button"
+                onClick={cancelSauce}
+                aria-label="Schließen"
+                className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                data-testid="button-sauce-close"
+              >
+                <X size={18} />
+              </button>
+              <h2
+                id="sauce-dialog-title"
+                className="font-serif text-2xl font-bold text-foreground"
+              >
+                Soße auswählen
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Welche Soße möchtest du zu deiner Box?
+              </p>
+              {sauceHeading && (
+                <p className="mt-2 text-sm font-medium text-foreground">
+                  {sauceHeading}
+                </p>
+              )}
+            </div>
+            <div className="border-t border-border" />
+            <div className="p-5 space-y-3">
+              {BOX_SAUCES.map((s) => {
+                const active = sauceChoice === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSauceChoice(s)}
+                    aria-pressed={active}
+                    data-testid={`button-sauce-${s}`}
+                    className={`w-full flex items-center gap-3 text-left rounded-xl border px-4 py-3.5 transition-colors ${
+                      active
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-background hover:border-primary/40 hover:bg-primary/5"
+                    }`}
+                  >
+                    <span
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                        active ? "border-primary" : "border-muted-foreground/40"
+                      }`}
+                    >
+                      {active && (
+                        <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                      )}
+                    </span>
+                    <span className="text-base font-medium text-foreground">
+                      {BOX_SAUCE_LABEL[s]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex items-stretch border-t border-border">
+              <button
+                type="button"
+                onClick={cancelSauce}
+                className="flex-1 py-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                data-testid="button-sauce-cancel"
+              >
+                Abbrechen
+              </button>
+              <div className="w-px bg-border" />
+              <button
+                type="button"
+                onClick={confirmSauce}
+                disabled={!sauceChoice}
+                className="flex-1 py-4 text-base font-semibold text-primary hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                data-testid="button-sauce-confirm"
+              >
+                Hinzufügen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

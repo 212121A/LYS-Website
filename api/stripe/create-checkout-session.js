@@ -63,15 +63,26 @@ const PRODUCTS = {
   a6: { number: "a6", name: "Gebratener Reis Garnelen", price: 1000 },
   a7: { number: "a7", name: "Gebratener Reis Tofu", price: 850 },
 
-  "box-gemuse-small": { name: "Nudel-/Reisbox Gemüse (klein)", price: 400 },
-  "box-gemuse-large": { name: "Nudel-/Reisbox Gemüse (groß)", price: 500 },
-  "box-huehnchen-small": { name: "Nudel-/Reisbox Hähnchen (klein)", price: 450 },
-  "box-huehnchen-large": { name: "Nudel-/Reisbox Hähnchen (groß)", price: 600 },
-  "box-pan-huehnchen": { name: "Nudel-/Reisbox Paniertes Hähnchen", price: 600 },
-  "box-fisch": { name: "Nudel-/Reisbox Fisch", price: 600 },
-  "box-fruehlingsrollen": { name: "Nudel-/Reisbox Frühlingsrollen", price: 600 },
-  "box-tofu": { name: "Nudel-/Reisbox Tofu", price: 800 },
-  "box-garnelen": { name: "Nudel-/Reisbox Garnelen", price: 1000 },
+  // Nudel-/Reisboxen: Cart-IDs im Format `<baseId>-<size>-<type>`.
+  // `number` = Kurzcode fuer Kitchen-Dashboard (z.B. GN2 = Grosse Nudelbox Haehnchen).
+  "box-gemuse-small-nudel": { number: "KN1", name: "Kleine Nudelbox Gemüse", price: 400 },
+  "box-gemuse-small-reis": { number: "KR1", name: "Kleine Reisbox Gemüse", price: 400 },
+  "box-gemuse-large-nudel": { number: "GN1", name: "Große Nudelbox Gemüse", price: 500 },
+  "box-gemuse-large-reis": { number: "GR1", name: "Große Reisbox Gemüse", price: 500 },
+  "box-huehnchen-small-nudel": { number: "KN2", name: "Kleine Nudelbox Hähnchen", price: 450 },
+  "box-huehnchen-small-reis": { number: "KR2", name: "Kleine Reisbox Hähnchen", price: 450 },
+  "box-huehnchen-large-nudel": { number: "GN2", name: "Große Nudelbox Hähnchen", price: 600 },
+  "box-huehnchen-large-reis": { number: "GR2", name: "Große Reisbox Hähnchen", price: 600 },
+  "box-pan-huehnchen-large-nudel": { number: "GN3", name: "Große Nudelbox Paniertes Hähnchen", price: 600 },
+  "box-pan-huehnchen-large-reis": { number: "GR3", name: "Große Reisbox Paniertes Hähnchen", price: 600 },
+  "box-fisch-large-nudel": { number: "GN4", name: "Große Nudelbox Fisch", price: 600 },
+  "box-fisch-large-reis": { number: "GR4", name: "Große Reisbox Fisch", price: 600 },
+  "box-fruehlingsrollen-large-nudel": { number: "GN5", name: "Große Nudelbox Vegetarische Frühlingsrollen", price: 600 },
+  "box-fruehlingsrollen-large-reis": { number: "GR5", name: "Große Reisbox Vegetarische Frühlingsrollen", price: 600 },
+  "box-tofu-large-nudel": { number: "GN6", name: "Große Nudelbox Tofu", price: 800 },
+  "box-tofu-large-reis": { number: "GR6", name: "Große Reisbox Tofu", price: 800 },
+  "box-garnelen-large-nudel": { number: "GN7", name: "Große Nudelbox Garnelen", price: 1000 },
+  "box-garnelen-large-reis": { number: "GR7", name: "Große Reisbox Garnelen", price: 1000 },
 
   "g-soft": { number: "GD1", name: "Softgetränke", price: 300 },
   "g-wasser": { number: "GD2", name: "Wasser", price: 200 },
@@ -113,6 +124,40 @@ const PRODUCTS = {
 
   "kids-schoko": { number: "32", name: "Schoko Latte", price: 450 },
 };
+
+// Box-Soßen: Cart-IDs wie `box-huehnchen-large-nudel-soja` werden auf die
+// Basis-Box gemappt. Preis bleibt identisch (Soßen sind inklusive), Name und
+// Kitchen-Dashboard-Kürzel bekommen ein Suffix mit der gewählten Soße.
+const BOX_SAUCE_SUFFIXES = {
+  "-soja": { code: "S", label: "Sojasoße" },
+  "-suesssauer": { code: "SS", label: "Süßsauersoße" },
+  "-curry": { code: "C", label: "Thaicurry mit Kokosmilch" },
+};
+
+function resolveProduct(id) {
+  if (typeof id !== "string" || id.length === 0) return null;
+  const direct = PRODUCTS[id];
+  if (direct) return { product: direct, sauce: null };
+
+  for (const [suffix, sauce] of Object.entries(BOX_SAUCE_SUFFIXES)) {
+    if (id.endsWith(suffix)) {
+      const baseId = id.slice(0, -suffix.length);
+      if (!baseId.startsWith("box-")) continue;
+      const base = PRODUCTS[baseId];
+      if (!base) continue;
+      return {
+        product: {
+          number: `${base.number}-${sauce.code}`,
+          name: `${base.name} • ${sauce.label}`,
+          price: base.price,
+        },
+        sauce,
+      };
+    }
+  }
+
+  return null;
+}
 
 // In-Memory Rate Limit (pro Function-Instance / pro Vercel-Region).
 // Vercel KV waere robuster, vermeidet aber zusaetzliches Setup.
@@ -241,12 +286,13 @@ export default async function handler(req, res) {
     const lineItems = itemsFromBody
       .map((item) => {
         const id = typeof item?.id === "string" ? item.id : "";
-        const product = PRODUCTS[id];
-        if (!product) {
+        const resolved = resolveProduct(id);
+        if (!resolved) {
           invalidItemIds.push(id || "unknown");
           return null;
         }
 
+        const { product } = resolved;
         return {
           price_data: {
             currency,
@@ -281,7 +327,8 @@ export default async function handler(req, res) {
 
     const normalizedItems = itemsFromBody.map((item) => {
       const id = typeof item?.id === "string" ? item.id : "";
-      const product = PRODUCTS[id];
+      const resolved = resolveProduct(id);
+      const product = resolved?.product;
       const number =
         (typeof item?.number === "string" && item.number.trim()) ||
         product?.number ||
