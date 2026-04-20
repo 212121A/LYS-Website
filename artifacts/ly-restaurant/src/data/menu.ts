@@ -165,8 +165,8 @@ export const menuCategories: MenuCategory[] = [
     name: "Getränke",
     nameKey: "catDrinks",
     items: [
-      { id: "g-soft", name: "Softgetränke (inkl. Pfand)", nameKey: "softDrinks", price: 3, category: "getraenke" },
-      { id: "g-wasser", name: "Wasser (inkl. Pfand)", nameKey: "water", price: 2, category: "getraenke" },
+      { id: "g-soft", number: "g1", name: "Softgetränke (inkl. Pfand)", nameKey: "softDrinks", price: 3, category: "getraenke" },
+      { id: "g-wasser", number: "g2", name: "Wasser (inkl. Pfand)", nameKey: "water", price: 2, category: "getraenke" },
     ],
   },
   {
@@ -174,14 +174,14 @@ export const menuCategories: MenuCategory[] = [
     name: "Matcha",
     nameKey: "catMatcha",
     items: [
-      { id: "m-latte", name: "Matcha Latte (warm/kalt)", nameKey: "matchaLatte", price: 4.5, vegetarian: true, category: "matcha" },
-      { id: "m-dau", name: "Matcha dâu (Erdbeere)", nameKey: "matchaDau", price: 5, vegetarian: true, category: "matcha" },
-      { id: "m-xoai", name: "Matcha xoài (Mango)", nameKey: "matchaXoai", price: 5, vegetarian: true, category: "matcha" },
-      { id: "m-rasp", name: "Matcha Raspberry (Himbeere)", nameKey: "matchaRaspberry", price: 5, vegetarian: true, category: "matcha" },
-      { id: "m-vietquat", name: "Matcha việt quất (Blaubeere)", nameKey: "matchaVietQuat", price: 5, vegetarian: true, category: "matcha" },
-      { id: "m-dua-ananas", name: "Matcha dứa (Ananas)", nameKey: "matchaDuaAnanas", price: 5, vegetarian: true, category: "matcha" },
-      { id: "m-vani", name: "Matcha vani (Vanille)", nameKey: "matchaVani", price: 5, vegetarian: true, category: "matcha" },
-      { id: "m-dua-cloud", name: "Matcha dừa (Coconut Cloud)", nameKey: "matchaDuaCloud", price: 5.5, vegetarian: true, category: "matcha" },
+      { id: "m-latte", number: "01", name: "Matcha Latte (warm/kalt)", nameKey: "matchaLatte", price: 4.5, vegetarian: true, category: "matcha" },
+      { id: "m-dau", number: "02", name: "Matcha dâu (Erdbeere)", nameKey: "matchaDau", price: 5, vegetarian: true, category: "matcha" },
+      { id: "m-xoai", number: "03", name: "Matcha xoài (Mango)", nameKey: "matchaXoai", price: 5, vegetarian: true, category: "matcha" },
+      { id: "m-rasp", number: "04", name: "Matcha Raspberry (Himbeere)", nameKey: "matchaRaspberry", price: 5, vegetarian: true, category: "matcha" },
+      { id: "m-vietquat", number: "05", name: "Matcha việt quất (Blaubeere)", nameKey: "matchaVietQuat", price: 5, vegetarian: true, category: "matcha" },
+      { id: "m-dua-ananas", number: "06", name: "Matcha dứa (Ananas)", nameKey: "matchaDuaAnanas", price: 5, vegetarian: true, category: "matcha" },
+      { id: "m-vani", number: "07", name: "Matcha vani (Vanille)", nameKey: "matchaVani", price: 5, vegetarian: true, category: "matcha" },
+      { id: "m-dua-cloud", number: "08", name: "Matcha dừa (Coconut Cloud)", nameKey: "matchaDuaCloud", price: 5.5, vegetarian: true, category: "matcha" },
     ],
   },
   {
@@ -189,12 +189,12 @@ export const menuCategories: MenuCategory[] = [
     name: "Cà Phê Việt Nam",
     nameKey: "catCoffee",
     items: [
-      { id: "cp-den", name: "Cà phê đen", nameKey: "caPheDen", price: 4.5, category: "ca-phe" },
-      { id: "cp-sua-da", name: "Cà phê sữa đá", nameKey: "caPheSuaDa", price: 5, category: "ca-phe" },
-      { id: "cp-den-da", name: "Cà phê đen đá", nameKey: "caPheDenDa", price: 4.5, category: "ca-phe" },
-      { id: "cp-nau-da", name: "Cà phê nâu đá", nameKey: "caPheNauDa", price: 5, category: "ca-phe" },
-      { id: "cp-dua", name: "Cà phê dừa", nameKey: "caPheDua", price: 5, category: "ca-phe" },
-      { id: "cp-bac-xiu", name: "Bạc xỉu", nameKey: "bacXiu", price: 6, category: "ca-phe" },
+      { id: "cp-den", number: "09", name: "Cà phê đen", nameKey: "caPheDen", price: 4.5, category: "ca-phe" },
+      { id: "cp-sua-da", number: "10", name: "Cà phê sữa đá", nameKey: "caPheSuaDa", price: 5, category: "ca-phe" },
+      { id: "cp-den-da", number: "11", name: "Cà phê đen đá", nameKey: "caPheDenDa", price: 4.5, category: "ca-phe" },
+      { id: "cp-nau-da", number: "12", name: "Cà phê nâu đá", nameKey: "caPheNauDa", price: 5, category: "ca-phe" },
+      { id: "cp-dua", number: "13", name: "Cà phê dừa", nameKey: "caPheDua", price: 5, category: "ca-phe" },
+      { id: "cp-bac-xiu", number: "14", name: "Bạc xỉu", nameKey: "bacXiu", price: 6, category: "ca-phe" },
     ],
   },
   {
@@ -202,10 +202,10 @@ export const menuCategories: MenuCategory[] = [
     name: "Trà (Hausgemachter Eistee)",
     nameKey: "catTea",
     items: [
-      { id: "t-chanh-leo", name: "Chanh leo (Passionsfrucht)", nameKey: "traChanh", price: 6, vegetarian: true, category: "tra-eistee" },
-      { id: "t-vai", name: "Trà vải (Lychee Tee)", nameKey: "traVai", price: 6, vegetarian: true, category: "tra-eistee" },
-      { id: "t-dao", name: "Trà đào cam sả", nameKey: "traDao", price: 6, vegetarian: true, category: "tra-eistee" },
-      { id: "t-chanh-simple", name: "Trà chanh (Zitronentee)", nameKey: "traChanhSimple", price: 6, vegetarian: true, category: "tra-eistee" },
+      { id: "t-chanh-leo", number: "15", name: "Chanh leo (Passionsfrucht)", nameKey: "traChanh", price: 6, vegetarian: true, category: "tra-eistee" },
+      { id: "t-vai", number: "16", name: "Trà vải (Lychee Tee)", nameKey: "traVai", price: 6, vegetarian: true, category: "tra-eistee" },
+      { id: "t-dao", number: "17", name: "Trà đào cam sả", nameKey: "traDao", price: 6, vegetarian: true, category: "tra-eistee" },
+      { id: "t-chanh-simple", number: "18", name: "Trà chanh (Zitronentee)", nameKey: "traChanhSimple", price: 6, vegetarian: true, category: "tra-eistee" },
     ],
   },
   {
@@ -213,10 +213,10 @@ export const menuCategories: MenuCategory[] = [
     name: "Soda",
     nameKey: "catSoda",
     items: [
-      { id: "soda-chanh", name: "Soda chanh (Zitrone)", nameKey: "sodaChanh", price: 6, vegetarian: true, category: "soda" },
-      { id: "soda-dao", name: "Soda đào (Pfirsich)", nameKey: "sodaDao", price: 6, vegetarian: true, category: "soda" },
-      { id: "soda-vai", name: "Soda vải (Lychee)", nameKey: "sodaVai", price: 6, vegetarian: true, category: "soda" },
-      { id: "soda-dua", name: "Soda dứa (Ananas)", nameKey: "sodaDua", price: 6, vegetarian: true, category: "soda" },
+      { id: "soda-chanh", number: "19", name: "Soda chanh (Zitrone)", nameKey: "sodaChanh", price: 6, vegetarian: true, category: "soda" },
+      { id: "soda-dao", number: "20", name: "Soda đào (Pfirsich)", nameKey: "sodaDao", price: 6, vegetarian: true, category: "soda" },
+      { id: "soda-vai", number: "21", name: "Soda vải (Lychee)", nameKey: "sodaVai", price: 6, vegetarian: true, category: "soda" },
+      { id: "soda-dua", number: "22", name: "Soda dứa (Ananas)", nameKey: "sodaDua", price: 6, vegetarian: true, category: "soda" },
     ],
   },
   {
@@ -224,7 +224,7 @@ export const menuCategories: MenuCategory[] = [
     name: "Sinh Tố (Smoothies)",
     nameKey: "catSmoothie",
     items: [
-      { id: "smoothie-all", name: "Alle Smoothies", nameKey: "smoothieAll", description: "Banane · Erdbeere · Mango · Ananas · Himbeere · Blaubeere", descKey: "smoothieDesc", price: 6.5, vegetarian: true, category: "sinh-to" },
+      { id: "smoothie-all", number: "23", name: "Alle Smoothies", nameKey: "smoothieAll", description: "Banane · Erdbeere · Mango · Ananas · Himbeere · Blaubeere", descKey: "smoothieDesc", price: 6.5, vegetarian: true, category: "sinh-to" },
     ],
   },
   {
@@ -234,9 +234,9 @@ export const menuCategories: MenuCategory[] = [
     subtitle: "Frische saisonale Früchte inklusive",
     subtitleKey: "bowlFreshFruits",
     items: [
-      { id: "bowl-oats1", name: "Overnight Oats mit Haferflocken & Milch", nameKey: "bowlOats1", price: 6.5, vegetarian: true, category: "bowls" },
-      { id: "bowl-oats2", name: "Overnight Oats mit Haferflocken, Milch und Chiapudding", nameKey: "bowlOats2", price: 6.5, vegetarian: true, category: "bowls" },
-      { id: "bowl-chia", name: "Chia Pudding", nameKey: "bowlChia", price: 6.5, vegetarian: true, description: "Toppings: Honig (+0,5) · Agavendicksaft (+0,5) · Matcha (+2) · Granola (+2) · Schoko/Kokos (+1)", descKey: "bowlToppings", category: "bowls" },
+      { id: "bowl-oats1", number: "24", name: "Overnight Oats mit Haferflocken & Milch", nameKey: "bowlOats1", price: 6.5, vegetarian: true, category: "bowls" },
+      { id: "bowl-oats2", number: "25", name: "Overnight Oats mit Haferflocken, Milch und Chiapudding", nameKey: "bowlOats2", price: 6.5, vegetarian: true, category: "bowls" },
+      { id: "bowl-chia", number: "29", name: "Chia Pudding", nameKey: "bowlChia", price: 6.5, vegetarian: true, description: "Toppings: Honig (+0,5) · Agavendicksaft (+0,5) · Matcha (+2) · Granola (+2) · Schoko/Kokos (+1)", descKey: "bowlToppings", category: "bowls" },
     ],
   },
   {
@@ -244,8 +244,8 @@ export const menuCategories: MenuCategory[] = [
     name: "Kem",
     nameKey: "catIceCream",
     items: [
-      { id: "kem-matcha", name: "Matcha Latte với kem Matcha", nameKey: "kemMatchaIce", price: 6.5, vegetarian: true, category: "kem" },
-      { id: "kem-vani", name: "Matcha Latte với kem vani", nameKey: "kemVanilleIce", price: 6.5, vegetarian: true, category: "kem" },
+      { id: "kem-matcha", number: "30", name: "Matcha Latte với kem Matcha", nameKey: "kemMatchaIce", price: 6.5, vegetarian: true, category: "kem" },
+      { id: "kem-vani", number: "31", name: "Matcha Latte với kem vani", nameKey: "kemVanilleIce", price: 6.5, vegetarian: true, category: "kem" },
     ],
   },
   {
@@ -253,7 +253,7 @@ export const menuCategories: MenuCategory[] = [
     name: "Für die Kids",
     nameKey: "catKids",
     items: [
-      { id: "kids-schoko", name: "Schoko Latte (warm/kalt)", nameKey: "kidsSchoko", price: 4.5, vegetarian: true, category: "kids" },
+      { id: "kids-schoko", number: "32", name: "Schoko Latte (warm/kalt)", nameKey: "kidsSchoko", price: 4.5, vegetarian: true, category: "kids" },
     ],
   },
 ];
