@@ -161,15 +161,25 @@ function getStripe() {
 // geladen werden kann, wird der Insert uebersprungen statt zu crashen.
 // Dynamic import verhindert, dass ein Modul-Loading-Fehler die ganze
 // Vercel Function killt (FUNCTION_INVOCATION_FAILED beim Cold Start).
+// Gibt { client, status } zurueck, damit der Aufrufer weiss warum es
+// evtl. nicht klappt.
 async function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
+  if (!url || !key) {
+    console.error(
+      "[supabase] missing env vars:",
+      !url ? "SUPABASE_URL" : "",
+      !key ? "SUPABASE_SERVICE_ROLE_KEY" : "",
+    );
+    return { client: null, status: "missing_env" };
+  }
   try {
     const mod = await import("@supabase/supabase-js");
-    return mod.createClient(url, key);
-  } catch {
-    return null;
+    return { client: mod.createClient(url, key), status: "ok" };
+  } catch (err) {
+    console.error("[supabase] import/createClient failed:", err?.message ?? err);
+    return { client: null, status: "import_failed" };
   }
 }
 
@@ -339,8 +349,13 @@ export default async function handler(req, res) {
       metadata: sessionMetadata,
     });
 
-    // Pending Order in Supabase loggen (best-effort, kein Crash bei Fehler).
-    const supabase = await getSupabase();
+    // Pending Order in Supabase loggen. Best-effort: Checkout-Flow
+    // wird nicht blockiert, wenn der Insert scheitert. Errors werden
+    // IMMER geloggt (auch in Production), damit wir sie in den Vercel
+    // Function Logs sehen koennen.
+    let pendingOrderStatus = "skipped";
+    let pendingOrderError = null;
+    const { client: supabase, status: supaStatus } = await getSupabase();
     if (supabase) {
       try {
         const { error: insertErr } = await supabase
@@ -349,17 +364,44 @@ export default async function handler(req, res) {
             session_id: session.id,
             items: JSON.stringify(normalizedItems),
           });
-        if (insertErr && process.env.NODE_ENV !== "production") {
-          console.error("pending_orders insert failed:", insertErr.message);
+        if (insertErr) {
+          pendingOrderStatus = "insert_error";
+          pendingOrderError = insertErr.message;
+          console.error(
+            "[pending_orders] insert failed:",
+            insertErr.message,
+            insertErr.details ?? "",
+            insertErr.hint ?? "",
+          );
+        } else {
+          pendingOrderStatus = "saved";
+          console.log(
+            "[pending_orders] saved session_id=",
+            session.id,
+            "items=",
+            normalizedItems.length,
+          );
         }
       } catch (err) {
-        if (process.env.NODE_ENV !== "production") {
-          console.error("pending_orders insert threw:", err?.message ?? err);
-        }
+        pendingOrderStatus = "insert_threw";
+        pendingOrderError = err?.message ?? String(err);
+        console.error("[pending_orders] insert threw:", err?.message ?? err);
       }
+    } else {
+      pendingOrderStatus = supaStatus;
+      console.error(
+        "[pending_orders] skipped (supabase unavailable):",
+        supaStatus,
+      );
     }
 
-    return res.status(200).json({ url: session.url });
+    return res.status(200).json({
+      url: session.url,
+      pending_order: {
+        status: pendingOrderStatus,
+        error: pendingOrderError,
+      },
+    });
   } catch (error) {
     return res
       .status(500)
