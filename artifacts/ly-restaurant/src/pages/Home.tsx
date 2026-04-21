@@ -27,7 +27,7 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Two side-by-side hero videos (same clip mirrored into equal halves via clip-path) */}
+        {/* Side-by-side hero videos: matcha (left), noodle box (right) — equal halves via clip-path */}
         <div className="absolute inset-0 z-0">
           <video
             src="/videos/hero-main.mp4"
@@ -44,8 +44,7 @@ export default function Home() {
             }}
           />
           <video
-            src="/videos/hero-main.mp4"
-            poster="/videos/hero-matcha-poster.png"
+            src="/videos/hero-noodles.mp4"
             autoPlay
             muted
             loop
