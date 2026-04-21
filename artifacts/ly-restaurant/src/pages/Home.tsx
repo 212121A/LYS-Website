@@ -27,29 +27,39 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Background videos — anchored L/R with overlap so flex math cannot leave a right gap */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-y-0 left-0 w-[56%] overflow-hidden">
-            <video
-              src="/videos/hero-1.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="absolute inset-0 h-full w-full object-cover object-left"
-            />
-          </div>
-          <div className="absolute inset-y-0 right-0 w-[56%] overflow-hidden z-[1]">
-            <video
-              src="/videos/hero-2.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="absolute inset-0 h-full w-full object-cover object-right"
-            />
+        {/* Background videos — L/R overlap; strip nudged right so seam sits on the Y of "LYS" */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div
+            className="absolute top-0 bottom-0 h-full"
+            style={{
+              left: "50%",
+              width: "112%",
+              transform:
+                "translateX(calc(-50% + clamp(18px, 2.35vw, 32px)))",
+            }}
+          >
+            <div className="absolute inset-y-0 left-0 w-[56%] overflow-hidden">
+              <video
+                src="/videos/hero-1.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                className="absolute inset-0 h-full w-full object-cover object-left"
+              />
+            </div>
+            <div className="absolute inset-y-0 right-0 w-[56%] overflow-hidden z-[1]">
+              <video
+                src="/videos/hero-2.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                className="absolute inset-0 h-full w-full object-cover object-right"
+              />
+            </div>
           </div>
         </div>
         {/* Dark overlay — lighter in center so motion stays visible */}
