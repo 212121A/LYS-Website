@@ -1,6 +1,7 @@
 import { Link } from "wouter";
-import { Phone, MapPin, Instagram } from "lucide-react";
+import { Phone, MapPin, Instagram, Facebook } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { TikTokIcon } from "@/components/icons/TikTokIcon";
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -49,8 +50,14 @@ export default function Footer() {
               </li>
             </ul>
             <div className="flex items-center gap-4 mt-6">
-              <a href="https://www.instagram.com/lys.noodlebox/" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" data-testid="link-instagram">
+              <a href="https://www.instagram.com/lys.noodlebox/" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" aria-label="Instagram" data-testid="link-instagram">
                 <Instagram size={18} />
+              </a>
+              <a href="https://www.tiktok.com/@lys.noodlebox" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" aria-label="TikTok" data-testid="link-tiktok">
+                <TikTokIcon size={18} />
+              </a>
+              <a href="https://www.facebook.com/lys.noodlebox/" target="_blank" rel="noopener noreferrer" className="text-background/50 hover:text-primary transition-colors" aria-label="Facebook" data-testid="link-facebook">
+                <Facebook size={18} />
               </a>
             </div>
           </div>

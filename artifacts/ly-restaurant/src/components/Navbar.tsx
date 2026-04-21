@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, ChevronDown, Globe, Instagram } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Instagram, Facebook } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { languages } from "@/i18n/translations";
+import { TikTokIcon } from "@/components/icons/TikTokIcon";
 
 function LangPicker({ compact = false }: { compact?: boolean }) {
   const { lang, setLang } = useLanguage();
@@ -100,15 +101,35 @@ export default function Navbar() {
               </Link>
             ))}
             <LangPicker />
-            <a
-              href="https://www.instagram.com/lys.noodlebox/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-1 p-2 rounded-full text-foreground/60 hover:text-primary hover:bg-accent transition-all"
-              aria-label="Instagram"
-            >
-              <Instagram size={18} />
-            </a>
+            <div className="ml-1 flex items-center gap-0.5">
+              <a
+                href="https://www.instagram.com/lys.noodlebox/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full text-foreground/60 hover:text-primary hover:bg-accent transition-all"
+                aria-label="Instagram"
+              >
+                <Instagram size={18} />
+              </a>
+              <a
+                href="https://www.tiktok.com/@lys.noodlebox"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full text-foreground/60 hover:text-primary hover:bg-accent transition-all"
+                aria-label="TikTok"
+              >
+                <TikTokIcon size={18} />
+              </a>
+              <a
+                href="https://www.facebook.com/lys.noodlebox/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full text-foreground/60 hover:text-primary hover:bg-accent transition-all"
+                aria-label="Facebook"
+              >
+                <Facebook size={18} />
+              </a>
+            </div>
           </div>
 
           {/* Mobile: lang + hamburger */}
