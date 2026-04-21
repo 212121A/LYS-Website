@@ -1,8 +1,6 @@
 import { Link } from "wouter";
-import { Heart, Leaf, Users, MapPin, ArrowRight } from "lucide-react";
+import { Heart, Leaf, Users, MapPin, ArrowRight, ImageIcon } from "lucide-react";
 import restaurantExteriorImg from "@assets/image_1775647522456.png";
-import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
-import foodSpreadImg from "@assets/IMG_0767_1775241763325.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function About() {
@@ -54,24 +52,16 @@ export default function About() {
               <p>{t.about.whoP3}</p>
             </div>
           </div>
-          <div className="rounded-2xl overflow-hidden h-80 shadow-lg">
-            <img
-              src={kitchenImg}
-              alt="Frische Zutaten täglich vorbereitet"
-              className="w-full h-full object-cover"
-            />
+          <div className="rounded-2xl overflow-hidden h-80 bg-muted border border-dashed border-border flex items-center justify-center" aria-label="Platzhalter für Bild">
+            <ImageIcon size={40} className="text-muted-foreground/40" strokeWidth={1.5} />
           </div>
         </div>
       </section>
 
-      {/* Food spread full-width image */}
+      {/* Food spread placeholder */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="rounded-3xl overflow-hidden h-64 md:h-80 shadow-lg">
-          <img
-            src={foodSpreadImg}
-            alt="Unsere frischen Gerichte täglich zubereitet"
-            className="w-full h-full object-cover object-center"
-          />
+        <div className="rounded-3xl overflow-hidden h-64 md:h-80 bg-muted border border-dashed border-border flex items-center justify-center" aria-label="Platzhalter für Bild">
+          <ImageIcon size={56} className="text-muted-foreground/40" strokeWidth={1.5} />
         </div>
       </section>
 
