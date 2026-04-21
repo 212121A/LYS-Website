@@ -32,7 +32,6 @@ export default function Home() {
           <div className="relative h-full w-full overflow-hidden">
             <video
               src="/videos/hero-main.mp4"
-              poster="/videos/hero-matcha-poster.png"
               autoPlay
               muted
               loop
