@@ -24,12 +24,12 @@ export default function Home() {
   ];
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       {/* Hero */}
-      <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Background videos — two panels, slight overlap + clip hides inner seam */}
-        <div className="absolute inset-0 z-0 flex">
-          <div className="relative h-full w-1/2 shrink-0 overflow-hidden">
+      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
+        {/* Background videos — anchored L/R with overlap so flex math cannot leave a right gap */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-y-0 left-0 w-[56%] overflow-hidden">
             <video
               src="/videos/hero-1.mp4"
               autoPlay
@@ -37,10 +37,10 @@ export default function Home() {
               loop
               playsInline
               preload="auto"
-              className="absolute inset-y-0 left-0 h-full min-h-full w-[118%] max-w-none object-cover object-left"
+              className="absolute inset-0 h-full w-full object-cover object-left"
             />
           </div>
-          <div className="relative h-full w-1/2 shrink-0 overflow-hidden -ml-[10%] z-[1]">
+          <div className="absolute inset-y-0 right-0 w-[56%] overflow-hidden z-[1]">
             <video
               src="/videos/hero-2.mp4"
               autoPlay
@@ -48,7 +48,7 @@ export default function Home() {
               loop
               playsInline
               preload="auto"
-              className="absolute inset-y-0 right-0 h-full min-h-full w-[118%] max-w-none object-cover object-right"
+              className="absolute inset-0 h-full w-full object-cover object-right"
             />
           </div>
         </div>
