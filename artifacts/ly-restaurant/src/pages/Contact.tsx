@@ -85,7 +85,7 @@ export default function Contact() {
                   <MapPin size={20} className="text-primary" />
                 </div>
                 <span className="text-sm font-medium">{t.common.mapsBtn}</span>
-                <span className="text-xs text-muted-foreground">Ledergasse 44–46, Schwäbisch Gmünd</span>
+                <span className="text-xs text-muted-foreground">Kappelgasse 2, 73525 Schwäbisch Gmünd</span>
               </a>
             </div>
           </div>
