@@ -72,7 +72,7 @@ export default function Home() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-20 w-full">
           <div className="flex flex-col items-center text-center">
             <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0 drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)] brightness-0 invert" />
-            <p className="text-lg md:text-xl text-white leading-relaxed mb-10 max-w-md mt-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+            <p className="whitespace-pre-line text-lg md:text-xl text-white leading-relaxed mb-10 max-w-md mt-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
               {t.home.heroDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
