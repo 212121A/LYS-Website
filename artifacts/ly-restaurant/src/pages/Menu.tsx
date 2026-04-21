@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Flame, Leaf, ShoppingCart } from "lucide-react";
+import { Flame, Leaf, ShoppingCart, Download } from "lucide-react";
 import { menuCategories, formatPrice } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
@@ -47,6 +47,30 @@ export default function Menu() {
           <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5"><Flame size={12} className="text-orange-500" /> {t.menu.spicy}</span>
             <span className="flex items-center gap-1.5"><Leaf size={12} className="text-primary" /> {t.menu.vegetarian}</span>
+          </div>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <a
+              href="/menus/Speisekarte.pdf"
+              download="LYS-Speisekarte.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="download-speisekarte"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20"
+            >
+              <Download size={14} />
+              Speisekarte (PDF)
+            </a>
+            <a
+              href="/menus/Getraenkekarte.pdf"
+              download="LYS-Getraenkekarte.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="download-getraenkekarte"
+              className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-5 py-2.5 rounded-full text-sm font-medium hover:bg-accent hover:-translate-y-0.5 transition-all"
+            >
+              <Download size={14} />
+              Getränkekarte (PDF)
+            </a>
           </div>
         </div>
       </section>
