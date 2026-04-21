@@ -27,35 +27,39 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Background videos */}
-        <div className="absolute inset-0 z-0">
-          <video
-            src="/videos/hero-1.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <video
-            src="/videos/hero-2.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent 0%, transparent 40%, black 60%, black 100%)",
-              maskImage:
-                "linear-gradient(to right, transparent 0%, transparent 40%, black 60%, black 100%)",
-            }}
-          />
+        {/* Background videos — two panels, slight overlap + clip hides inner seam */}
+        <div className="absolute inset-0 z-0 flex">
+          <div className="relative h-full w-1/2 shrink-0 overflow-hidden">
+            <video
+              src="/videos/hero-1.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              className="absolute inset-y-0 left-0 h-full min-h-full w-[118%] max-w-none object-cover object-left"
+            />
+          </div>
+          <div className="relative h-full w-1/2 shrink-0 overflow-hidden -ml-[10%] z-[1]">
+            <video
+              src="/videos/hero-2.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              className="absolute inset-y-0 right-0 h-full min-h-full w-[118%] max-w-none object-cover object-right"
+            />
+          </div>
         </div>
-        {/* Dark overlay for text contrast */}
-        <div className="absolute inset-0 z-10 bg-black/55" />
+        {/* Dark overlay — lighter in center so motion stays visible */}
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 85% 70% at 50% 45%, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.62) 100%)",
+          }}
+        />
         {/* Content */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-20 w-full">
           <div className="flex flex-col items-center text-center">
