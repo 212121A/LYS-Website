@@ -27,30 +27,34 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Background videos — exact 50/50; slight inward scale clips a sub-pixel center seam */}
-        <div className="absolute inset-0 z-0 grid h-full min-h-full grid-cols-2">
-          <div className="relative h-full min-h-full overflow-hidden">
-            <video
-              src="/videos/hero-1.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="absolute inset-0 h-full w-full object-cover object-center origin-left scale-[1.04]"
-            />
-          </div>
-          <div className="relative h-full min-h-full overflow-hidden">
-            <video
-              src="/videos/hero-2.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="absolute inset-0 h-full w-full object-cover object-center origin-right scale-[1.04]"
-            />
-          </div>
+        {/* Background videos — two full-bleed layers, symmetric clip-path → mathematically equal halves */}
+        <div className="absolute inset-0 z-0">
+          <video
+            src="/videos/hero-1.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            style={{
+              clipPath: "inset(0 50% 0 0)",
+              WebkitClipPath: "inset(0 50% 0 0)",
+            }}
+          />
+          <video
+            src="/videos/hero-2.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover"
+            style={{
+              clipPath: "inset(0 0 0 50%)",
+              WebkitClipPath: "inset(0 0 0 50%)",
+            }}
+          />
         </div>
         {/* Dark overlay — lighter in center so motion stays visible */}
         <div
