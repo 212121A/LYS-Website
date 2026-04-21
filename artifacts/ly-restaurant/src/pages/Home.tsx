@@ -53,19 +53,26 @@ export default function Home() {
             />
           </div>
         </div>
-        {/* Dark overlay — slightly stronger for bright footage (matcha on white) */}
+        {/* Dark overlay: base wash + centered radial pool behind hero copy for readability */}
         <div
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 90% 72% at 50% 45%, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.68) 100%)",
+              "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 55% at 50% 50%, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 75%)",
           }}
         />
         {/* Content */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-20 w-full">
           <div className="flex flex-col items-center text-center">
-            <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0 drop-shadow-2xl brightness-0 invert" />
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-10 max-w-md mt-5 drop-shadow-lg">
+            <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0 drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)] brightness-0 invert" />
+            <p className="text-lg md:text-xl text-white leading-relaxed mb-10 max-w-md mt-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
               {t.home.heroDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
