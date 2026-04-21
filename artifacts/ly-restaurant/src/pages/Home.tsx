@@ -28,7 +28,7 @@ export default function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-black">
         {/* Background videos */}
-        <div className="absolute inset-0 z-0 grid grid-cols-2">
+        <div className="absolute inset-0 z-0">
           <video
             src="/videos/hero-1.mp4"
             autoPlay
@@ -36,7 +36,7 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            className="w-full h-full object-cover"
+            className="absolute top-0 left-0 h-full w-[51%] object-cover"
           />
           <video
             src="/videos/hero-2.mp4"
@@ -45,7 +45,7 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            className="w-full h-full object-cover"
+            className="absolute top-0 right-0 h-full w-[51%] object-cover"
           />
         </div>
         {/* Dark overlay for text contrast */}
