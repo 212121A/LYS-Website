@@ -147,11 +147,11 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="rounded-3xl overflow-hidden relative h-72 md:h-96">
           <img src={kitchenImg} alt="Frische Zutaten in der Küche" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 to-transparent flex items-center">
-            <div className="px-8 md:px-14 max-w-lg">
-              <p className="text-background/80 text-xs uppercase tracking-widest font-medium mb-2">{t.home.freshTag}</p>
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-background mb-3 leading-tight">{t.home.freshTitle}</h2>
-              <p className="text-background/70 text-sm leading-relaxed">{t.home.freshDesc}</p>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/58 to-black/18 flex items-center">
+            <div className="px-8 md:px-14 max-w-lg rounded-xl py-5 bg-black/22 backdrop-blur-[1px]">
+              <p className="text-white/90 text-xs uppercase tracking-widest font-medium mb-2 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">{t.home.freshTag}</p>
+              <h2 className="font-serif text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">{t.home.freshTitle}</h2>
+              <p className="text-white/85 text-sm leading-relaxed drop-shadow-[0_1px_8px_rgba(0,0,0,0.9)]">{t.home.freshDesc}</p>
             </div>
           </div>
         </div>
