@@ -108,7 +108,11 @@ export default function Home() {
               <Clock size={18} className="text-primary shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">{t.common.openingHours}</p>
-                <p className="text-sm font-medium">Mo–Do: 11:00–21:30 · Fr–Sa: bis 22:00</p>
+                <p className="text-sm font-medium">
+                  Mo–Do: 11:00–21:30
+                  <br />
+                  Fr–Sa: bis 22:00
+                </p>
                 <p className="text-xs text-muted-foreground">So & Feiertage: 13:00–20:00 Uhr</p>
               </div>
             </div>
