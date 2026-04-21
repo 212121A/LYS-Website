@@ -27,41 +27,25 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Background videos — equal halves via clip-path; scale < 1 zooms out vs pure object-cover */}
+        {/* Single hero background video */}
         <div className="absolute inset-0 z-0">
           <video
-            src="/videos/hero-1.mp4"
+            src="/videos/hero-main.mp4"
+            poster="/videos/hero-matcha-poster.png"
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
-            className="pointer-events-none absolute inset-0 h-full w-full origin-center scale-[0.82] object-cover"
-            style={{
-              clipPath: "inset(0 50% 0 0)",
-              WebkitClipPath: "inset(0 50% 0 0)",
-            }}
-          />
-          <video
-            src="/videos/hero-2.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="pointer-events-none absolute inset-0 z-[1] h-full w-full origin-center scale-[0.82] object-cover"
-            style={{
-              clipPath: "inset(0 0 0 50%)",
-              WebkitClipPath: "inset(0 0 0 50%)",
-            }}
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
           />
         </div>
-        {/* Dark overlay — lighter in center so motion stays visible */}
+        {/* Dark overlay — slightly stronger for bright footage (matcha on white) */}
         <div
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 85% 70% at 50% 45%, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.62) 100%)",
+              "radial-gradient(ellipse 90% 72% at 50% 45%, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.68) 100%)",
           }}
         />
         {/* Content */}
