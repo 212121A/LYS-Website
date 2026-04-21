@@ -27,7 +27,7 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Background videos — two full-bleed layers, symmetric clip-path → mathematically equal halves */}
+        {/* Background videos — equal halves via clip-path; scale < 1 zooms out vs pure object-cover */}
         <div className="absolute inset-0 z-0">
           <video
             src="/videos/hero-1.mp4"
@@ -36,7 +36,7 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            className="pointer-events-none absolute inset-0 h-full w-full origin-center scale-[0.82] object-cover"
             style={{
               clipPath: "inset(0 50% 0 0)",
               WebkitClipPath: "inset(0 50% 0 0)",
@@ -49,7 +49,7 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover"
+            className="pointer-events-none absolute inset-0 z-[1] h-full w-full origin-center scale-[0.82] object-cover"
             style={{
               clipPath: "inset(0 0 0 50%)",
               WebkitClipPath: "inset(0 0 0 50%)",
