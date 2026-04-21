@@ -36,7 +36,7 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            className="absolute top-0 left-0 h-full w-[51%] object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
           <video
             src="/videos/hero-2.mp4"
@@ -45,7 +45,13 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
-            className="absolute top-0 right-0 h-full w-[51%] object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0%, transparent 40%, black 60%, black 100%)",
+              maskImage:
+                "linear-gradient(to right, transparent 0%, transparent 40%, black 60%, black 100%)",
+            }}
           />
         </div>
         {/* Dark overlay for text contrast */}
