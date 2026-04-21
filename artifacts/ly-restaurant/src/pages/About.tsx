@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Heart, Leaf, Users, MapPin, ArrowRight } from "lucide-react";
-import restaurantExteriorImg from "@assets/IMG_7821_1775241763325.JPG";
+import restaurantExteriorImg from "@assets/image_1775647522456.png";
 import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
 import foodSpreadImg from "@assets/IMG_0767_1775241763325.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
