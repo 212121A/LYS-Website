@@ -27,7 +27,7 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Side-by-side hero videos: matcha (left), noodle box (right) — shown at original aspect */}
+        {/* Side-by-side hero videos — fill the hero without distortion (object-cover) */}
         <div className="absolute inset-0 z-0 grid grid-cols-2">
           <div className="relative h-full w-full overflow-hidden">
             <video
@@ -38,7 +38,7 @@ export default function Home() {
               loop
               playsInline
               preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-contain object-center"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
             />
           </div>
           <div className="relative h-full w-full overflow-hidden">
@@ -49,7 +49,7 @@ export default function Home() {
               loop
               playsInline
               preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-contain object-center"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
             />
           </div>
         </div>
