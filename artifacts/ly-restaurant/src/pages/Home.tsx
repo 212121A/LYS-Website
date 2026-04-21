@@ -1,8 +1,8 @@
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-import springRollsImg from "@assets/F7C3641B-3647-4B49-BA2C-BB1DAC79A504_1775241763325.PNG";
-import curryImg from "@assets/52E8C510-830F-40FA-B773-ADA071B6847A_1775241763325.PNG";
-import chickenRiceImg from "@assets/2B3F8F4C-9785-4E35-8C8B-FF905937040C_1775241763325.PNG";
+import vietnameseCoffeeImg from "@assets/vietnamese-coffee.png";
+import matchaImg from "@assets/matcha-lys.png";
+import noodleRiceBoxImg from "@assets/lys-noodle-rice-box.png";
 import restaurantExteriorImg from "@assets/image_1775647522456.png";
 import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
 import heroFoodImg from "@assets/hero-food.png";
@@ -12,9 +12,9 @@ export default function Home() {
   const { t } = useLanguage();
 
   const categories = [
-    { img: springRollsImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
-    { img: chickenRiceImg, title: t.home.wokTitle, desc: t.home.wokDesc },
-    { img: curryImg, title: t.home.curry, desc: t.home.curryDesc },
+    { img: vietnameseCoffeeImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
+    { img: matchaImg, title: t.home.wokTitle, desc: t.home.wokDesc },
+    { img: noodleRiceBoxImg, title: t.home.curry, desc: t.home.curryDesc },
   ];
 
   const boxes = [
