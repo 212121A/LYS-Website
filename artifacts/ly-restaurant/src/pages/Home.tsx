@@ -27,7 +27,7 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Single hero background video */}
+        {/* Two side-by-side hero videos (same clip mirrored into equal halves via clip-path) */}
         <div className="absolute inset-0 z-0">
           <video
             src="/videos/hero-main.mp4"
@@ -38,6 +38,24 @@ export default function Home() {
             playsInline
             preload="auto"
             className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+            style={{
+              clipPath: "inset(0 50% 0 0)",
+              WebkitClipPath: "inset(0 50% 0 0)",
+            }}
+          />
+          <video
+            src="/videos/hero-main.mp4"
+            poster="/videos/hero-matcha-poster.png"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover object-center"
+            style={{
+              clipPath: "inset(0 0 0 50%)",
+              WebkitClipPath: "inset(0 0 0 50%)",
+            }}
           />
         </div>
         {/* Dark overlay — slightly stronger for bright footage (matcha on white) */}
