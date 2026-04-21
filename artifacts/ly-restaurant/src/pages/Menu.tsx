@@ -41,7 +41,7 @@ export default function Menu() {
       {/* Header */}
       <section className="bg-card border-b border-border py-16 pattern-bg relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Ly Asiatische Spezialitäten</p>
+          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">LYS</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.menu.title}</h1>
           <p className="text-muted-foreground max-w-lg">{t.menu.pricesNote}</p>
           <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">

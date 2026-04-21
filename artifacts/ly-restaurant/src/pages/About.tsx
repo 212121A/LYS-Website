@@ -127,7 +127,7 @@ export default function About() {
               <div className="flex items-start gap-3 mb-4">
                 <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
                 <div>
-                  <p className="font-medium text-foreground">Ly Asiatische Spezialitäten</p>
+                  <p className="font-medium text-foreground">LYS</p>
                   <p className="text-muted-foreground text-sm mt-1">Kappelgasse 2</p>
                   <p className="text-muted-foreground text-sm">73525 Schwäbisch Gmünd</p>
                   <p className="text-muted-foreground text-xs">Am Marktplatz gegenüber der Bibliothek</p>
