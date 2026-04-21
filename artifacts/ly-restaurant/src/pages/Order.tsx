@@ -149,6 +149,11 @@ export default function Order() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">Online</p>
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">{t.order.title}</h1>
+          <div className="max-w-3xl rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-red-900">
+            <p className="text-sm md:text-base font-semibold">
+              Wichtiger Hinweis: Wir öffnen erst im Mai. Aktuell werden keine Bestellungen angenommen - bitte nicht bestellen.
+            </p>
+          </div>
         </div>
       </section>
 
