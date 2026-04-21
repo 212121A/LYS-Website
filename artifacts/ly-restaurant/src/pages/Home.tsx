@@ -4,7 +4,7 @@ import vietnameseCoffeeImg from "@assets/vietnamese-coffee.png";
 import matchaImg from "@assets/matcha-lys.png";
 import noodleRiceBoxImg from "@assets/lys-noodle-rice-box.png";
 import restaurantExteriorImg from "@assets/image_1775647522456.png";
-import kitchenImg from "@assets/IMG_1015_1775241763325.jpg";
+import kitchenImg from "@assets/lys-fresh-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Home() {
