@@ -84,7 +84,7 @@ export default function Home() {
               <Phone size={18} className="text-primary shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">{t.common.phone}</p>
-                <a href="tel:071719994828" className="text-sm font-medium hover:text-primary transition-colors">07171 / 9994828</a>
+                <a href="tel:xxxxxx" className="text-sm font-medium hover:text-primary transition-colors">xxxxxx</a>
               </div>
             </div>
             <div className="flex items-center gap-3 py-5 px-4 sm:px-8">
