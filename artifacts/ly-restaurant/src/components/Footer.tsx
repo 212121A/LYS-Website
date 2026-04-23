@@ -63,9 +63,14 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-background/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-background/40 text-xs">
+        <div className="border-t border-background/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-background/40 text-xs">
           <p>© {new Date().getFullYear()} LYS Noodle Box. {t.footer.rights}</p>
-          <p>Allergiker-Information auf Anfrage</p>
+          <div className="flex items-center gap-4">
+            <Link href="/impressum" className="hover:text-background transition-colors" data-testid="link-impressum">
+              Impressum
+            </Link>
+            <span>Allergiker-Information auf Anfrage</span>
+          </div>
         </div>
       </div>
     </footer>
