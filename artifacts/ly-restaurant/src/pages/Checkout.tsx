@@ -89,7 +89,9 @@ export default function Checkout() {
             id: item.id,
             name: item.name,
             number: item.number,
+            price: item.price,
             quantity: item.quantity,
+            size: item.size,
           })),
           customer,
           orderType: "pickup",
@@ -308,22 +310,33 @@ export default function Checkout() {
           <div className="bg-card border border-border rounded-2xl p-6 sticky top-28">
             <h2 className="font-serif text-xl font-bold text-foreground mb-5">{t.checkout.orderSummary}</h2>
             <div className="space-y-3 mb-5">
-              {cart.map(item => (
+              {cart.map(item => {
+                const primary = item.number ? item.number : item.name;
+                const details = item.number
+                  ? item.name
+                  : item.size
+                    ? item.size === "small"
+                      ? t.order.small
+                      : t.order.large
+                    : null;
+                return (
                 <div key={item.id} className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
-                    {item.size && (
-                      <p className="text-xs text-muted-foreground">
-                        {item.size === "small" ? t.order.small : t.order.large}
+                    <p className="text-sm font-semibold text-foreground truncate font-mono">
+                      {item.quantity}x {primary}
+                    </p>
+                    {details && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {details}
                       </p>
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-xs text-muted-foreground">×{item.quantity}</p>
                     <p className="text-sm font-medium text-foreground">{fmt(item.price * item.quantity)}</p>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="border-t border-border pt-4 space-y-2">

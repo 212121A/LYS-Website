@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+
+const FALLBACK_MESSAGE = "Bitte fragen Sie an der Kasse nach Ihrer Bestellnummer.";
 
 export default function Success() {
   const sessionId = useMemo(() => {
-    const search = new URLSearchParams(window.location.search);
-    return search.get("session_id");
+    const params = new URLSearchParams(window.location.search);
+    return params.get("session_id");
   }, []);
 
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
@@ -13,85 +15,83 @@ export default function Success() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+
     if (!sessionId) {
       setIsLoading(false);
-      setErrorMessage(
-        "Bitte fragen Sie an der Kasse nach Ihrer Bestellnummer.",
-      );
+      setErrorMessage(FALLBACK_MESSAGE);
       return;
     }
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
     if (!supabaseUrl || !supabaseAnonKey) {
       setIsLoading(false);
-      setErrorMessage(
-        "Bitte fragen Sie an der Kasse nach Ihrer Bestellnummer.",
-      );
+      setErrorMessage(FALLBACK_MESSAGE);
       return;
     }
 
-    let isCancelled = false;
-    let elapsedMs = 0;
+    let isActive = true;
+    const timeoutIds: number[] = [];
 
-    const lookupOrder = async () => {
-      try {
-        const response = await fetch(
-          `${supabaseUrl}/rest/v1/orders?stripe_session_id=eq.${encodeURIComponent(
-            sessionId,
-          )}&select=order_number`,
-          {
-            headers: {
-              apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseAnonKey}`,
+    const startDelayId = window.setTimeout(async () => {
+      if (!isActive) return;
+
+      const maxAttempts = 15;
+      let attempts = 0;
+
+      const poll = async () => {
+        if (!isActive) return;
+
+        attempts++;
+
+        try {
+          const encodedSessionId = encodeURIComponent(sessionId);
+          const url = `${supabaseUrl}/rest/v1/orders?stripe_session_id=eq.${encodedSessionId}&select=order_number`;
+
+          const res = await fetch(
+            url,
+            {
+              headers: {
+                apikey: supabaseAnonKey,
+                Authorization: `Bearer ${supabaseAnonKey}`,
+                "Content-Type": "application/json",
+              },
             },
-          },
-        );
+          );
 
-        if (!response.ok) {
-          throw new Error("Supabase query failed");
+          const data = (await res.json()) as Array<{ order_number?: string | number }>;
+
+          if (data && data.length > 0 && data[0].order_number) {
+            if (!isActive) return;
+            setOrderNumber(String(data[0].order_number));
+            setIsLoading(false);
+            setErrorMessage(null);
+            return;
+          }
+
+        } catch (err) {
         }
 
-        const rows = (await response.json()) as Array<{ order_number?: string | number }>;
-        const foundOrderNumber = rows?.[0]?.order_number;
-
-        if (foundOrderNumber !== undefined && foundOrderNumber !== null && !isCancelled) {
-          setOrderNumber(String(foundOrderNumber));
-          setIsLoading(false);
-          setErrorMessage(null);
-          return true;
+        if (attempts < maxAttempts) {
+          const nextPollId = window.setTimeout(() => {
+            void poll();
+          }, 3000);
+          timeoutIds.push(nextPollId);
+          return;
         }
-      } catch {
-        // Keep polling until timeout, then show fallback text.
-      }
 
-      return false;
-    };
-
-    const startPolling = async () => {
-      while (!isCancelled && elapsedMs <= 30000) {
-        const found = await lookupOrder();
-        if (found) return;
-
-        if (elapsedMs >= 30000) break;
-
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        elapsedMs += 2000;
-      }
-
-      if (!isCancelled) {
+        if (!isActive) return;
         setIsLoading(false);
-        setErrorMessage(
-          "Bitte fragen Sie an der Kasse nach Ihrer Bestellnummer.",
-        );
-      }
-    };
+        setErrorMessage(FALLBACK_MESSAGE);
+      };
 
-    void startPolling();
+      void poll();
+    }, 3000);
+    timeoutIds.push(startDelayId);
 
     return () => {
-      isCancelled = true;
+      isActive = false;
+      timeoutIds.forEach((id) => window.clearTimeout(id));
     };
   }, [sessionId]);
 
@@ -112,14 +112,24 @@ export default function Success() {
 
         {isLoading ? (
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
-            <Loader2 size={16} className="animate-spin" />
-            Bestellnummer wird geladen...
+            <span>Bestellnummer wird geladen</span>
+            <span className="inline-flex items-end leading-none">
+              <span className="inline-block animate-bounce">.</span>
+              <span className="inline-block animate-bounce [animation-delay:150ms]">
+                .
+              </span>
+              <span className="inline-block animate-bounce [animation-delay:300ms]">
+                .
+              </span>
+            </span>
           </div>
         ) : orderNumber ? (
-          <div className="mb-8 rounded-2xl border border-primary/30 bg-primary/10 px-6 py-5 text-foreground">
-            <p className="text-xl sm:text-2xl font-semibold">
-              Ihre Bestellnummer:{" "}
-              <span className="font-mono text-2xl sm:text-4xl">{orderNumber}</span>
+          <div className="mb-8 rounded-2xl border border-primary/30 bg-primary/10 px-6 py-7 text-foreground text-center">
+            <p className="text-2xl sm:text-3xl font-semibold">
+              Ihre Bestellnummer:
+            </p>
+            <p className="font-mono text-5xl sm:text-6xl font-bold mt-2">
+              {orderNumber}
             </p>
           </div>
         ) : (

@@ -115,8 +115,11 @@ const PRODUCTS = {
 
   "smoothie-all": { number: "23", name: "Smoothie", price: 650 },
 
-  "bowl-oats1": { number: "24", name: "Overnight Oats", price: 650 },
-  "bowl-oats2": { number: "25", name: "Overnight Oats mit Chia", price: 650 },
+  "bowl-oats1": { number: "24", name: "Overnight Oats mit Haferflocken & Milch", price: 650 },
+  "bowl-joghurt": { number: "25", name: "Joghurt Bowl", price: 650 },
+  "bowl-protein": { number: "26", name: "Protein Bowl", price: 650 },
+  "bowl-acai": { number: "27", name: "Acai Bowl", price: 650 },
+  "bowl-smoothie": { number: "28", name: "Smoothie Bowl", price: 650 },
   "bowl-chia": { number: "29", name: "Chia Pudding", price: 650 },
 
   "kem-matcha": { number: "30", name: "Matcha Latte mit Matcha Eis", price: 650 },
@@ -135,14 +138,392 @@ const BOX_SAUCE_SUFFIXES = {
   "-soja": { code: "Sojasoße", label: "Sojasoße" },
   "-suesssauer": { code: "Süßsauersoße", label: "Süßsauersoße" },
   "-curry": { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
+  "-matcha": { code: "Matcha Soße", label: "Matcha Soße" },
+  "-mango": { code: "Mango Soße", label: "Mango Soße" },
 };
+
+/** Gebratener Reis + Soße (Cart-ID z.B. a4-curry) — gleiche Codes wie Box-Soßen. */
+const FRIED_RICE_SAUCE = {
+  soja: { code: "Sojasoße", label: "Sojasoße" },
+  suesssauer: { code: "Süßsauersoße", label: "Süßsauersoße" },
+  curry: { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
+  matcha: { code: "Matcha Soße", label: "Matcha Soße" },
+  mango: { code: "Mango Soße", label: "Mango Soße" },
+};
+
+const BOWL_FRUITS = {
+  banane: "Banane",
+  erdbeere: "Erdbeere",
+  blaubeere: "Blaubeere",
+  himbeere: "Himbeere",
+  mango: "Mango",
+};
+
+const BOWL_TOPPINGS = {
+  honig: "Honig",
+  agave: "Agavendicksaft",
+  matcha: "Matcha",
+  granola: "Granola",
+  "schoko-kokos": "Schoko/Kokos",
+};
+
+const BOWL_TOPPING_PRICE = {
+  honig: 50,
+  agave: 50,
+  matcha: 200,
+  granola: 200,
+  "schoko-kokos": 100,
+};
+
+const MENU_MILKS = {
+  kuhmilch: "Kuhmilch",
+  sojamilch: "Sojamilch",
+  hafermilch: "Hafermilch",
+  kokosmilch: "Kokosmilch",
+};
+
+const MATCHA_MILK_SURCHARGE = {
+  kuhmilch: 0,
+  sojamilch: 50,
+  hafermilch: 50,
+  kokosmilch: 50,
+};
+
+const MATCHA_STYLE_LABEL = {
+  classic: "Classic",
+  frappe: "Frappe",
+  protein: "Proteinmatcha",
+};
+
+const MATCHA_STYLE_SURCHARGE = {
+  classic: 0,
+  frappe: 100,
+  protein: 200,
+};
+
+const MILK_OPTION_MATCHA_BASES = [
+  "m-dua-cloud",
+  "m-dua-ananas",
+  "m-vietquat",
+  "m-rasp",
+  "m-xoai",
+  "m-dau",
+  "m-latte",
+  "m-vani",
+  "kem-matcha",
+  "kem-vani",
+];
+
+const SMOOTHIE_FRUITS = {
+  banane: "Banane",
+  erdbeere: "Erdbeere",
+  mango: "Mango",
+  ananas: "Ananas",
+  himbeere: "Himbeere",
+  blaubeere: "Blaubeere",
+};
+
+const SMOOTHIE_MILKS = {
+  kokosmilch: "Kokosmilch",
+  hafermilch: "Hafermilch",
+  sojamilch: "Sojamilch",
+};
+
+function resolveSmoothieProduct(id) {
+  const prefix = "smoothie-all-";
+  if (!id.startsWith(prefix)) return null;
+
+  let rest = id.slice(prefix.length);
+  let withProtein = false;
+  if (rest.endsWith("-protein")) {
+    withProtein = true;
+    rest = rest.slice(0, -"-protein".length);
+  }
+
+  const milkKeys = Object.keys(SMOOTHIE_MILKS).sort((a, b) => b.length - a.length);
+  const sweetOrder = ["honig", "agave", "none"];
+
+  let sweetener = null;
+  for (const s of sweetOrder) {
+    if (rest.endsWith(`-${s}`)) {
+      sweetener = s;
+      rest = rest.slice(0, -(s.length + 1));
+      break;
+    }
+  }
+  if (!sweetener) return null;
+
+  let milkKey = null;
+  for (const m of milkKeys) {
+    if (rest.endsWith(`-${m}`)) {
+      milkKey = m;
+      rest = rest.slice(0, -(m.length + 1));
+      break;
+    }
+  }
+  if (!milkKey || !rest) return null;
+
+  const fruitKeys = rest.split("-").filter(Boolean);
+  const labels = [];
+  for (const fk of fruitKeys) {
+    const lbl = SMOOTHIE_FRUITS[fk];
+    if (!lbl) return null;
+    labels.push(lbl);
+  }
+
+  let price = 650;
+  if (sweetener === "agave" || sweetener === "honig") price += 50;
+  if (withProtein) price += 200;
+
+  const milkLabel = SMOOTHIE_MILKS[milkKey];
+  const sweetLabels = { none: "", agave: "Agavendicksaft", honig: "Honig" };
+  const sweetSuffix =
+    sweetener === "none" ? "" : `-${sweetLabels[sweetener]}`;
+  const proteinSuffix = withProtein ? "-Protein" : "";
+  const fruitJoinPlus = labels.join("+");
+
+  const number = `23-${fruitJoinPlus}-${milkLabel}${sweetSuffix}${proteinSuffix}`;
+  const extras = [milkLabel];
+  if (sweetener !== "none") extras.push(sweetLabels[sweetener]);
+  if (withProtein) extras.push("Protein");
+  const name = `Smoothie ${labels.join(" + ")} • ${extras.join(" • ")}`;
+
+  return { number, name, price };
+}
+
+function bowlVocabKeys() {
+  return Object.keys({
+    ...BOWL_FRUITS,
+    ...BOWL_TOPPINGS,
+    "keine-frucht": true,
+    "ohne-topping": true,
+  }).sort((a, b) => b.length - a.length);
+}
+
+function tokenizeBowlSegment(segment) {
+  const vocab = bowlVocabKeys();
+  const tokens = [];
+  let i = 0;
+  while (i < segment.length) {
+    if (segment[i] === "-") {
+      i += 1;
+      continue;
+    }
+    let matched = null;
+    for (const k of vocab) {
+      if (
+        segment.startsWith(k, i) &&
+        (i + k.length === segment.length || segment[i + k.length] === "-")
+      ) {
+        matched = k;
+        break;
+      }
+    }
+    if (!matched) return null;
+    tokens.push(matched);
+    i += matched.length;
+  }
+  return tokens;
+}
+
+function parseBowlRest(rest) {
+  const tokens = tokenizeBowlSegment(rest);
+  if (!tokens) return null;
+
+  const fruitKeys = new Set([...Object.keys(BOWL_FRUITS), "keine-frucht"]);
+  const topKeys = new Set([...Object.keys(BOWL_TOPPINGS), "ohne-topping"]);
+
+  const splitIdx = tokens.findIndex((t) => topKeys.has(t));
+  if (splitIdx === -1) return null;
+
+  const fruitToks = tokens.slice(0, splitIdx);
+  const topToks = tokens.slice(splitIdx);
+
+  if (!fruitToks.every((t) => fruitKeys.has(t))) return null;
+  if (!topToks.every((t) => topKeys.has(t))) return null;
+  if (fruitToks.includes("keine-frucht") && fruitToks.length > 1) return null;
+  if (topToks.includes("ohne-topping") && topToks.length > 1) return null;
+
+  const fruits = fruitToks.filter((t) => t !== "keine-frucht");
+  const toppings = topToks.filter((t) => t !== "ohne-topping");
+
+  return { fruits, toppings };
+}
+
+function resolveBowlProduct(id) {
+  const bases = [
+    "bowl-smoothie",
+    "bowl-oats1",
+    "bowl-joghurt",
+    "bowl-protein",
+    "bowl-acai",
+    "bowl-chia",
+  ].sort((a, b) => b.length - a.length);
+
+  let baseId = null;
+  for (const b of bases) {
+    if (id === b || id.startsWith(`${b}-`)) {
+      baseId = b;
+      break;
+    }
+  }
+  if (!baseId) return null;
+
+  const base = PRODUCTS[baseId];
+  if (!base) return null;
+
+  if (id === baseId) return { product: base, sauce: null };
+
+  const parsed = parseBowlRest(id.slice(baseId.length + 1));
+  if (!parsed) return null;
+
+  const fruitLabels = parsed.fruits.map((f) => BOWL_FRUITS[f]);
+  const topLabels = parsed.toppings.map((t) => BOWL_TOPPINGS[t]);
+  const toppingCents = parsed.toppings.reduce(
+    (sum, t) => sum + (BOWL_TOPPING_PRICE[t] ?? 0),
+    0,
+  );
+
+  const fruitSuffix = fruitLabels.length ? `-${fruitLabels.join("+")}` : "";
+  const topSuffix = topLabels.length ? `-${topLabels.join("+")}` : "";
+  const number = `${base.number}${fruitSuffix}${topSuffix}`;
+  const fruitPart =
+    fruitLabels.length > 0
+      ? `Früchte: ${fruitLabels.join(", ")}`
+      : "Früchte: keine Auswahl";
+  const topPart =
+    topLabels.length > 0
+      ? `Toppings: ${topLabels.join(", ")}`
+      : "ohne Extra-Topping";
+  const name = `${base.name} • ${fruitPart} • ${topPart}`;
+
+  return {
+    product: {
+      number,
+      name,
+      price: base.price + toppingCents,
+    },
+    sauce: null,
+  };
+}
+
+function resolveMilkOptionProduct(id) {
+  const sortedMatchaBases = [...MILK_OPTION_MATCHA_BASES].sort(
+    (a, b) => b.length - a.length,
+  );
+
+  for (const baseId of sortedMatchaBases) {
+    if (!id.startsWith(`${baseId}-`)) continue;
+
+    const rest = id.slice(baseId.length + 1);
+    const parts = rest.split("-");
+    const styleKeys = Object.keys(MATCHA_STYLE_LABEL).sort(
+      (a, b) => b.length - a.length,
+    );
+
+    let styleKey = "classic";
+    let milkParts = parts;
+
+    const last = parts[parts.length - 1];
+    if (last && MATCHA_STYLE_LABEL[last]) {
+      styleKey = last;
+      milkParts = parts.slice(0, -1);
+    }
+
+    const milkKey = milkParts.join("-");
+    if (!MENU_MILKS[milkKey]) continue;
+
+    const base = PRODUCTS[baseId];
+    if (!base) continue;
+
+    const milkLabel = MENU_MILKS[milkKey];
+    const surcharge =
+      MATCHA_MILK_SURCHARGE[milkKey] + MATCHA_STYLE_SURCHARGE[styleKey];
+
+    const styleSuffix =
+      styleKey !== "classic" ? `-${MATCHA_STYLE_LABEL[styleKey]}` : "";
+    const number = `${base.number}-${milkLabel}${styleSuffix}`;
+    const displayStyle =
+      styleKey !== "classic" ? ` • ${MATCHA_STYLE_LABEL[styleKey]}` : "";
+    const name = `${base.name} • ${milkLabel}${displayStyle}`;
+
+    return {
+      product: {
+        number,
+        name,
+        price: base.price + surcharge,
+      },
+      sauce: null,
+    };
+  }
+
+  const coffeeBase = "cp-nau-da";
+  if (id.startsWith(`${coffeeBase}-`)) {
+    const milkKey = id.slice(coffeeBase.length + 1);
+    if (!MENU_MILKS[milkKey]) return null;
+    const base = PRODUCTS[coffeeBase];
+    if (!base) return null;
+    const milkLabel = MENU_MILKS[milkKey];
+    return {
+      product: {
+        number: `${base.number}-${milkLabel}`,
+        name: `${base.name} • ${milkLabel}`,
+        price: base.price,
+      },
+      sauce: null,
+    };
+  }
+
+  return null;
+}
+
+function resolveFriedRice(id) {
+  const m = id.match(/^a([1-7])-(soja|suesssauer|curry|matcha|mango)$/);
+  if (!m) return null;
+  const baseId = `a${m[1]}`;
+  const sauce = FRIED_RICE_SAUCE[m[2]];
+  const base = PRODUCTS[baseId];
+  if (!base || !sauce) return null;
+  return {
+    product: {
+      number: `${base.number}-${sauce.code}`,
+      name: `${base.name} • ${sauce.label}`,
+      price: base.price,
+    },
+    sauce: null,
+  };
+}
+
+function resolveRiceNoodleMain(id) {
+  if (!id.endsWith("-nudel") && !id.endsWith("-reis")) return null;
+  const type = id.endsWith("-nudel") ? "nudel" : "reis";
+  const baseId = id.slice(0, -(type.length + 1));
+  if (!baseId || baseId.startsWith("box-")) return null;
+  if (/^a[1-7]$/.test(baseId)) return null;
+
+  const base = PRODUCTS[baseId];
+  if (!base) return null;
+
+  const typeLabel = type === "nudel" ? "Nudel" : "Reis";
+  return {
+    product: {
+      number: `${base.number}-${typeLabel}`,
+      name: `${base.name} • ${typeLabel}`,
+      price: base.price,
+    },
+    sauce: null,
+  };
+}
 
 function resolveProduct(id) {
   if (typeof id !== "string" || id.length === 0) return null;
   const direct = PRODUCTS[id];
   if (direct) return { product: direct, sauce: null };
 
-  for (const [suffix, sauce] of Object.entries(BOX_SAUCE_SUFFIXES)) {
+  const suffixEntries = Object.entries(BOX_SAUCE_SUFFIXES).sort(
+    (a, b) => b[0].length - a[0].length,
+  );
+  for (const [suffix, sauce] of suffixEntries) {
     if (id.endsWith(suffix)) {
       const baseId = id.slice(0, -suffix.length);
       if (!baseId.startsWith("box-")) continue;
@@ -158,6 +539,21 @@ function resolveProduct(id) {
       };
     }
   }
+
+  const smoothie = resolveSmoothieProduct(id);
+  if (smoothie) return { product: smoothie, sauce: null };
+
+  const bowl = resolveBowlProduct(id);
+  if (bowl) return bowl;
+
+  const milkOpt = resolveMilkOptionProduct(id);
+  if (milkOpt) return milkOpt;
+
+  const fried = resolveFriedRice(id);
+  if (fried) return fried;
+
+  const riceNoodle = resolveRiceNoodleMain(id);
+  if (riceNoodle) return riceNoodle;
 
   return null;
 }
