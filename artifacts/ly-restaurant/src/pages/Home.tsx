@@ -1,19 +1,26 @@
 import { Link } from "wouter";
-import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-import vietnameseCoffeeImg from "@assets/vietnamese-coffee.png";
-import matchaImg from "@assets/matcha-lys.png";
-import noodleRiceBoxImg from "@assets/lys-noodle-rice-box.png";
-import restaurantExteriorImg from "@assets/image_1775647522456.png";
-import kitchenImg from "@assets/lys-fresh-ingredients.png";
+import vietnameseCoffeeImg from "@assets/lys-coffee-card.png";
+import matchaImg from "@assets/lys-matcha-card.png";
+import noodleRiceBoxImg from "@assets/lys-noodle-box-new.png";
+import storefrontImg from "@assets/lys-storefront.png";
+import kitchenImg from "@assets/lys-fresh-ingredients-new.png";
+import heroDrinksImg from "@assets/lys-hero-drinks.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+/**
+ * Home — minimalist rewrite.
+ *  Direction : Quiet, contemporary, image-first.
+ *              Aesop / MUJI / Kinfolk reference.
+ *  Pattern   : Full-bleed hero · Generous whitespace · Plain typographic blocks
+ *  Style     : Sans-only, thin weights, hairline rules, no decorations, no marquees.
+ */
 export default function Home() {
   const { t } = useLanguage();
 
-  const categories = [
-    { img: vietnameseCoffeeImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
-    { img: matchaImg, title: t.home.wokTitle, desc: t.home.wokDesc },
-    { img: noodleRiceBoxImg, title: t.home.curry, desc: t.home.curryDesc },
+  const trinity = [
+    { img: vietnameseCoffeeImg, kicker: "01 · Cà Phê",   title: t.home.springRolls, desc: t.home.springRollsDesc },
+    { img: matchaImg,           kicker: "02 · Trà Xanh", title: t.home.wokTitle,    desc: t.home.wokDesc },
+    { img: noodleRiceBoxImg,    kicker: "03 · Hộp",      title: t.home.curry,       desc: t.home.curryDesc },
   ];
 
   const boxes = [
@@ -24,193 +31,422 @@ export default function Home() {
   ];
 
   return (
-    <div className="w-full min-w-0">
-      {/* Hero */}
-      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Side-by-side hero videos — fill the hero without distortion (object-cover) */}
-        <div className="absolute inset-0 z-0 grid grid-cols-2">
-          <div className="relative h-full w-full overflow-hidden">
-            <video
-              src="/videos/hero-main.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
-            />
-          </div>
-          <div className="relative h-full w-full overflow-hidden">
-            <video
-              src="/videos/hero-noodles.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
-            />
+    <div className="relative w-full min-w-0 bg-background text-foreground">
+      <style>{`
+        @keyframes lys-fade-up {
+          from { opacity: 0; transform: translate3d(0, 14px, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+        @keyframes lys-fade {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        .lys-fade-up { animation: lys-fade-up 1100ms cubic-bezier(.16,1,.3,1) both; }
+        .lys-fade    { animation: lys-fade 1400ms ease-out both; }
+
+        .lys-link {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          gap: .6rem;
+          padding-bottom: 3px;
+          font-size: .8125rem;
+          letter-spacing: .04em;
+          color: hsl(var(--foreground));
+          transition: color 320ms ease, gap 380ms ease;
+        }
+        .lys-link::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 1px;
+          background: hsl(var(--foreground) / .35);
+          transition: background 320ms ease;
+        }
+        .lys-link:hover { gap: .9rem; }
+        .lys-link:hover::after { background: hsl(var(--foreground)); }
+        .lys-link:focus-visible {
+          outline: 2px solid hsl(var(--foreground));
+          outline-offset: 6px;
+          border-radius: 2px;
+        }
+
+        .lys-caps {
+          font-family: var(--app-font-sans);
+          font-size: 10.5px;
+          font-weight: 500;
+          letter-spacing: 0.34em;
+          text-transform: uppercase;
+          color: hsl(var(--foreground) / .55);
+        }
+
+        .lys-rule {
+          display: block;
+          width: 100%;
+          height: 1px;
+          background: hsl(var(--foreground) / .15);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .lys-fade-up, .lys-fade { animation: none !important; opacity: 1; transform: none; }
+        }
+      `}</style>
+
+      {/* ════════════════════════════════════════════════════════════════
+            1 · HERO — full-bleed, full-size image
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative w-full">
+        {/* Small brand strip above hero */}
+        <div className="max-w-[120rem] mx-auto px-5 sm:px-8 lg:px-12 pt-6 pb-6 lg:pt-8 lg:pb-8">
+          <div className="flex items-center justify-between gap-6">
+            <span className="lys-caps">LYS · Noodle &amp; Box</span>
+            <span className="lys-caps hidden sm:inline">Schwäbisch Gmünd</span>
+            <span className="lys-caps hidden md:inline">Open · 11:00 – 21:30</span>
           </div>
         </div>
-        {/* Dark overlay: base wash + centered radial pool behind hero copy for readability */}
-        <div
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 55% at 50% 50%, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 75%)",
-          }}
-        />
-        {/* Content */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-20 w-full">
-          <div className="flex flex-col items-center text-center">
-            <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0 drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)] brightness-0 invert" />
-            <p className="whitespace-pre-line text-lg md:text-xl text-white leading-relaxed mb-10 max-w-3xl mt-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
-              {t.home.heroDesc}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5">
-                {t.common.orderNow} <ArrowRight size={18} />
+
+        {/* The hero image — full-bleed, focused on the drinks & box, blinds cropped out */}
+        <div className="lys-fade w-full overflow-hidden">
+          <img
+            src={heroDrinksImg}
+            alt="LYS Hero"
+            className="block w-full h-[60vh] sm:h-[72vh] lg:h-[82vh] object-cover select-none"
+            style={{ objectPosition: "50% 78%" }}
+            draggable={false}
+          />
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+            2 · STATEMENT — quiet introduction
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="max-w-[88rem] mx-auto px-5 sm:px-8 lg:px-12 pt-28 lg:pt-44 pb-24 lg:pb-36">
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-start">
+
+            <div className="col-span-12 md:col-span-3">
+              <p className="lys-caps lys-fade-up">— Index</p>
+            </div>
+
+            <div className="col-span-12 md:col-span-9 max-w-3xl">
+              <p
+                className="lys-fade-up font-sans font-light tracking-[-0.015em] leading-[1.18] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.85rem] xl:text-[3.25rem] text-foreground"
+                style={{ animationDelay: "80ms" }}
+              >
+                Mit Erfahrung gekocht. Für deinen Alltag gemacht. Frische Nudel- und
+                Reisgerichte, Bowls und Drinks — schnell zubereitet und voller Geschmack.
+              </p>
+
+              <div
+                className="lys-fade-up flex flex-wrap items-center gap-8 mt-12 lg:mt-16"
+                style={{ animationDelay: "200ms" }}
+              >
+                <Link
+                  href="/order"
+                  data-testid="button-hero-order"
+                  className="lys-link cursor-pointer"
+                >
+                  {t.common.orderNow}
+                  <span aria-hidden>→</span>
+                </Link>
+                <Link href="/menu" className="lys-link cursor-pointer">
+                  {t.common.viewMenu}
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span className="lys-rule" />
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+            3 · TRINITY — three products, calm grid
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="max-w-[120rem] mx-auto px-5 sm:px-8 lg:px-12 pt-24 lg:pt-36 pb-24 lg:pb-32">
+
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-end mb-16 lg:mb-24">
+            <div className="col-span-12 md:col-span-3">
+              <p className="lys-caps">— 01 / Auswahl</p>
+            </div>
+            <div className="col-span-12 md:col-span-9">
+              <h2 className="font-sans font-light tracking-[-0.015em] leading-[1.1] text-3xl sm:text-4xl lg:text-5xl text-foreground max-w-2xl">
+                {t.home.categoriesTitle}.
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-12 gap-8 lg:gap-12">
+            {trinity.map((item) => (
+              <Link
+                key={item.title}
+                href="/menu"
+                data-testid={`card-trinity-${item.kicker}`}
+                className="group col-span-12 sm:col-span-6 lg:col-span-4 block cursor-pointer focus:outline-none"
+              >
+                <div className="relative w-full overflow-hidden bg-[hsl(27,18%,82%)]">
+                  <img
+                    src={item.img}
+                    alt={item.title}
+                    className="block w-full h-auto transition-transform duration-[1600ms] ease-out group-hover:scale-[1.025] select-none"
+                    draggable={false}
+                  />
+                </div>
+                <div className="pt-6 lg:pt-8">
+                  <p className="lys-caps mb-3">{item.kicker}</p>
+                  <h3 className="font-sans font-normal text-xl lg:text-2xl text-foreground leading-tight tracking-[-0.01em] mb-3 transition-colors duration-300 group-hover:text-foreground/70">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-foreground/65 max-w-md">
+                    {item.desc}
+                  </p>
+                </div>
               </Link>
-              <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/40 text-white px-9 py-4 rounded-full font-medium text-lg hover:bg-white/20 transition-all">
+            ))}
+          </div>
+        </div>
+        <span className="lys-rule" />
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+            4 · KITCHEN — full-width image, quiet caption
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="w-full lys-fade">
+          <img
+            src={kitchenImg}
+            alt="Frische Zutaten"
+            className="block w-full h-auto select-none"
+            draggable={false}
+          />
+        </div>
+
+        <div className="max-w-[88rem] mx-auto px-5 sm:px-8 lg:px-12 pt-20 lg:pt-28 pb-24 lg:pb-36">
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-start">
+            <div className="col-span-12 md:col-span-3">
+              <p className="lys-caps">— 02 / {t.home.freshTag}</p>
+            </div>
+            <div className="col-span-12 md:col-span-6 max-w-xl">
+              <h2 className="font-sans font-light tracking-[-0.015em] leading-[1.12] text-3xl sm:text-4xl lg:text-[2.85rem] text-foreground mb-7">
+                {t.home.freshTitle}.
+              </h2>
+              <p className="text-base leading-relaxed text-foreground/70 mb-8">
+                {t.home.freshDesc}
+              </p>
+              <Link href="/menu" className="lys-link cursor-pointer">
                 {t.common.viewMenu}
+                <span aria-hidden>→</span>
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Info bar */}
-      <section className="border-y border-border bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
-            <div className="flex items-center gap-3 py-5 px-4 sm:px-8">
-              <MapPin size={18} className="text-primary shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">{t.common.address}</p>
-                <p className="text-sm font-medium">Kappelgasse 2, 73525 Schwäbisch Gmünd</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 py-5 px-4 sm:px-8">
-              <Phone size={18} className="text-primary shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">{t.common.phone}</p>
-                <a href="tel:xxxxxx" className="text-sm font-medium hover:text-primary transition-colors">xxxxxx</a>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 py-5 px-4 sm:px-8">
-              <Clock size={18} className="text-primary shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">{t.common.openingHours}</p>
-                <p className="text-sm font-medium">
-                  Mo–Do: 11:00–21:30
-                  <br />
-                  Fr–Sa: bis 22:00
-                </p>
-                <p className="text-xs text-muted-foreground">So & Feiertage: 13:00–20:00 Uhr</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured categories */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-12">
-          <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.home.specTag}</p>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">{t.home.categoriesTitle}</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categories.map((item) => (
-            <Link key={item.title} href="/menu" data-testid={`card-category-${item.title}`}>
-              <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full cursor-pointer">
-                <div className="h-48 overflow-hidden bg-muted">
-                  <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="p-5">
-                  <h3 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                  <div className="mt-4 flex items-center gap-1 text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    {t.common.viewMenu} <ArrowRight size={12} />
+            <div className="col-span-12 md:col-span-3 md:pl-4 lg:pl-8 mt-10 md:mt-0">
+              <dl className="space-y-6">
+                {[
+                  { n: "100%", l: "Frisch" },
+                  { n: "0",    l: "Konservierung" },
+                  { n: "8+",   l: "Saucen" },
+                ].map(({ n, l }) => (
+                  <div key={l} className="pt-4 border-t border-foreground/15">
+                    <dt className="font-sans font-light text-3xl lg:text-4xl tabular-nums text-foreground leading-none mb-2">
+                      {n}
+                    </dt>
+                    <dd className="lys-caps">{l}</dd>
                   </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Kitchen banner */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="rounded-3xl overflow-hidden relative h-72 md:h-96">
-          <img src={kitchenImg} alt="Frische Zutaten in der Küche" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/58 to-black/18 flex items-center">
-            <div className="px-8 md:px-14 max-w-lg rounded-xl py-5 bg-black/22 backdrop-blur-[1px]">
-              <p className="text-white/90 text-xs uppercase tracking-widest font-medium mb-2 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">{t.home.freshTag}</p>
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">{t.home.freshTitle}</h2>
-              <p className="text-white/85 text-sm leading-relaxed drop-shadow-[0_1px_8px_rgba(0,0,0,0.9)]">{t.home.freshDesc}</p>
+                ))}
+              </dl>
             </div>
           </div>
         </div>
+        <span className="lys-rule" />
       </section>
 
-      {/* Boxes highlight */}
-      <section className="bg-primary/5 border-y border-primary/10 py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.home.boxTag}</p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">{t.home.boxTitle}</h2>
-              <p className="text-muted-foreground leading-relaxed mb-6">{t.home.boxDesc}</p>
-              <div className="flex flex-wrap gap-3 mb-8">
+      {/* ════════════════════════════════════════════════════════════════
+            5 · BOXES — pure typographic list + single image
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="max-w-[120rem] mx-auto px-5 sm:px-8 lg:px-12 pt-24 lg:pt-36 pb-24 lg:pb-36">
+
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-end mb-16 lg:mb-20">
+            <div className="col-span-12 md:col-span-3">
+              <p className="lys-caps">— 03 / {t.home.boxTag}</p>
+            </div>
+            <div className="col-span-12 md:col-span-9">
+              <h2 className="font-sans font-light tracking-[-0.015em] leading-[1.08] text-3xl sm:text-4xl lg:text-5xl text-foreground max-w-2xl">
+                {t.home.boxTitle}.
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-start">
+
+            {/* Left — single image */}
+            <div className="col-span-12 lg:col-span-5">
+              <div className="w-full overflow-hidden bg-[hsl(27,18%,82%)]">
+                <img
+                  src={noodleRiceBoxImg}
+                  alt={t.home.boxTitle}
+                  className="block w-full h-auto select-none"
+                  draggable={false}
+                />
+              </div>
+              <p className="text-sm leading-relaxed text-foreground/70 mt-6 max-w-md">
+                {t.home.boxDesc}
+              </p>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5">
                 {[t.home.boxSauce1, t.home.boxSauce2, t.home.boxSauce3].map((sauce) => (
-                  <span key={sauce} className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-full border border-primary/20 font-medium">{sauce}</span>
+                  <span key={sauce} className="lys-caps">· {sauce}</span>
                 ))}
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <Utensils size={14} className="text-primary" />
-                <span>{t.home.boxPriceFrom}</span>
-              </div>
-              <Link href="/order" data-testid="button-boxes-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium text-sm hover:opacity-90 transition-all mt-4">
-                {t.common.orderNow} <ArrowRight size={14} />
-              </Link>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {boxes.map((box) => (
-                <div key={box.name} className="bg-card border border-border rounded-xl p-4 hover:border-primary/30 transition-all">
-                  <span className="inline-block bg-primary/10 text-primary text-[10px] font-medium px-2 py-0.5 rounded-full mb-2">{box.tag}</span>
-                  <p className="text-sm font-medium text-foreground">{box.name}</p>
-                  <p className="text-primary font-semibold text-sm mt-1">{box.price}</p>
+
+            {/* Right — minimal table */}
+            <div className="col-span-12 lg:col-span-7">
+              <div className="border-t border-foreground/15">
+                {boxes.map((box, idx) => (
+                  <Link
+                    key={box.name}
+                    href="/order"
+                    data-testid={`row-box-${idx}`}
+                    className="group grid grid-cols-12 items-baseline gap-4 py-6 sm:py-7 border-b border-foreground/15 cursor-pointer transition-colors duration-300"
+                  >
+                    <span className="col-span-2 sm:col-span-1 lys-caps tabular-nums">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <p className="col-span-7 sm:col-span-7 font-sans font-normal text-lg sm:text-xl lg:text-[1.5rem] text-foreground leading-snug tracking-[-0.01em] transition-colors duration-300 group-hover:text-foreground/65">
+                      {box.name}
+                    </p>
+                    <span className="hidden sm:inline lys-caps col-span-2">{box.tag}</span>
+                    <p className="col-span-3 sm:col-span-2 text-right font-sans font-light text-lg sm:text-xl lg:text-[1.5rem] text-foreground tabular-nums">
+                      {box.price}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-10">
+                <Link href="/order" className="lys-link cursor-pointer">
+                  {t.common.orderNow}
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span className="lys-rule" />
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+            6 · VISIT — full image + plain info
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="w-full lys-fade">
+          <img
+            src={storefrontImg}
+            alt="LYS Noodle Box Außenansicht"
+            className="block w-full h-auto select-none"
+            draggable={false}
+          />
+        </div>
+
+        <div className="max-w-[88rem] mx-auto px-5 sm:px-8 lg:px-12 pt-20 lg:pt-28 pb-24 lg:pb-36">
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-start">
+            <div className="col-span-12 md:col-span-3">
+              <p className="lys-caps">— 04 / Besuch</p>
+            </div>
+            <div className="col-span-12 md:col-span-9">
+              <h2 className="font-sans font-light tracking-[-0.015em] leading-[1.1] text-3xl sm:text-4xl lg:text-[2.85rem] text-foreground max-w-2xl mb-12 lg:mb-16">
+                Kappelgasse 2, 73525 Schwäbisch Gmünd.
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8 max-w-3xl">
+                <div className="pt-5 border-t border-foreground/15">
+                  <p className="lys-caps mb-3">{t.common.openingHours}</p>
+                  <p className="text-sm leading-relaxed text-foreground">
+                    Mo–Do · 11:00 – 21:30<br />
+                    Fr–Sa · 11:00 – 22:00<br />
+                    So · 13:00 – 20:00
+                  </p>
                 </div>
-              ))}
+                <div className="pt-5 border-t border-foreground/15">
+                  <p className="lys-caps mb-3">{t.common.address}</p>
+                  <p className="text-sm leading-relaxed text-foreground">
+                    Kappelgasse 2<br />
+                    73525 Schwäbisch Gmünd<br />
+                    Deutschland
+                  </p>
+                </div>
+                <div className="pt-5 border-t border-foreground/15">
+                  <p className="lys-caps mb-3">{t.common.phone}</p>
+                  <a href="tel:xxxxxx" className="lys-link cursor-pointer">
+                    xxxxxx
+                    <span aria-hidden>→</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Testimonial below — very quiet */}
+              <div className="mt-20 lg:mt-28 max-w-2xl">
+                <p className="lys-caps mb-5">— Stimmen</p>
+                <blockquote className="font-sans font-light tracking-[-0.01em] leading-[1.35] text-xl sm:text-2xl lg:text-[1.75rem] text-foreground/85 italic">
+                  {t.home.testimonialQuote}
+                </blockquote>
+                <p className="lys-caps mt-6">{t.home.testimonialAuthor}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span className="lys-rule" />
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+            7 · CLOSING — single quiet invitation
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="max-w-[88rem] mx-auto px-5 sm:px-8 lg:px-12 pt-24 lg:pt-36 pb-32 lg:pb-48">
+          <div className="grid grid-cols-12 gap-8 lg:gap-16 items-end">
+            <div className="col-span-12 md:col-span-9">
+              <p className="lys-caps mb-6">— 05 / Schluss</p>
+              <h2 className="font-sans font-light tracking-[-0.02em] leading-[0.98] text-[2.6rem] sm:text-6xl lg:text-[5.5rem] xl:text-[7rem] text-foreground">
+                {t.home.ctaTitle}
+              </h2>
+              <p className="mt-8 max-w-xl text-base sm:text-lg text-foreground/70 leading-relaxed">
+                {t.home.ctaDesc}
+              </p>
+            </div>
+
+            <div className="col-span-12 md:col-span-3 flex md:justify-end mt-8 md:mt-0">
+              <Link
+                href="/order"
+                data-testid="button-final-cta"
+                className="lys-link cursor-pointer text-base"
+              >
+                {t.home.ctaBtn}
+                <span aria-hidden>→</span>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="rounded-2xl overflow-hidden h-72 lg:h-80 shadow-lg">
-            <img src={restaurantExteriorImg} alt="LYS Noodle Box Außenansicht" className="w-full h-full object-cover" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1 mb-5">
-              {[...Array(5)].map((_, i) => <Star key={i} size={16} className="fill-primary text-primary" />)}
-            </div>
-            <blockquote className="font-serif text-2xl md:text-3xl text-foreground leading-relaxed italic mb-5">
-              {t.home.testimonialQuote}
-            </blockquote>
-            <p className="text-muted-foreground text-sm mb-8">{t.home.testimonialAuthor}</p>
-            <Link href="/about" data-testid="button-learn-more" className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:gap-3 transition-all">
-              {t.common.learnMore} <ArrowRight size={14} />
-            </Link>
+      {/* ════════════════════════════════════════════════════════════════
+            8 · STOREFRONT — full-bleed closing image
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="relative">
+        <div className="w-full lys-fade">
+          <img
+            src={storefrontImg}
+            alt="LYS Noodle &amp; Rice — Kappelgasse 2, Schwäbisch Gmünd"
+            className="block w-full h-auto select-none"
+            draggable={false}
+          />
+        </div>
+        <div className="max-w-[88rem] mx-auto px-5 sm:px-8 lg:px-12 pt-8 lg:pt-10 pb-16 lg:pb-20">
+          <div className="flex flex-wrap items-baseline justify-between gap-4">
+            <p className="lys-caps">— LYS Noodle &amp; Rice · Kappelgasse 2</p>
+            <p className="lys-caps">Schwäbisch Gmünd · 2026</p>
           </div>
         </div>
       </section>
