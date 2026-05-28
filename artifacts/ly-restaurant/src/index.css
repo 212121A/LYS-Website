@@ -218,7 +218,40 @@
     @apply border-border;
   }
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background-color: hsl(var(--background));
+  }
+  /* Smoke ambient background — sits behind all content, fixed so it parallaxes on scroll.
+     The source image has the LYS mark centered. We zoom in heavily and crop to a
+     smoke-only corner so the logo never reads as a watermark behind content. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -8%; /* slight bleed past edges so blur doesn't reveal hard borders */
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("/lys-smoke-bg.png");
+    background-size: 360% auto;
+    background-position: 0% 0%; /* top-left smoke wisps */
+    background-repeat: no-repeat;
+    background-color: hsl(var(--background));
+    background-blend-mode: multiply;
+    filter: blur(1.5px);
+    opacity: 0.7;
+  }
+}
+
+/* Let the smoke breathe through page-level surfaces while keeping content legible.
+   Cards/buttons that need solid surfaces use explicit bg-card / bg-primary etc.,
+   so only generic bg-background section surfaces become translucent. */
+@layer utilities {
+  section.bg-background,
+  header.bg-background,
+  footer.bg-background,
+  main.bg-background,
+  nav.bg-background,
+  div.bg-background:not([class*="card"]):not([class*="rounded"]) {
+    background-color: hsl(var(--background) / 0.82);
   }
 }
 
