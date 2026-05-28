@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-import restaurantExteriorImg from "@assets/image_1775647522456.png";
+const restaurantExteriorImg = "/lys-storefront-photo.jpg";
 import kitchenImg from "@assets/lys-fresh-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
