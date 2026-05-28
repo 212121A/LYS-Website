@@ -25,27 +25,18 @@ export default function Home() {
 
   return (
     <div className="w-full min-w-0">
-      {/* Hero — full-bleed LYS smoke brand image */}
-      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-end bg-background">
-        {/* Smoke logo background — fills the section, logo intentionally visible */}
-        <img
-          src="/lys-smoke-bg.png"
-          alt="LYS Noodle Box"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
-          draggable={false}
-        />
-        {/* Soft bottom gradient so the claim + CTAs sit on a calm surface */}
-        <div
-          className="absolute inset-x-0 bottom-0 h-1/3 z-10 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(238,228,212,0) 0%, rgba(238,228,212,0.85) 45%, rgba(238,228,212,0.98) 100%)",
-          }}
-        />
-        {/* Content — placed below the logo which is part of the background image */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 lg:pb-16 relative z-20 w-full">
+      {/* Hero — LYS smoke logo as a centered, sharply-sized card on the ambient body smoke */}
+      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center justify-center bg-background">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10 w-full">
           <div className="flex flex-col items-center text-center">
-            <p className="whitespace-pre-line text-lg md:text-xl text-foreground/90 leading-relaxed mb-8 max-w-3xl">
+            {/* Logo image at intrinsic-friendly size so the smoke + lettering stay sharp */}
+            <img
+              src="/lys-smoke-bg.png"
+              alt="LYS Noodle Box"
+              className="w-full max-w-[16rem] sm:max-w-xs lg:max-w-sm h-auto select-none mb-8 sm:mb-10"
+              draggable={false}
+            />
+            <p className="whitespace-pre-line text-lg md:text-xl text-foreground/90 leading-relaxed mb-8 max-w-2xl">
               {t.home.heroDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
