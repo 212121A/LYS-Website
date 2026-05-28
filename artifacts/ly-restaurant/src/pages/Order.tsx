@@ -587,29 +587,13 @@ export default function Order() {
         </div>
       </div>
 
-      <div className="max-w-[86rem] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_20rem] gap-8">
           {/* Menu selection */}
           <div className="space-y-16">
             {orderable.map((category) => (
-              <div
-                key={category.id}
-                id={category.id}
-                className="lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-8 lg:items-start"
-              >
-                {category.image ? (
-                  <img
-                    src={category.image}
-                    alt={mt[category.nameKey as keyof typeof mt] || category.name}
-                    loading="lazy"
-                    className="hidden lg:block w-full aspect-[9/16] rounded-2xl object-cover border border-border shadow-md"
-                  />
-                ) : (
-                  <div className="hidden lg:block" aria-hidden="true" />
-                )}
-
-                <div className="min-w-0">
-                <div className="flex items-center gap-4 mb-6">
+              <div key={category.id} id={category.id}>
+                <div className="flex items-center gap-4 mb-2">
                   <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
                     {mt[category.nameKey as keyof typeof mt] || category.name}
                   </h2>
@@ -617,7 +601,7 @@ export default function Order() {
                 </div>
 
                 {(category.subtitleKey || category.subtitle) && (
-                  <p className="text-sm text-muted-foreground mb-6 -mt-2 whitespace-pre-line italic">
+                  <p className="text-sm text-muted-foreground mb-6 whitespace-pre-line italic">
                     {mt[category.subtitleKey as keyof typeof mt] || category.subtitle}
                   </p>
                 )}
@@ -724,7 +708,6 @@ export default function Order() {
                     </div>
                     );
                   })}
-                </div>
                 </div>
               </div>
             ))}
