@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <div className="w-full min-w-0">
-      {/* Hero — landscape LYS smoke brand image as full-bleed canvas */}
+      {/* Hero — product spread photo as full-bleed canvas with centered LYS wordmark */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-end bg-background">
         <img
           src="/lys-hero.png"
@@ -34,6 +34,15 @@ export default function Home() {
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
           draggable={false}
         />
+        {/* Centered LYS wordmark — transparent PNG, soft glow so it reads on busy imagery */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-10 flex justify-center pointer-events-none px-6">
+          <img
+            src="/logo.png"
+            alt="LYS Noodle Box"
+            className="w-full max-w-[14rem] sm:max-w-xs lg:max-w-sm h-auto select-none drop-shadow-[0_2px_20px_rgba(255,255,255,0.7)]"
+            draggable={false}
+          />
+        </div>
         {/* Soft bottom gradient lifts the claim + CTAs onto a calm surface */}
         <div
           aria-hidden
