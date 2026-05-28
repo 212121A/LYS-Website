@@ -25,60 +25,34 @@ export default function Home() {
 
   return (
     <div className="w-full min-w-0">
-      {/* Hero */}
-      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center bg-black">
-        {/* Side-by-side hero videos — fill the hero without distortion (object-cover) */}
-        <div className="absolute inset-0 z-0 grid grid-cols-2">
-          <div className="relative h-full w-full overflow-hidden">
-            <video
-              src="/videos/hero-main.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
-            />
-          </div>
-          <div className="relative h-full w-full overflow-hidden">
-            <video
-              src="/videos/hero-noodles.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
-            />
-          </div>
-        </div>
-        {/* Dark overlay: base wash + centered radial pool behind hero copy for readability */}
+      {/* Hero — full-bleed LYS smoke brand image */}
+      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-end bg-background">
+        {/* Smoke logo background — fills the section, logo intentionally visible */}
+        <img
+          src="/lys-smoke-bg.png"
+          alt="LYS Noodle Box"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
+          draggable={false}
+        />
+        {/* Soft bottom gradient so the claim + CTAs sit on a calm surface */}
         <div
-          className="absolute inset-0 z-10 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-1/3 z-10 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%)",
+              "linear-gradient(to bottom, rgba(238,228,212,0) 0%, rgba(238,228,212,0.85) 45%, rgba(238,228,212,0.98) 100%)",
           }}
         />
-        <div
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 55% at 50% 50%, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 75%)",
-          }}
-        />
-        {/* Content */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-20 w-full">
+        {/* Content — placed below the logo which is part of the background image */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 lg:pb-16 relative z-20 w-full">
           <div className="flex flex-col items-center text-center">
-            <img src="/logo.png" alt="LYS Noodle Box" className="w-full max-w-xs sm:max-w-sm lg:max-w-md h-auto mb-0 drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)] brightness-0 invert" />
-            <p className="whitespace-pre-line text-lg md:text-xl text-white leading-relaxed mb-10 max-w-3xl mt-5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+            <p className="whitespace-pre-line text-lg md:text-xl text-foreground/90 leading-relaxed mb-8 max-w-3xl">
               {t.home.heroDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5">
                 {t.common.orderNow} <ArrowRight size={18} />
               </Link>
-              <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/40 text-white px-9 py-4 rounded-full font-medium text-lg hover:bg-white/20 transition-all">
+              <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-foreground/5 backdrop-blur-sm border border-foreground/30 text-foreground px-9 py-4 rounded-full font-medium text-lg hover:bg-foreground/10 transition-all">
                 {t.common.viewMenu}
               </Link>
             </div>
