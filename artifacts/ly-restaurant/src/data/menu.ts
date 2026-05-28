@@ -11,7 +11,6 @@ export interface MenuItem {
   vegetarian?: boolean;
   vegan?: boolean;
   category: string;
-  image?: string;
 }
 
 export interface MenuCategory {
@@ -20,7 +19,6 @@ export interface MenuCategory {
   nameKey: string;
   subtitle?: string;
   subtitleKey?: string;
-  image?: string;
   items: MenuItem[];
 }
 
@@ -175,7 +173,6 @@ export const menuCategories: MenuCategory[] = [
     id: "matcha",
     name: "Matcha",
     nameKey: "catMatcha",
-    image: "/menu-images/matcha-kokos.jpg",
     items: [
       { id: "m-latte", number: "01", name: "Matcha Latte (warm/kalt)", nameKey: "matchaLatte", description: "Milch wählbar: Kuhmilch inkl. · Soja/Hafer/Kokos +0,50 · als Frappe +1 · als Proteinmatcha +2", price: 4.5, vegetarian: true, category: "matcha" },
       { id: "m-dau", number: "02", name: "Matcha dâu (Erdbeere)", nameKey: "matchaDau", description: "Milch wählbar: Kuhmilch inkl. · Soja/Hafer/Kokos +0,50 · als Frappe +1 · als Proteinmatcha +2", price: 5, vegetarian: true, category: "matcha" },
@@ -191,7 +188,6 @@ export const menuCategories: MenuCategory[] = [
     id: "ca-phe",
     name: "Cà Phê Việt Nam",
     nameKey: "catCoffee",
-    image: "/menu-images/ca-phe-sua-da.jpg",
     items: [
       { id: "cp-den", number: "09", name: "Cà phê đen", nameKey: "caPheDen", price: 4.5, category: "ca-phe" },
       { id: "cp-sua-da", number: "10", name: "Cà phê sữa đá", nameKey: "caPheSuaDa", price: 5, category: "ca-phe" },
@@ -205,7 +201,6 @@ export const menuCategories: MenuCategory[] = [
     id: "tra-eistee",
     name: "Trà (Hausgemachter Eistee)",
     nameKey: "catTea",
-    image: "/menu-images/eistee-zitrone.jpg",
     items: [
       { id: "t-chanh-leo", number: "15", name: "Chanh leo (Passionsfrucht)", nameKey: "traChanh", price: 6, vegetarian: true, category: "tra-eistee" },
       { id: "t-vai", number: "16", name: "Trà vải (Lychee Tee)", nameKey: "traVai", price: 6, vegetarian: true, category: "tra-eistee" },
@@ -217,7 +212,6 @@ export const menuCategories: MenuCategory[] = [
     id: "soda",
     name: "Soda",
     nameKey: "catSoda",
-    image: "/menu-images/soda-ananas.jpg",
     items: [
       { id: "soda-chanh", number: "19", name: "Soda chanh (Zitrone)", nameKey: "sodaChanh", price: 6, vegetarian: true, category: "soda" },
       { id: "soda-dao", number: "20", name: "Soda đào (Pfirsich)", nameKey: "sodaDao", price: 6, vegetarian: true, category: "soda" },
@@ -229,7 +223,6 @@ export const menuCategories: MenuCategory[] = [
     id: "sinh-to",
     name: "Sinh Tố (Smoothies)",
     nameKey: "catSmoothie",
-    image: "/menu-images/erdbeer-smoothie.jpg",
     items: [
       { id: "smoothie-all", number: "23", name: "Alle Smoothies", nameKey: "smoothieAll", description: "Banane · Erdbeere · Mango · Ananas · Himbeere · Blaubeere · individuell mixbar · optional Agavendicksaft/Honig +0,50 · Proteinsmoothie +2", descKey: "smoothieDesc", price: 6.5, vegetarian: true, category: "sinh-to" },
     ],
@@ -238,7 +231,6 @@ export const menuCategories: MenuCategory[] = [
     id: "bowls",
     name: "Bowls",
     nameKey: "catBowls",
-    image: "/menu-images/acai-bowl.jpg",
     subtitle: "Frische saisonale Früchte inklusive\nZum Beispiel: Banane, Erdbeere, Blaubeere, Himbeere, Mango\nToppings: • Honig (+0,5) • Agavendicksaft (0,5) • Matcha (+2) • Granola (+2) • Schoko/Kokos (+1)",
     items: [
       { id: "bowl-oats1", number: "24", name: "Overnight Oats mit Haferflocken & Milch", nameKey: "bowlOats1", price: 6.5, vegetarian: true, category: "bowls" },
@@ -253,7 +245,6 @@ export const menuCategories: MenuCategory[] = [
     id: "kem",
     name: "Kem",
     nameKey: "catIceCream",
-    image: "/menu-images/matcha-mit-eis.jpg",
     items: [
       { id: "kem-matcha", number: "30", name: "Matcha Latte với kem Matcha", nameKey: "kemMatchaIce", price: 6.5, vegetarian: true, category: "kem" },
       { id: "kem-vani", number: "31", name: "Matcha Latte với kem vani", nameKey: "kemVanilleIce", price: 6.5, vegetarian: true, category: "kem" },
@@ -263,7 +254,6 @@ export const menuCategories: MenuCategory[] = [
     id: "kids",
     name: "Für die Kids",
     nameKey: "catKids",
-    image: "/menu-images/schoko-latte.jpg",
     items: [
       { id: "kids-schoko", number: "32", name: "Schoko Latte (warm/kalt)", nameKey: "kidsSchoko", price: 4.5, vegetarian: true, category: "kids" },
     ],
