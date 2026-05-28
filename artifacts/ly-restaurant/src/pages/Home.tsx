@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
 const restaurantExteriorImg = "/lys-storefront-photo.jpg";
-import kitchenImg from "@assets/lys-fresh-ingredients.png";
+const kitchenImg = "/lys-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const sodaImg = "/lys-card-soda.jpg";
