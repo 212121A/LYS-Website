@@ -104,8 +104,8 @@ export default function Home() {
           {categories.map((item) => (
             <Link key={item.title} href="/menu" data-testid={`card-category-${item.title}`}>
               <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full cursor-pointer">
-                <div className="h-48 overflow-hidden bg-muted">
-                  <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="aspect-[3/4] overflow-hidden bg-muted">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500" />
                 </div>
                 <div className="p-5">
                   <h3 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
