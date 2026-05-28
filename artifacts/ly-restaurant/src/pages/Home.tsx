@@ -27,6 +27,29 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero — LYS smoke logo as a centered, sharply-sized card on the ambient body smoke */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center justify-center bg-background">
+        {/* Smoke-fill layer — source image stretched horizontally + heavily blurred so the
+            central LYS lettering dissolves into abstract texture while the wisps remain. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage: "url(/lys-smoke-bg.png)",
+            backgroundSize: "180% 100%",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+            filter: "blur(14px) saturate(0.9)",
+            opacity: 0.85,
+          }}
+        />
+        {/* Soft beige vignette behind the centered card so it reads as a quiet pool of light */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            background:
+              "radial-gradient(ellipse 50% 45% at 50% 50%, rgba(238,228,212,0.7) 0%, rgba(238,228,212,0.15) 60%, rgba(238,228,212,0) 100%)",
+          }}
+        />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10 w-full">
           <div className="flex flex-col items-center text-center">
             {/* Logo image at intrinsic-friendly size so the smoke + lettering stay sharp */}
