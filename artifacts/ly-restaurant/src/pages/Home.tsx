@@ -1,17 +1,18 @@
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-import vietnameseCoffeeImg from "@assets/vietnamese-coffee.png";
-import matchaImg from "@assets/matcha-lys.png";
-import noodleRiceBoxImg from "@assets/lys-noodle-rice-box.png";
 import restaurantExteriorImg from "@assets/image_1775647522456.png";
 import kitchenImg from "@assets/lys-fresh-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+const sodaImg = "/lys-card-soda.jpg";
+const matchaImg = "/lys-card-matcha.jpg";
+const noodleRiceBoxImg = "/lys-card-reisbox.png";
 
 export default function Home() {
   const { t } = useLanguage();
 
   const categories = [
-    { img: vietnameseCoffeeImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
+    { img: sodaImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
     { img: matchaImg, title: t.home.wokTitle, desc: t.home.wokDesc },
     { img: noodleRiceBoxImg, title: t.home.curry, desc: t.home.curryDesc },
   ];
