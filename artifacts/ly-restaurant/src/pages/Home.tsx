@@ -26,37 +26,31 @@ export default function Home() {
 
   return (
     <div className="w-full min-w-0">
-      {/* Hero — product spread photo as full-bleed canvas with centered LYS wordmark */}
-      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-end bg-background">
+      {/* Hero — product spread photo with top-anchored LYS wordmark + CTAs */}
+      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-start bg-background">
         <img
           src="/lys-hero.png"
           alt="LYS Noodle Box"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
           draggable={false}
         />
-        {/* Centered LYS wordmark — transparent PNG, soft glow so it reads on busy imagery */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-10 flex justify-center pointer-events-none px-6">
-          <img
-            src="/logo.png"
-            alt="LYS Noodle Box"
-            className="w-full max-w-[14rem] sm:max-w-xs lg:max-w-sm h-auto select-none drop-shadow-[0_2px_20px_rgba(255,255,255,0.7)]"
-            draggable={false}
-          />
-        </div>
-        {/* Soft bottom gradient lifts the claim + CTAs onto a calm surface */}
+        {/* Soft top wash so the wordmark + CTAs sit on a calm surface */}
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-2/5 z-10 pointer-events-none"
+          className="absolute inset-x-0 top-0 h-2/5 z-10 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(238,228,212,0) 0%, rgba(238,228,212,0.6) 45%, rgba(238,228,212,0.95) 100%)",
+              "linear-gradient(to bottom, rgba(238,228,212,0.85) 0%, rgba(238,228,212,0.5) 55%, rgba(238,228,212,0) 100%)",
           }}
         />
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14 lg:pb-16 relative z-20 w-full">
-          <div className="flex flex-col items-center text-center">
-            <p className="whitespace-pre-line text-lg md:text-xl text-foreground/90 leading-relaxed mb-8 max-w-2xl">
-              {t.home.heroDesc}
-            </p>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 lg:pt-16 relative z-20 w-full">
+          <div className="flex flex-col items-center text-center gap-7 sm:gap-9">
+            <img
+              src="/logo.png"
+              alt="LYS Noodle Box"
+              className="w-full max-w-[14rem] sm:max-w-xs lg:max-w-sm h-auto select-none drop-shadow-[0_2px_18px_rgba(255,255,255,0.55)]"
+              draggable={false}
+            />
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5">
                 {t.common.orderNow} <ArrowRight size={18} />
