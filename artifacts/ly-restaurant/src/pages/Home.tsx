@@ -133,9 +133,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Boxes highlight */}
-      <section className="bg-primary/5 border-y border-primary/10 py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Boxes highlight — mostly opaque background so the body smoke stays subtle here */}
+      <section
+        className="relative border-y border-primary/10 py-16"
+        style={{ backgroundColor: "hsl(27 18% 84%)" }}
+      >
+        <div aria-hidden className="absolute inset-0 bg-primary/5 pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.home.boxTag}</p>
