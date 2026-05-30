@@ -13,8 +13,8 @@ export default function Home() {
 
   const categories: { img: string; video?: string; title: string; desc: string }[] = [
     { img: sodaImg, video: "/lys-card-soda.mp4", title: t.home.springRolls, desc: t.home.springRollsDesc },
-    { img: matchaImg, title: t.home.wokTitle, desc: t.home.wokDesc },
-    { img: noodleRiceBoxImg, title: t.home.curry, desc: t.home.curryDesc },
+    { img: matchaImg, video: "/lys-card-matcha.mp4", title: t.home.wokTitle, desc: t.home.wokDesc },
+    { img: noodleRiceBoxImg, video: "/lys-card-reisbox.mp4", title: t.home.curry, desc: t.home.curryDesc },
   ];
 
   const boxes = [
