@@ -523,7 +523,7 @@ export default function Order() {
   };
 
   return (
-    <div>
+    <div className="pb-24 lg:pb-0">
       {/* Header */}
       <section className="bg-card border-b border-border py-16 pattern-bg relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -1400,6 +1400,29 @@ export default function Order() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Mobile sticky cart bar — visible whenever cart has items, always reachable while scrolling */}
+      {cart.length > 0 && (
+        <button
+          onClick={goToCheckout}
+          data-testid="button-mobile-cart-checkout"
+          className="lg:hidden fixed bottom-3 inset-x-3 z-50 bg-primary text-primary-foreground px-4 py-3.5 rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-between gap-3 active:scale-[0.99] transition-transform"
+          style={{ paddingBottom: "calc(0.875rem + env(safe-area-inset-bottom, 0px))" }}
+        >
+          <span className="flex items-center gap-2.5 min-w-0">
+            <span className="relative inline-flex shrink-0">
+              <ShoppingCart size={20} />
+              <span className="absolute -top-1.5 -right-2 bg-background text-foreground text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full inline-flex items-center justify-center leading-none">
+                {cart.reduce((n, item) => n + item.quantity, 0)}
+              </span>
+            </span>
+            <span className="font-semibold text-base tabular-nums">{formatPrice(total)}</span>
+          </span>
+          <span className="flex items-center gap-2 font-medium text-sm shrink-0">
+            {t.order.checkout} <ArrowRight size={16} />
+          </span>
+        </button>
       )}
     </div>
   );
