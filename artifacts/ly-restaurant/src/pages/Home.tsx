@@ -28,11 +28,16 @@ export default function Home() {
     <div className="w-full min-w-0">
       {/* Hero — branded smoke canvas (logo embedded), CTAs sit just below the wordmark */}
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center justify-center bg-background">
-        <img
-          src="/lys-hero.jpg"
-          alt="LYS Noodle Box"
+        <video
+          src="/lys-hero.mp4"
+          poster="/lys-hero.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="LYS Noodle Box"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
-          draggable={false}
         />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-[28vh] sm:pt-[30vh]">
           <div className="flex flex-wrap justify-center gap-4">
