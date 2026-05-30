@@ -58,7 +58,7 @@ export default function Checkout() {
 
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customer.name || !customer.phone) return;
+    if (!customer.name || !customer.phone || !customer.email) return;
     setStep("payment");
   };
 
@@ -173,6 +173,7 @@ export default function Checkout() {
                     <label className="block text-sm font-medium text-foreground mb-1.5">{t.checkout.emailLabel}</label>
                     <input
                       type="email"
+                      required
                       value={customer.email}
                       onChange={e => setCustomer(p => ({ ...p, email: e.target.value }))}
                       className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"

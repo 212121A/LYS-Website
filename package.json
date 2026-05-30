@@ -20,6 +20,7 @@
     "@supabase/supabase-js": "^2.103.0",
     "express-rate-limit": "^8.3.2",
     "micro": "^10.0.1",
+    "resend": "^4.0.0",
     "stripe": "^22.0.0"
   }
 }
