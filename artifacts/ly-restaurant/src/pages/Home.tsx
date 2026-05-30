@@ -11,8 +11,8 @@ const noodleRiceBoxImg = "/lys-card-reisbox.png";
 export default function Home() {
   const { t } = useLanguage();
 
-  const categories = [
-    { img: sodaImg, title: t.home.springRolls, desc: t.home.springRollsDesc },
+  const categories: { img: string; video?: string; title: string; desc: string }[] = [
+    { img: sodaImg, video: "/lys-card-soda.mp4", title: t.home.springRolls, desc: t.home.springRollsDesc },
     { img: matchaImg, title: t.home.wokTitle, desc: t.home.wokDesc },
     { img: noodleRiceBoxImg, title: t.home.curry, desc: t.home.curryDesc },
   ];
@@ -91,7 +91,20 @@ export default function Home() {
             <Link key={item.title} href="/menu" data-testid={`card-category-${item.title}`}>
               <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full cursor-pointer">
                 <div className="aspect-[3/4] overflow-hidden bg-muted">
-                  <img src={item.img} alt={item.title} className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500" />
+                  {item.video ? (
+                    <video
+                      src={item.video}
+                      poster={item.img}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500"
+                    />
+                  ) : (
+                    <img src={item.img} alt={item.title} className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500" />
+                  )}
                 </div>
                 <div className="p-5">
                   <h3 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
