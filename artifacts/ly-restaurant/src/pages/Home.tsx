@@ -161,8 +161,21 @@ export default function Home() {
       {/* Testimonial */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-[3/4] shadow-lg">
-            <img src={restaurantExteriorImg} alt="LYS Noodle Box Außenansicht" className="w-full h-full object-cover object-center" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl overflow-hidden aspect-[3/4] shadow-lg">
+              <img src={restaurantExteriorImg} alt="LYS Noodle Box Außenansicht" className="w-full h-full object-cover object-center" />
+            </div>
+            <div className="rounded-2xl overflow-hidden aspect-[3/4] shadow-lg bg-muted">
+              <video
+                src="/lys-promo.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
           </div>
           <div>
             <div className="flex items-center gap-1 mb-5">
