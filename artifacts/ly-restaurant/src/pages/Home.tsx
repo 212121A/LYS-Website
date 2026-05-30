@@ -26,39 +26,22 @@ export default function Home() {
 
   return (
     <div className="w-full min-w-0">
-      {/* Hero — product spread photo with top-anchored LYS wordmark + CTAs */}
-      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-start bg-background">
+      {/* Hero — branded smoke canvas (logo embedded), CTAs sit just below the wordmark */}
+      <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center justify-center bg-background">
         <img
-          src="/lys-hero.png"
+          src="/lys-hero.jpg"
           alt="LYS Noodle Box"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
           draggable={false}
         />
-        {/* Soft top wash so the wordmark + CTAs sit on a calm surface */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 h-2/5 z-10 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(238,228,212,0.85) 0%, rgba(238,228,212,0.5) 55%, rgba(238,228,212,0) 100%)",
-          }}
-        />
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 lg:pt-16 relative z-20 w-full">
-          <div className="flex flex-col items-center text-center gap-7 sm:gap-9">
-            <img
-              src="/logo.png"
-              alt="LYS Noodle Box"
-              className="w-full max-w-[14rem] sm:max-w-xs lg:max-w-sm h-auto select-none drop-shadow-[0_2px_18px_rgba(255,255,255,0.55)]"
-              draggable={false}
-            />
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5">
-                {t.common.orderNow} <ArrowRight size={18} />
-              </Link>
-              <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-foreground/5 backdrop-blur-sm border border-foreground/30 text-foreground px-9 py-4 rounded-full font-medium text-lg hover:bg-foreground/10 transition-all">
-                {t.common.viewMenu}
-              </Link>
-            </div>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-[28vh] sm:pt-[30vh]">
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5">
+              {t.common.orderNow} <ArrowRight size={18} />
+            </Link>
+            <Link href="/menu" data-testid="button-hero-menu" className="inline-flex items-center gap-2 bg-foreground/5 backdrop-blur-sm border border-foreground/30 text-foreground px-9 py-4 rounded-full font-medium text-lg hover:bg-foreground/10 transition-all">
+              {t.common.viewMenu}
+            </Link>
           </div>
         </div>
       </section>
