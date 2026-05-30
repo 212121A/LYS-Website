@@ -127,7 +127,17 @@ export default function Home() {
       {/* Kitchen banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="rounded-3xl overflow-hidden relative h-72 md:h-96">
-          <img src={kitchenImg} alt="Frische Zutaten in der Küche" className="w-full h-full object-cover" />
+          <video
+            src="/lys-ingredients.mp4"
+            poster={kitchenImg}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label="Frische Zutaten in der Küche"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/58 to-black/18 flex items-center">
             <div className="px-8 md:px-14 max-w-lg rounded-xl py-5 bg-black/22 backdrop-blur-[1px]">
               <p className="text-white/90 text-xs uppercase tracking-widest font-medium mb-2 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">{t.home.freshTag}</p>
