@@ -34,7 +34,7 @@ export default function Home() {
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
           draggable={false}
         />
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-[28vh] sm:pt-[30vh]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-[48vh] sm:pt-[30vh]">
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/order" data-testid="button-hero-order" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5">
               {t.common.orderNow} <ArrowRight size={18} />
