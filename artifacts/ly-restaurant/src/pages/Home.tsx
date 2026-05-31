@@ -5,7 +5,7 @@ const restaurantExteriorImg = "/lys-storefront-photo.jpg";
 const kitchenImg = "/lys-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const sodaImg = "/lys-card-soda.jpg";
+const coffeeImg = "/lys-card-coffee.jpg";
 const matchaImg = "/lys-card-matcha.jpg";
 const noodleRiceBoxImg = "/lys-card-reisbox.png";
 
@@ -75,7 +75,7 @@ export default function Home() {
   const { t } = useLanguage();
 
   const categories: { img: string; video?: string; title: string; desc: string }[] = [
-    { img: sodaImg, video: "/lys-card-soda.mp4", title: t.home.springRolls, desc: t.home.springRollsDesc },
+    { img: coffeeImg, video: "/lys-card-coffee.mp4", title: t.home.springRolls, desc: t.home.springRollsDesc },
     { img: matchaImg, video: "/lys-card-matcha.mp4", title: t.home.wokTitle, desc: t.home.wokDesc },
     { img: noodleRiceBoxImg, video: "/lys-card-reisbox.mp4", title: t.home.curry, desc: t.home.curryDesc },
   ];
