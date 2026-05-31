@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
 const restaurantExteriorImg = "/lys-storefront-photo.jpg";
@@ -7,6 +8,68 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const sodaImg = "/lys-card-soda.jpg";
 const matchaImg = "/lys-card-matcha.jpg";
 const noodleRiceBoxImg = "/lys-card-reisbox.png";
+
+/**
+ * Card media that first shows the still image, then crossfades to a looping
+ * video about 1.2 s after the card enters the viewport. Image stays mounted
+ * underneath the video so the moment of swap is invisible to the user.
+ */
+function CategoryCardMedia({ img, video, alt }: { img: string; video?: string; alt: string }) {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [showVideo, setShowVideo] = useState(false);
+
+  useEffect(() => {
+    if (!video) return;
+    const el = wrapperRef.current;
+    if (!el) return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            timer = setTimeout(() => {
+              setShowVideo(true);
+              videoRef.current?.play().catch(() => {
+                /* autoplay blocked — image stays, no error to surface */
+              });
+            }, 1200);
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      if (timer) clearTimeout(timer);
+    };
+  }, [video]);
+
+  return (
+    <div ref={wrapperRef} className="relative w-full h-full">
+      <img
+        src={img}
+        alt={alt}
+        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500"
+      />
+      {video ? (
+        <video
+          ref={videoRef}
+          src={video}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+          className={`absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-[opacity,transform] duration-700 ${showVideo ? "opacity-100" : "opacity-0"}`}
+        />
+      ) : null}
+    </div>
+  );
+}
 
 export default function Home() {
   const { t } = useLanguage();
@@ -91,20 +154,7 @@ export default function Home() {
             <Link key={item.title} href="/menu" data-testid={`card-category-${item.title}`}>
               <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full cursor-pointer">
                 <div className="aspect-[3/4] overflow-hidden bg-muted">
-                  {item.video ? (
-                    <video
-                      src={item.video}
-                      poster={item.img}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500"
-                    />
-                  ) : (
-                    <img src={item.img} alt={item.title} className="w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-500" />
-                  )}
+                  <CategoryCardMedia img={item.img} video={item.video} alt={item.title} />
                 </div>
                 <div className="p-5">
                   <h3 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
