@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-const restaurantExteriorImg = "/lys-storefront-photo.jpg";
+import restaurantExteriorImg from "@assets/image_1775647522456.png";
 const kitchenImg = "/lys-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
