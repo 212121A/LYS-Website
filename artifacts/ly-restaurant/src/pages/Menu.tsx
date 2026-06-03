@@ -14,6 +14,12 @@ export default function Menu() {
       label: "Getränkekarte",
       testId: "download-getraenkekarte",
     },
+    {
+      href: "/menus/Allergene_Zusatzstoffe.pdf",
+      filename: "LYS-Allergene-Zusatzstoffe.pdf",
+      label: "Allergene & Zusatzstoffe",
+      testId: "download-allergene",
+    },
   ];
 
   return (
