@@ -40,7 +40,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t.contact.phoneLabel}</p>
-                  <a href="tel:+4971719929983" data-testid="link-phone" className="font-medium text-foreground hover:text-primary transition-colors">
+                  <a href="tel:+4971719929983" data-testid="link-phone" className="inline-flex items-center gap-1.5 font-medium text-primary underline decoration-dotted underline-offset-4 hover:decoration-solid transition-all">
                     07171 / 9929983
                   </a>
                   <p className="text-xs text-muted-foreground mt-0.5">{t.contact.phoneHint}</p>
@@ -173,7 +173,7 @@ export default function Contact() {
 
                 <p className="text-xs text-muted-foreground text-center">
                   {t.contact.quickCallNote}{" "}
-                  <a href="tel:+4971719929983" className="text-primary hover:underline">07171 / 9929983</a>
+                  <a href="tel:+4971719929983" className="text-primary font-medium underline underline-offset-2 hover:opacity-80">07171 / 9929983</a>
                 </p>
               </form>
             )}

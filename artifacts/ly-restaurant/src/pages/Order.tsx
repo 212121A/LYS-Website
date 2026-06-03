@@ -810,9 +810,9 @@ export default function Order() {
                 <a
                   href="tel:+4971719929983"
                   data-testid="link-phone-order"
-                  className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline"
+                  className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-medium text-sm hover:opacity-90 transition-opacity"
                 >
-                  <Phone size={14} />
+                  <Phone size={15} />
                   07171 / 9929983
                 </a>
               </div>
