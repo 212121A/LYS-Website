@@ -556,6 +556,17 @@ export default function Order() {
               <Download size={14} />
               Getränkekarte (PDF)
             </a>
+            <a
+              href="/menus/Allergene_Zusatzstoffe.pdf"
+              download="LYS-Allergene-Zusatzstoffe.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="download-allergene-order"
+              className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-5 py-2.5 rounded-full text-sm font-medium hover:bg-accent hover:-translate-y-0.5 transition-all"
+            >
+              <Download size={14} />
+              Allergene & Zusatzstoffe (PDF)
+            </a>
           </div>
           <div className="mt-6 max-w-3xl rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-red-900">
             <p className="text-sm md:text-base font-semibold">
@@ -633,10 +644,20 @@ export default function Order() {
                               {item.spicy && <Flame size={12} className="text-orange-500 shrink-0" />}
                               {item.vegetarian && <Leaf size={12} className="text-primary shrink-0" />}
                             </div>
+                            {item.halal && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                                Halal <span lang="ar" dir="rtl" className="text-[11px]">حلال</span>
+                              </span>
+                            )}
                           </div>
                           <h3 className="font-medium text-foreground text-sm leading-snug">
                             {mt[item.nameKey as keyof typeof mt] || item.name}
                           </h3>
+                          {item.veggieMix && (
+                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                              {mt.withVariousVeggies}
+                            </p>
+                          )}
                           {(item.descKey || item.description) && (
                             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                               {mt[item.descKey as keyof typeof mt] || item.description}
