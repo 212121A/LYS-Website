@@ -565,7 +565,7 @@ export default function Order() {
         </div>
       </section>
 
-      <div className="sticky top-16 z-30 bg-background/90 backdrop-blur-md border-b border-border">
+      <div className="sticky top-24 z-30 bg-background/90 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-2 py-3 overflow-x-auto scrollbar-hide">
             {categories.map((cat) => (
