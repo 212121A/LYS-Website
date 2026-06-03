@@ -35,6 +35,16 @@ function LegacyCheckoutReturn({
   return null;
 }
 
+function ScrollToTop() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  return null;
+}
+
 function Router() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -69,6 +79,7 @@ function App() {
       <TooltipProvider>
         <LanguageProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <ScrollToTop />
             <Router />
           </WouterRouter>
           <Toaster />
