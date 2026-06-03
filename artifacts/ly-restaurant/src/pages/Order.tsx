@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X, Flame, Leaf, Download } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X, Flame, Leaf, Download, Info } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
+import { ALLERGEN_CODES_BY_ITEM, allergenLabels, allergenUi } from "@/i18n/allergens";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   boxCartId,
   boxCode,
@@ -556,17 +558,6 @@ export default function Order() {
               <Download size={14} />
               Getränkekarte (PDF)
             </a>
-            <a
-              href="/menus/Allergene_Zusatzstoffe.pdf"
-              download="LYS-Allergene-Zusatzstoffe.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="download-allergene-order"
-              className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-5 py-2.5 rounded-full text-sm font-medium hover:bg-accent hover:-translate-y-0.5 transition-all"
-            >
-              <Download size={14} />
-              Allergene & Zusatzstoffe (PDF)
-            </a>
           </div>
           <div className="mt-6 max-w-3xl rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-red-900">
             <p className="text-sm md:text-base font-semibold">
@@ -648,6 +639,41 @@ export default function Order() {
                               <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
                                 Halal <span lang="ar" dir="rtl" className="text-[11px]">حلال</span>
                               </span>
+                            )}
+                            {ALLERGEN_CODES_BY_ITEM[item.id] && (
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <button
+                                    type="button"
+                                    aria-label={allergenUi[lang].show}
+                                    data-testid={`button-allergens-${item.id}`}
+                                    className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
+                                  >
+                                    <Info size={12} />
+                                  </button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  align="start"
+                                  className="w-64"
+                                  data-testid={`popover-allergens-${item.id}`}
+                                >
+                                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                                    {allergenUi[lang].title}
+                                  </p>
+                                  <ul className="mt-2 space-y-1.5">
+                                    {ALLERGEN_CODES_BY_ITEM[item.id].map((code) => (
+                                      <li key={code} className="flex items-start gap-2 text-xs text-foreground">
+                                        <span className="mt-px shrink-0 font-mono text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                          {code}
+                                        </span>
+                                        <span className="leading-snug">
+                                          {allergenLabels[lang][code] ?? code}
+                                        </span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </PopoverContent>
+                              </Popover>
                             )}
                           </div>
                           <h3 className="font-medium text-foreground text-sm leading-snug">
