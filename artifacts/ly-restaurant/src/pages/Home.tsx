@@ -4,6 +4,7 @@ import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
 const restaurantExteriorImg = "/lys-storefront-photo.jpg";
 const kitchenImg = "/lys-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
+import menuT from "@/i18n/menuTranslations";
 
 const coffeeImg = "/lys-card-coffee.jpg";
 const matchaImg = "/lys-card-matcha.jpg";
@@ -72,7 +73,8 @@ function CategoryCardMedia({ img, video, alt }: { img: string; video?: string; a
 }
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const mt = menuT[lang];
 
   const categories: { img: string; video?: string; title: string; desc: string }[] = [
     { img: coffeeImg, video: "/lys-card-coffee.mp4", title: t.home.springRolls, desc: t.home.springRollsDesc },
@@ -206,7 +208,7 @@ export default function Home() {
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">{t.home.boxTitle}</h2>
               <p className="text-muted-foreground leading-relaxed mb-6">{t.home.boxDesc}</p>
               <div className="flex flex-wrap gap-3 mb-8">
-                {[t.home.boxSauce1, t.home.boxSauce2, t.home.boxSauce3].map((sauce) => (
+                {[mt.catSoy, mt.catSweetSour, mt.catThaiCurry, mt.catPeanut, mt.catMatchaSauce, mt.catMangoSauce].map((sauce) => (
                   <span key={sauce} className="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-full border border-primary/20 font-medium">{sauce}</span>
                 ))}
               </div>
