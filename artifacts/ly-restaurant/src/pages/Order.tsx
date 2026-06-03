@@ -808,12 +808,12 @@ export default function Order() {
               <div className="mt-4 bg-card border border-border rounded-xl p-4 text-center">
                 <p className="text-xs text-muted-foreground mb-2">{t.order.phoneAlt}</p>
                 <a
-                  href="tel:xxxxxx"
+                  href="tel:+4971719929983"
                   data-testid="link-phone-order"
                   className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline"
                 >
                   <Phone size={14} />
-                  xxxxxx
+                  07171 / 9929983
                 </a>
               </div>
 
