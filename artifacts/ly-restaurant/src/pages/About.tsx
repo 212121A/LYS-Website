@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Heart, Leaf, Users, MapPin, ArrowRight, ImageIcon } from "lucide-react";
-import restaurantExteriorImg from "@assets/image_1775647522456.png";
+const restaurantExteriorImg = "/lys-storefront-photo.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function About() {
