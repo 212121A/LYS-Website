@@ -46,7 +46,7 @@ export default function About() {
           <div>
             <p className="text-primary text-xs font-medium tracking-[0.3em] uppercase mb-3">{t.about.whoTag}</p>
             <h2 className="font-serif text-3xl font-bold text-foreground mb-6">{t.about.whoTitle}</h2>
-            <div className="space-y-4 text-muted-foreground leading-relaxed">
+            <div className="space-y-4 text-foreground/80 leading-relaxed">
               <p>{t.about.whoP1}</p>
               <p>{t.about.whoP2}</p>
               <p>{t.about.whoP3}</p>
