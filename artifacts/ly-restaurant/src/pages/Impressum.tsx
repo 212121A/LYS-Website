@@ -30,8 +30,8 @@ export default function Impressum() {
             </h2>
           </div>
           <div className="space-y-1 text-foreground">
-            <p className="font-medium">Manh Chung Tran</p>
-            <p className="text-muted-foreground text-sm">LYS Noodle & Rice (Einzelunternehmen)</p>
+            <p className="font-medium">LYS Noodle Box</p>
+            <p className="text-muted-foreground text-sm">Inhaber: Manh Chung Tran</p>
           </div>
           <div className="mt-4 flex items-start gap-2 text-muted-foreground text-sm">
             <MapPin size={15} className="mt-0.5 shrink-0 text-primary" />
@@ -58,10 +58,12 @@ export default function Impressum() {
               <Phone size={15} className="shrink-0 text-primary" />
               <span className="text-muted-foreground">
                 Telefon:{" "}
-                <span className="text-foreground font-medium">
-                  {/* TODO: Telefonnummer eintragen — Pflichtangabe */}
-                  [Telefonnummer bitte ergänzen]
-                </span>
+                <a
+                  href="tel:+4971719929983"
+                  className="text-primary hover:underline font-medium"
+                >
+                  07171 / 9929983
+                </a>
               </span>
             </li>
             <li className="flex items-center gap-2">
@@ -92,12 +94,7 @@ export default function Impressum() {
           <p className="text-muted-foreground text-sm leading-relaxed">
             Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:
             <br />
-            <span className="text-foreground font-medium">
-              {/* TODO: USt-IdNr. eintragen (Format DE123456789) oder bei Kleinunternehmern:
-                  "Kleinunternehmer gemäß § 19 UStG, daher wird keine Umsatzsteuer ausgewiesen."
-                  und Steuernummer angeben. */}
-              [USt-IdNr. bzw. Steuernummer bitte ergänzen]
-            </span>
+            <span className="text-foreground font-medium">DE461819020</span>
           </p>
         </section>
 

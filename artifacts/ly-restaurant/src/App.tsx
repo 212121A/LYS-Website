@@ -17,6 +17,7 @@ import CheckoutSuccess from "@/pages/CheckoutSuccess";
 import Success from "@/pages/Success";
 import Cancel from "@/pages/Cancel";
 import Impressum from "@/pages/Impressum";
+import Datenschutz from "@/pages/Datenschutz";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ function Router() {
           <Route path="/success" component={Success} />
           <Route path="/cancel" component={Cancel} />
           <Route path="/impressum" component={Impressum} />
+          <Route path="/datenschutz" component={Datenschutz} />
           <Route path="/bestellung">
             {() => <LegacyCheckoutReturn status="cancel" />}
           </Route>
