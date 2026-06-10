@@ -30,7 +30,7 @@ export default function Impressum() {
             </h2>
           </div>
           <div className="space-y-1 text-foreground">
-            <p className="font-medium">LYS Noodle Box</p>
+            <p className="font-medium">LYS Noodles & Rice</p>
             <p className="text-muted-foreground text-sm">Inhaber: Manh Chung Tran</p>
           </div>
           <div className="mt-4 flex items-start gap-2 text-muted-foreground text-sm">

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Transaktionale / private Seiten nicht indexieren
+Disallow: /checkout
+Disallow: /success
+Disallow: /cancel
+Disallow: /bestellung
+
+Sitemap: https://lysnoodleandrice.com/sitemap.xml

@@ -95,7 +95,7 @@ export default function Home() {
       <section className="relative w-full min-w-0 overflow-hidden min-h-[85vh] flex items-center justify-center bg-background">
         <img
           src="/lys-hero.jpg"
-          alt="LYS Noodle Box"
+          alt="LYS Noodles & Rice"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
           draggable={false}
         />

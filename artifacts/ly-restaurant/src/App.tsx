@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import RouteSeo from "@/components/RouteSeo";
 import Home from "@/pages/Home";
 import Menu from "@/pages/Menu";
 import Order from "@/pages/Order";
@@ -50,6 +51,7 @@ function ScrollToTop() {
 function Router() {
   return (
     <div className="min-h-screen flex flex-col">
+      <RouteSeo />
       <Navbar />
       <main className="flex-1">
         <Switch>

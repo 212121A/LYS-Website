@@ -87,7 +87,7 @@ export default function Datenschutz() {
             ist:
           </p>
           <div className="text-foreground">
-            <p className="font-medium">LYS Noodle Box</p>
+            <p className="font-medium">LYS Noodles & Rice</p>
             <p>Inhaber: Manh Chung Tran</p>
             <p>Kappelgasse 2</p>
             <p>73525 Schwäbisch Gmünd</p>

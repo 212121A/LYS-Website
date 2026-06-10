@@ -274,7 +274,7 @@ export default function Checkout() {
                           intent: "CAPTURE",
                           purchase_units: [{
                             amount: { value: grandTotal.toFixed(2), currency_code: "EUR" },
-                            description: `LYS Noodle Box - ${customer.name}`,
+                            description: `LYS Noodles & Rice - ${customer.name}`,
                           }],
                         })
                       }

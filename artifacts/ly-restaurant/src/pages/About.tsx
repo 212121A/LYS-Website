@@ -25,7 +25,7 @@ export default function About() {
       <section className="relative overflow-hidden min-h-[60vh] flex items-end bg-foreground">
         <img
           src={restaurantExteriorImg}
-          alt="Ly Restaurant Außenansicht"
+          alt="LYS Noodles & Rice – Außenansicht des Restaurants in Schwäbisch Gmünd"
           className="absolute inset-0 w-full h-full object-cover md:object-contain opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
@@ -55,7 +55,7 @@ export default function About() {
           <div className="rounded-2xl overflow-hidden h-80">
             <img
               src="/lys-inhaber.jpg"
-              alt="Herr Tran, Inhaber von LYS Noodle & Rice"
+              alt="Herr Tran, Inhaber von LYS Noodles & Rice"
               className="w-full h-full object-cover"
             />
           </div>
