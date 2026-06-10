@@ -1,4 +1,4 @@
-import { Info, ListChecks, FlaskConical } from "lucide-react";
+import { ListChecks, FlaskConical } from "lucide-react";
 import { ALLERGENS, ADDITIVES, DISH_GROUPS, type LegendEntry } from "@/data/allergens";
 
 const CODE_LABELS: Record<string, string> = Object.fromEntries(
@@ -57,19 +57,6 @@ export default function Allergene() {
       </section>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-10">
-        {/* Hinweis */}
-        <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5">
-          <Info size={18} className="text-primary mt-0.5 shrink-0" />
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Die folgenden Angaben beziehen sich auf die jeweils nummerierten
-            Allergene und Zusatzstoffe. Trotz sorgfältiger Zubereitung können in
-            unserer Küche Spuren weiterer allergener Stoffe nicht vollständig
-            ausgeschlossen werden. Bei Fragen oder Unverträglichkeiten sprich
-            uns gerne direkt an &ndash; verbindliche Auskunft erhältst du jederzeit
-            im Restaurant.
-          </p>
-        </div>
-
         {/* Legenden */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Legend
