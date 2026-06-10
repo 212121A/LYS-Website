@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, Clock, MapPin, Phone, Utensils, Star } from "lucide-react";
-import restaurantExteriorImg from "@assets/image_1775647522456.png";
 const kitchenImg = "/lys-ingredients.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
@@ -9,6 +8,7 @@ import menuT from "@/i18n/menuTranslations";
 const coffeeImg = "/lys-card-coffee.jpg";
 const matchaImg = "/lys-card-matcha.jpg";
 const noodleRiceBoxImg = "/lys-card-reisbox.png";
+const storefrontImg = "/lys-storefront-photo.jpg";
 
 /**
  * Card media that first shows the still image, then crossfades to a looping
@@ -238,7 +238,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-2xl overflow-hidden aspect-[3/4] shadow-lg">
-              <img src={restaurantExteriorImg} alt="LYS Noodle Box Außenansicht" className="w-full h-full object-cover object-center" />
+              <img src={storefrontImg} alt="LYS Storefront bei Dämmerung" className="w-full h-full object-cover object-center" />
             </div>
             <div className="rounded-2xl overflow-hidden aspect-[3/4] shadow-lg bg-muted">
               <video
