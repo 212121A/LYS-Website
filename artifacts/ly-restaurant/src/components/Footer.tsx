@@ -72,7 +72,9 @@ export default function Footer() {
             <Link href="/datenschutz" className="hover:text-background transition-colors" data-testid="link-datenschutz">
               Datenschutz
             </Link>
-            <span>Allergiker-Information auf Anfrage</span>
+            <Link href="/allergene" className="hover:text-background transition-colors" data-testid="link-allergene">
+              Allergene &amp; Zusatzstoffe
+            </Link>
           </div>
         </div>
       </div>

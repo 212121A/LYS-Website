@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
-import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X, Flame, Leaf, Download } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X, Flame, Leaf, Download, Info } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
 import { isPromoActive, applyPromo, PROMO_PERCENT, PROMO_END_LABEL } from "@/lib/promo";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -559,6 +559,14 @@ export default function Order() {
               <Download size={14} />
               Getränkekarte (PDF)
             </a>
+            <Link
+              href="/allergene"
+              data-testid="link-allergene-order"
+              className="inline-flex items-center gap-2 bg-background border border-border text-foreground px-5 py-2.5 rounded-full text-sm font-medium hover:bg-accent hover:-translate-y-0.5 transition-all"
+            >
+              <Info size={14} />
+              Allergene &amp; Zusatzstoffe
+            </Link>
           </div>
           <div className="mt-6 max-w-3xl rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-red-900">
             <p className="text-sm md:text-base font-semibold">
