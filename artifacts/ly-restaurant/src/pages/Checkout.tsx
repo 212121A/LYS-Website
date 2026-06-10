@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ArrowLeft, Lock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { isPromoActive, applyPromo, PROMO_PERCENT } from "@/lib/promo";
 
 interface CartItem {
   id: string;
@@ -52,7 +53,9 @@ export default function Checkout() {
   }, [navigate]);
 
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const grandTotal = subtotal;
+  const promoActive = isPromoActive();
+  const grandTotal = applyPromo(subtotal);
+  const promoDiscount = subtotal - grandTotal;
 
   const fmt = (v: number) => v.toFixed(2).replace(".", ",") + " €";
 
@@ -345,6 +348,12 @@ export default function Checkout() {
                 <span>{t.checkout.subtotal}</span>
                 <span>{fmt(subtotal)}</span>
               </div>
+              {promoActive && (
+                <div className="flex justify-between text-sm font-medium text-primary">
+                  <span>Eröffnungsrabatt (−{PROMO_PERCENT} %)</span>
+                  <span>−{fmt(promoDiscount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-base font-semibold text-foreground pt-1 border-t border-border">
                 <span>{t.checkout.total}</span>
                 <span>{fmt(grandTotal)}</span>
