@@ -26,7 +26,7 @@ export default function About() {
         <img
           src={restaurantExteriorImg}
           alt="Ly Restaurant Außenansicht"
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          className="absolute inset-0 w-full h-full object-cover md:object-contain opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 pt-32">
