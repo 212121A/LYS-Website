@@ -34,9 +34,41 @@ function parseItems(metadata) {
   return []
 }
 
-function shortOrderNumber(sessionId) {
-  const tail = String(sessionId || "").slice(-6).toUpperCase()
-  return `LYS-${tail || "000000"}`
+// Echte Bestellnummer aus Supabase holen (von n8n via order_counter erzeugt
+// und nach orders.order_number geschrieben — dieselbe Quelle wie die
+// Success-Seite). Kurzes Polling, weil n8n die Zeile erst ~Sekunden nach dem
+// checkout.session.completed-Event schreibt. Bewusst deutlich unter Stripes
+// ~10s Webhook-Timeout. Gibt null zurueck, wenn (noch) nicht vorhanden — dann
+// wird KEINE (falsche) Nummer in die Mail geschrieben.
+async function fetchOrderNumber(sessionId, attempts = 5, delayMs = 1200) {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    console.warn("[order_number] Supabase env fehlt — kann Nummer nicht lesen")
+    return null
+  }
+  const endpoint = `${url}/rest/v1/orders?stripe_session_id=eq.${encodeURIComponent(
+    sessionId,
+  )}&select=order_number`
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(endpoint, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      })
+      if (res.ok) {
+        const rows = await res.json()
+        const num = Array.isArray(rows) ? rows[0]?.order_number : null
+        if (num !== undefined && num !== null && num !== "") return String(num)
+      }
+    } catch (err) {
+      console.error("[order_number] fetch error:", err?.message ?? err)
+    }
+    if (i < attempts - 1) {
+      await new Promise((r) => setTimeout(r, delayMs))
+    }
+  }
+  console.warn("[order_number] nicht rechtzeitig gefunden fuer session", sessionId)
+  return null
 }
 
 function formatEuros(cents) {
@@ -62,6 +94,10 @@ function renderEmailHtml({ orderNumber, name, items, total, note, receiptUrl }) 
     ? `<tr><td align="center" style="padding-top:24px;"><a href="${escapeHtml(receiptUrl)}" target="_blank" style="display:inline-block;background:#a87146;color:#fbf3e1;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:0.5px;padding:13px 28px;border-radius:999px;">Stripe-Zahlungsbeleg ansehen</a></td></tr>`
     : ""
 
+  const orderNumberBlock = orderNumber
+    ? `<tr><td style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#3b2f24;padding-bottom:24px;">${escapeHtml(orderNumber)}</td></tr>`
+    : `<tr><td style="font-size:14px;color:#6b5947;line-height:1.5;padding-bottom:24px;">Deine Bestellnummer wird dir auf dem Bestätigungsbildschirm angezeigt.</td></tr>`
+
   return `<!doctype html>
 <html lang="de">
   <body style="margin:0;padding:0;background:#e9ddc7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
@@ -78,9 +114,7 @@ function renderEmailHtml({ orderNumber, name, items, total, note, receiptUrl }) 
             <tr>
               <td style="font-size:11px;letter-spacing:3px;color:#a87146;text-transform:uppercase;padding-bottom:6px;">Bestellbestätigung</td>
             </tr>
-            <tr>
-              <td style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#3b2f24;padding-bottom:24px;">${escapeHtml(orderNumber)}</td>
-            </tr>
+            ${orderNumberBlock}
             <tr>
               <td style="font-size:15px;color:#3b2f24;padding-bottom:8px;">Hallo ${escapeHtml(name || "")},</td>
             </tr>
@@ -157,7 +191,7 @@ export default async function handler(req, res) {
       try {
         const metadata = session.metadata || {}
         const items = parseItems(metadata)
-        const orderNumber = shortOrderNumber(session.id)
+        const orderNumber = await fetchOrderNumber(session.id)
         const total = formatEuros(session.amount_total)
         const name = metadata.customerName || session.customer_details?.name || ""
         const note = metadata.note || ""
@@ -186,7 +220,9 @@ export default async function handler(req, res) {
         await resend.emails.send({
           from: fromAddress,
           to: email,
-          subject: `Deine Bestellung bei LYS Noodle Box — ${orderNumber}`,
+          subject: orderNumber
+            ? `Deine Bestellung bei LYS Noodle Box — ${orderNumber}`
+            : "Deine Bestellung bei LYS Noodle Box",
           html: renderEmailHtml({ orderNumber, name, items, total, note, receiptUrl }),
         })
         console.log("Confirmation email sent to", email, "order", orderNumber)
