@@ -44,7 +44,7 @@ function formatEuros(cents) {
   return `${value} €`
 }
 
-function renderEmailHtml({ orderNumber, name, items, total, note }) {
+function renderEmailHtml({ orderNumber, name, items, total, note, receiptUrl }) {
   const itemRows = items.length
     ? items
         .map(
@@ -56,6 +56,10 @@ function renderEmailHtml({ orderNumber, name, items, total, note }) {
 
   const noteBlock = note
     ? `<tr><td style="padding-top:18px;font-size:13px;color:#6b5947;line-height:1.5;"><strong style="color:#3b2f24;">Anmerkung:</strong> ${escapeHtml(note)}</td></tr>`
+    : ""
+
+  const receiptBlock = receiptUrl
+    ? `<tr><td align="center" style="padding-top:24px;"><a href="${escapeHtml(receiptUrl)}" target="_blank" style="display:inline-block;background:#a87146;color:#fbf3e1;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:0.5px;padding:13px 28px;border-radius:999px;">Stripe-Zahlungsbeleg ansehen</a></td></tr>`
     : ""
 
   return `<!doctype html>
@@ -105,6 +109,7 @@ function renderEmailHtml({ orderNumber, name, items, total, note }) {
               </td>
             </tr>
             ${noteBlock}
+            ${receiptBlock}
             <tr>
               <td style="padding-top:32px;font-size:13px;color:#7a6a55;line-height:1.6;text-align:center;">Bei Fragen einfach auf diese E-Mail antworten.<br>Wir freuen uns auf dich!</td>
             </tr>
@@ -157,12 +162,32 @@ export default async function handler(req, res) {
         const name = metadata.customerName || session.customer_details?.name || ""
         const note = metadata.note || ""
 
+        // Stripe-Zahlungsbeleg (gehostete Quittung) holen — best effort.
+        // receipt_url haengt am Charge, nicht an der Session; daher den
+        // PaymentIntent mit latest_charge expanden. Schlaegt das fehl, geht
+        // die Mail trotzdem raus, nur ohne Beleg-Link.
+        let receiptUrl = null
+        try {
+          const piId =
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : session.payment_intent?.id
+          if (piId) {
+            const pi = await stripe.paymentIntents.retrieve(piId, {
+              expand: ["latest_charge"],
+            })
+            receiptUrl = pi.latest_charge?.receipt_url ?? null
+          }
+        } catch (err) {
+          console.error("Could not fetch Stripe receipt_url:", err?.message ?? err)
+        }
+
         const resend = new Resend(apiKey)
         await resend.emails.send({
           from: fromAddress,
           to: email,
           subject: `Deine Bestellung bei LYS Noodle Box — ${orderNumber}`,
-          html: renderEmailHtml({ orderNumber, name, items, total, note }),
+          html: renderEmailHtml({ orderNumber, name, items, total, note, receiptUrl }),
         })
         console.log("Confirmation email sent to", email, "order", orderNumber)
       } catch (err) {
