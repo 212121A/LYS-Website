@@ -21,6 +21,12 @@ const API_BASE_URL = (
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "sb";
 const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
 
+// PayPal ist noch nicht produktionsreif: Der Preis kommt aktuell aus dem Browser
+// (keine serverseitige Preishoheit) und PayPal-Bestellungen erreichen das
+// Küchen-Dashboard nicht. Bis zur sauberen serverseitigen Anbindung kurz vor
+// Release nur Stripe anbieten. Zum Reaktivieren: auf true setzen.
+const PAYPAL_ENABLED = false;
+
 export default function Checkout() {
   const { t } = useLanguage();
   const [, navigate] = useLocation();
@@ -292,6 +298,7 @@ export default function Checkout() {
                   <Lock size={16} className="text-primary" /> {t.checkout.securePayment}
                 </h2>
                 <p className="text-sm text-muted-foreground mb-5">{t.checkout.payment}</p>
+                {PAYPAL_ENABLED && (
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <button
                     type="button"
@@ -324,8 +331,9 @@ export default function Checkout() {
                     PayPal
                   </button>
                 </div>
+                )}
 
-                {paymentMethod === "stripe" ? (
+                {(!PAYPAL_ENABLED || paymentMethod === "stripe") ? (
                   <>
                     <button
                       type="button"
