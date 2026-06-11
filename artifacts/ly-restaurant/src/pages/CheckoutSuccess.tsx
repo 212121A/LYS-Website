@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "wouter";
-import { CheckCircle, Home, ShoppingBag } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
@@ -9,6 +9,7 @@ interface CheckoutContext {
   customerName?: string;
   customerPhone?: string;
   orderType?: "pickup" | "delivery";
+  pickupTime?: string;
   total?: number;
   createdAt?: number;
 }
@@ -63,6 +64,15 @@ export default function CheckoutSuccess() {
             <span className="text-foreground font-medium">Bestellart:</span>{" "}
             {context.orderType === "delivery" ? t.checkout.delivery : t.checkout.pickup}
           </p>
+          {context.pickupTime ? (
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+              <Clock size={14} className="text-primary" />
+              <span className="text-foreground font-medium">{t.checkout.pickupSummaryLabel}:</span>{" "}
+              {/^\d{2}:\d{2}$/.test(context.pickupTime)
+                ? `${context.pickupTime} Uhr`
+                : context.pickupTime}
+            </p>
+          ) : null}
           {total ? (
             <p className="text-sm text-muted-foreground">
               <span className="text-foreground font-medium">Bezahlt:</span> {total}

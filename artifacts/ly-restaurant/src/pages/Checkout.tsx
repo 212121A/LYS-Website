@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft, Lock, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isPromoActive, applyPromo, PROMO_PERCENT } from "@/lib/promo";
+import { isOpenNow, getPickupSlots, ASAP_PICKUP_VALUE } from "@/lib/openingHours";
 
 interface CartItem {
   id: string;
@@ -31,6 +32,16 @@ export default function Checkout() {
   );
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
+
+  // Öffnungsstatus + Abhol-Slots einmalig beim Mount berechnen (Europe/Berlin).
+  const storeOpen = useMemo(() => isOpenNow(), []);
+  const pickupSlots = useMemo(() => getPickupSlots(), []);
+  const [pickupMode, setPickupMode] = useState<"asap" | "time">("asap");
+  const [pickupSlot, setPickupSlot] = useState<string>("");
+
+  // Wert für orders.pickup_time: konkrete Uhrzeit oder fester ASAP-String.
+  const pickupTime =
+    pickupMode === "time" && pickupSlot ? pickupSlot : ASAP_PICKUP_VALUE;
 
   useEffect(() => {
     const saved = localStorage.getItem("lys_cart");
@@ -75,6 +86,7 @@ export default function Checkout() {
         customerName: customer.name,
         customerPhone: customer.phone,
         orderType: "pickup",
+        pickupTime,
         total: grandTotal,
         createdAt: Date.now(),
       }),
@@ -101,6 +113,7 @@ export default function Checkout() {
           note: customer.note,
           origin: window.location.origin,
           currency: "eur",
+          metadata: { pickup_time: pickupTime },
         }),
       });
 
@@ -127,6 +140,24 @@ export default function Checkout() {
         <div className="text-center">
           <p className="text-muted-foreground mb-4">{t.checkout.cartEmpty}</p>
           <Link href="/order" className="text-primary font-medium hover:underline">{t.checkout.cartEmptyLink}</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!storeOpen) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="max-w-md text-center bg-card border border-border rounded-2xl p-8">
+          <Clock className="mx-auto mb-4 text-primary" size={28} />
+          <h1 className="font-serif text-2xl font-bold text-foreground mb-2">{t.checkout.closedTitle}</h1>
+          <p className="text-sm text-muted-foreground mb-5">{t.checkout.closedDesc}</p>
+          <div className="text-sm text-foreground space-y-1 mb-6">
+            <p>{t.contact.hoursMoSa}</p>
+            <p>{t.contact.hoursFrSa}</p>
+            <p>{t.contact.hoursSun}</p>
+          </div>
+          <Link href="/order" className="text-primary font-medium hover:underline">{t.checkout.backToOrder}</Link>
         </div>
       </div>
     );
@@ -193,6 +224,52 @@ export default function Checkout() {
                       placeholder={t.checkout.notesPlaceholder}
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Abholzeit (nur heute, innerhalb der Öffnungszeiten) */}
+              <div className="bg-card border border-border rounded-2xl p-6">
+                <h2 className="font-serif text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Clock size={18} className="text-primary" /> {t.checkout.pickupTimeLabel}
+                </h2>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="pickupMode"
+                      checked={pickupMode === "asap"}
+                      onChange={() => setPickupMode("asap")}
+                      className="accent-primary"
+                    />
+                    <span className="text-sm text-foreground">{t.checkout.pickupAsap}</span>
+                  </label>
+                  {pickupSlots.length > 0 && (
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="pickupMode"
+                        checked={pickupMode === "time"}
+                        onChange={() => {
+                          setPickupMode("time");
+                          if (!pickupSlot) setPickupSlot(pickupSlots[0]);
+                        }}
+                        className="accent-primary"
+                      />
+                      <span className="text-sm text-foreground">{t.checkout.pickupSpecificTime}</span>
+                    </label>
+                  )}
+                  {pickupMode === "time" && pickupSlots.length > 0 && (
+                    <select
+                      value={pickupSlot || pickupSlots[0]}
+                      onChange={(e) => setPickupSlot(e.target.value)}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                    >
+                      {pickupSlots.map((s) => (
+                        <option key={s} value={s}>{s} Uhr</option>
+                      ))}
+                    </select>
+                  )}
+                  <p className="text-xs text-muted-foreground">{t.checkout.pickupTimeHint}</p>
                 </div>
               </div>
 
@@ -286,6 +363,7 @@ export default function Checkout() {
                             customerName: customer.name,
                             customerPhone: customer.phone,
                             orderType: "pickup",
+                            pickupTime,
                             total: grandTotal,
                             createdAt: Date.now(),
                           }),
@@ -358,6 +436,15 @@ export default function Checkout() {
                 <span>{t.checkout.total}</span>
                 <span>{fmt(grandTotal)}</span>
               </div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between text-sm border-t border-border pt-4">
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <Clock size={13} /> {t.checkout.pickupSummaryLabel}
+              </span>
+              <span className="font-medium text-foreground">
+                {pickupMode === "time" ? `${pickupTime} Uhr` : t.checkout.pickupAsap}
+              </span>
             </div>
 
             <div className="mt-5 flex items-center gap-2 text-xs text-muted-foreground">
