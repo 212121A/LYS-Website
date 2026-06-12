@@ -568,11 +568,6 @@ export default function Order() {
               Allergene &amp; Zusatzstoffe
             </Link>
           </div>
-          <div className="mt-6 max-w-3xl rounded-xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-red-900">
-            <p className="text-sm md:text-base font-semibold">
-              Wichtiger Hinweis: Wir öffnen am 12.06.2026. Aktuell werden keine Bestellungen angenommen – bitte nicht bestellen.
-            </p>
-          </div>
           {promoActive && (
             <div className="mt-4 max-w-3xl rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
               <p className="text-sm md:text-base font-semibold text-primary">
