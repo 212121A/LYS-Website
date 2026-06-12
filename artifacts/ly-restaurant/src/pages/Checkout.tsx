@@ -297,7 +297,6 @@ export default function Checkout() {
                 <h2 className="font-serif text-xl font-bold text-foreground mb-5 flex items-center gap-2">
                   <Lock size={16} className="text-primary" /> {t.checkout.securePayment}
                 </h2>
-                <p className="text-sm text-muted-foreground mb-5">{t.checkout.payment}</p>
                 <p className="mb-5 rounded-xl border border-border bg-accent/50 px-4 py-3 text-xs text-foreground">
                   <strong>Hinweis:</strong> Über die Website aufgegebene Bestellungen können nicht storniert werden.
                 </p>
