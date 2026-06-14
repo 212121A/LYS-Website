@@ -23,17 +23,20 @@ interface OpeningWindow {
 }
 
 /**
- * Bestellannahme-Zeitfenster je Wochentag (0 = So … 6 = Sa):
- * täglich 10:30–22:00.
+ * Bestellannahme-Zeitfenster je Wochentag (0 = So … 6 = Sa) — identisch zu den
+ * Öffnungszeiten: Mo–Do 11:00–21:30, Fr–Sa 11:00–22:00, So 13:00–20:00.
+ *
+ * Feiertage gelten laut Aushang wie Sonntag (13:00–20:00), werden hier aber
+ * mangels Kalender NICHT erkannt — an Feiertagen greifen die Wochentags-Zeiten.
  */
 const OPENING_HOURS: Record<number, OpeningWindow> = {
-  0: { open: 10 * 60 + 30, close: 22 * 60 }, // So
-  1: { open: 10 * 60 + 30, close: 22 * 60 }, // Mo
-  2: { open: 10 * 60 + 30, close: 22 * 60 }, // Di
-  3: { open: 10 * 60 + 30, close: 22 * 60 }, // Mi
-  4: { open: 10 * 60 + 30, close: 22 * 60 }, // Do
-  5: { open: 10 * 60 + 30, close: 22 * 60 }, // Fr
-  6: { open: 10 * 60 + 30, close: 22 * 60 }, // Sa
+  0: { open: 13 * 60, close: 20 * 60 }, // So
+  1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
+  2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di
+  3: { open: 11 * 60, close: 21 * 60 + 30 }, // Mi
+  4: { open: 11 * 60, close: 21 * 60 + 30 }, // Do
+  5: { open: 11 * 60, close: 22 * 60 }, // Fr
+  6: { open: 11 * 60, close: 22 * 60 }, // Sa
 };
 
 /** Wochentag (0–6) und Minuten seit Mitternacht in Europe/Berlin. */
