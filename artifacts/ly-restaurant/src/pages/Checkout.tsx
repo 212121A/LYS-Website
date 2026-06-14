@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ArrowLeft, Lock, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { isOpenNow, getPickupSlots, ASAP_PICKUP_VALUE } from "@/lib/openingHours";
+import { getOrderingStatus, getPickupSlots, ASAP_PICKUP_VALUE } from "@/lib/openingHours";
 
 interface CartItem {
   id: string;
@@ -39,7 +39,8 @@ export default function Checkout() {
   const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
 
   // Öffnungsstatus + Abhol-Slots einmalig beim Mount berechnen (Europe/Berlin).
-  const storeOpen = useMemo(() => isOpenNow(), []);
+  const orderingStatus = useMemo(() => getOrderingStatus(), []);
+  const storeOpen = orderingStatus === "open";
   const pickupSlots = useMemo(() => getPickupSlots(), []);
   const [pickupMode, setPickupMode] = useState<"asap" | "time">("asap");
   const [pickupSlot, setPickupSlot] = useState<string>("");
@@ -152,8 +153,8 @@ export default function Checkout() {
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="max-w-md text-center bg-card border border-border rounded-2xl p-8">
           <Clock className="mx-auto mb-4 text-primary" size={28} />
-          <h1 className="font-serif text-2xl font-bold text-foreground mb-2">{t.checkout.closedTitle}</h1>
-          <p className="text-sm text-muted-foreground mb-5">{t.checkout.closedDesc}</p>
+          <h1 className="font-serif text-2xl font-bold text-foreground mb-2">{orderingStatus === "ordering-closed" ? t.checkout.orderingClosedTitle : t.checkout.closedTitle}</h1>
+          <p className="text-sm text-muted-foreground mb-5">{orderingStatus === "ordering-closed" ? t.checkout.orderingClosedDesc : t.checkout.closedDesc}</p>
           <div className="text-sm text-foreground space-y-1 mb-6">
             <p>{t.contact.hoursMoSa}</p>
             <p>{t.contact.hoursFrSa}</p>

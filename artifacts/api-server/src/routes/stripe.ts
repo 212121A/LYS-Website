@@ -1,5 +1,6 @@
 import { Router } from "express";
 import Stripe from "stripe";
+import { isOrderingOpen } from "../openingHours";
 
 const router = Router();
 
@@ -52,6 +53,13 @@ router.post("/create-checkout-session", async (req, res) => {
 
     if (itemsFromBody.length === 0) {
       return res.status(400).json({ error: "Cart is empty" });
+    }
+
+    if (!isOrderingOpen()) {
+      return res.status(409).json({
+        error:
+          "Online-Bestellannahme ist aktuell geschlossen (Annahmeschluss 30 Min vor Ladenschluss).",
+      });
     }
 
     const normalizedOrigin =

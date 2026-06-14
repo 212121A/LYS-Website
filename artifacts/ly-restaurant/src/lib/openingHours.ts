@@ -141,17 +141,24 @@ function formatHHMM(totalMinutes: number): string {
 }
 
 /**
- * Nimmt der Laden zur gegebenen Zeit (default: jetzt) noch Bestellungen an?
- * Annahmeschluss ist 30 Min vor Ladenschluss.
+ * Bestellannahme-Status für den Checkout:
+ * - "open": Bestellungen werden angenommen.
+ * - "ordering-closed": Laden noch offen, aber Annahmeschluss erreicht (letzte 30 Min).
+ * - "closed": außerhalb der Öffnungszeiten.
  */
-export function isOpenNow(now: Date = new Date()): boolean {
+export type OrderingStatus = "open" | "ordering-closed" | "closed";
+
+export function getOrderingStatus(now: Date = new Date()): OrderingStatus {
   const parts = berlinNow(now);
   const window = windowFor(parts);
-  if (!window) return false;
-  return (
-    parts.minutes >= window.open &&
-    parts.minutes < window.close - LAST_ORDER_OFFSET_MINUTES
-  );
+  if (!window) return "closed";
+  if (parts.minutes < window.open || parts.minutes >= window.close) {
+    return "closed";
+  }
+  if (parts.minutes >= window.close - LAST_ORDER_OFFSET_MINUTES) {
+    return "ordering-closed";
+  }
+  return "open";
 }
 
 /**

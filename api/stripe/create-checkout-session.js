@@ -1,5 +1,72 @@
 import Stripe from "stripe";
 
+// Bestellannahme-Fenster (Europe/Berlin) — spiegelt
+// artifacts/ly-restaurant/src/lib/openingHours.ts. Server hat Autoritaet:
+// Annahme nur innerhalb der Oeffnungszeiten und bis 30 Min vor Ladenschluss;
+// gesetzliche Feiertage (Baden-Wuerttemberg) gelten wie Sonntag.
+const LAST_ORDER_OFFSET_MINUTES = 30;
+const OPENING_HOURS = {
+  0: { open: 13 * 60, close: 20 * 60 }, // So
+  1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
+  2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di
+  3: { open: 11 * 60, close: 21 * 60 + 30 }, // Mi
+  4: { open: 11 * 60, close: 21 * 60 + 30 }, // Do
+  5: { open: 11 * 60, close: 22 * 60 }, // Fr
+  6: { open: 11 * 60, close: 22 * 60 }, // Sa
+};
+function berlinParts(now) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Berlin",
+    weekday: "short", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(now);
+  const get = (type) => parts.find((p) => p.type === type)?.value ?? "";
+  const weekdayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const hour = Number(get("hour")) % 24;
+  return {
+    weekday: weekdayMap[get("weekday")] ?? 0,
+    minutes: hour * 60 + Number(get("minute")),
+    year: Number(get("year")),
+    month: Number(get("month")),
+    day: Number(get("day")),
+  };
+}
+function easterSunday(year) {
+  const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(Date.UTC(year, month - 1, day));
+}
+function isHolidayBW(year, month, day) {
+  const key = (mo, d) => `${mo}-${d}`;
+  const days = new Set([
+    key(1, 1), key(1, 6), key(5, 1), key(10, 3),
+    key(11, 1), key(12, 25), key(12, 26),
+  ]);
+  const easter = easterSunday(year);
+  const rel = (off) => {
+    const x = new Date(easter.getTime());
+    x.setUTCDate(x.getUTCDate() + off);
+    return key(x.getUTCMonth() + 1, x.getUTCDate());
+  };
+  [-2, 1, 39, 50, 60].forEach((off) => days.add(rel(off)));
+  return days.has(key(month, day));
+}
+function isOrderingOpen(now = new Date()) {
+  const p = berlinParts(now);
+  const win = isHolidayBW(p.year, p.month, p.day)
+    ? OPENING_HOURS[0]
+    : OPENING_HOURS[p.weekday];
+  if (!win) return false;
+  return p.minutes >= win.open && p.minutes < win.close - LAST_ORDER_OFFSET_MINUTES;
+}
+
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
 // number = Menue-Abkuerzung (wird ans Kitchen-Dashboard durchgereicht).
@@ -674,6 +741,13 @@ export default async function handler(req, res) {
 
     if (itemsFromBody.length === 0) {
       return res.status(400).json({ error: "Cart is empty" });
+    }
+
+    if (!isOrderingOpen()) {
+      return res.status(409).json({
+        error:
+          "Online-Bestellannahme ist aktuell geschlossen (Annahmeschluss 30 Min vor Ladenschluss).",
+      });
     }
 
     const normalizedOrigin =
