@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X, Flame, Leaf, Download, Info } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
-import { isPromoActive, applyPromo, PROMO_PERCENT, PROMO_END_LABEL } from "@/lib/promo";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
 import {
@@ -503,8 +502,6 @@ export default function Order() {
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const promoActive = isPromoActive();
-  const discountedTotal = applyPromo(total);
   const getItemLabel = (item: MenuItem) => {
     const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
     return item.number ? `${item.number} ${translatedName}` : translatedName;
@@ -568,13 +565,6 @@ export default function Order() {
               Allergene &amp; Zusatzstoffe
             </Link>
           </div>
-          {promoActive && (
-            <div className="mt-4 max-w-3xl rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
-              <p className="text-sm md:text-base font-semibold text-primary">
-                🎉 Eröffnungsaktion: {PROMO_PERCENT} % Rabatt auf alles – noch bis einschließlich {PROMO_END_LABEL}! Der Rabatt wird automatisch im Warenkorb abgezogen.
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
@@ -810,21 +800,9 @@ export default function Order() {
                   {cart.length > 0 && (
                     <>
                       <div className="border-t border-border mt-4 pt-4 space-y-1.5">
-                        {promoActive && (
-                          <>
-                            <div className="flex items-center justify-between text-sm text-muted-foreground">
-                              <span>Zwischensumme</span>
-                              <span className="line-through">{formatPrice(total)}</span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm font-medium text-primary">
-                              <span>Eröffnungsrabatt (−{PROMO_PERCENT} %)</span>
-                              <span>−{formatPrice(total - discountedTotal)}</span>
-                            </div>
-                          </>
-                        )}
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-foreground">{t.order.total}</span>
-                          <span className="font-bold text-foreground" data-testid="text-total">{formatPrice(discountedTotal)}</span>
+                          <span className="font-bold text-foreground" data-testid="text-total">{formatPrice(total)}</span>
                         </div>
                       </div>
 
@@ -1453,7 +1431,7 @@ export default function Order() {
                 {cart.reduce((n, item) => n + item.quantity, 0)}
               </span>
             </span>
-            <span className="font-semibold text-base tabular-nums">{formatPrice(discountedTotal)}</span>
+            <span className="font-semibold text-base tabular-nums">{formatPrice(total)}</span>
           </span>
           <span className="flex items-center gap-2 font-medium text-sm shrink-0">
             {t.order.checkout} <ArrowRight size={16} />

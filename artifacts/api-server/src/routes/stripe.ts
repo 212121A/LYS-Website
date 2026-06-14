@@ -3,14 +3,6 @@ import Stripe from "stripe";
 
 const router = Router();
 
-// Eröffnungsaktion: 20% Rabatt bis einschließlich 14.06.2026
-// (23:59:59 Europe/Berlin). Spiegelt promo.ts im Frontend.
-const PROMO_PERCENT = 20;
-const PROMO_END_MS = Date.parse("2026-06-14T23:59:59+02:00");
-function isPromoActive(now: number = Date.now()): boolean {
-  return now <= PROMO_END_MS;
-}
-
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error("STRIPE_SECRET_KEY not set");
@@ -67,16 +59,12 @@ router.post("/create-checkout-session", async (req, res) => {
         ? origin
         : `${req.protocol}://${req.get("host")}`;
 
-    const promoActive = isPromoActive();
     const lineItems = itemsFromBody
       .filter((item: any) => item && typeof item.name === "string")
       .map((item: any) => {
         const rawPrice = Number(item.price);
         const quantity = Math.max(1, Number(item.quantity ?? 1));
-        const fullAmount = Math.round(rawPrice * 100);
-        const unitAmount = promoActive
-          ? Math.round((fullAmount * (100 - PROMO_PERCENT)) / 100)
-          : fullAmount;
+        const unitAmount = Math.round(rawPrice * 100);
 
         if (!Number.isFinite(unitAmount) || unitAmount < 1) {
           throw new Error("Invalid item price");

@@ -1,16 +1,5 @@
 import Stripe from "stripe";
 
-// Eröffnungsaktion: 20% Rabatt bis einschließlich 14.06.2026
-// (23:59:59 Europe/Berlin, CEST = UTC+2). Danach automatisch aus.
-// Spiegelt artifacts/ly-restaurant/src/lib/promo.ts. Da der Server die
-// Preisautoritaet hat, wird der Rabatt hier autoritativ auf die
-// Produkt-Line-Items angewandt (Liefergebuehr bleibt voll).
-const PROMO_PERCENT = 20;
-const PROMO_END_MS = Date.parse("2026-06-14T23:59:59+02:00");
-function isPromoActive(now = Date.now()) {
-  return now <= PROMO_END_MS;
-}
-
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
 // number = Menue-Abkuerzung (wird ans Kitchen-Dashboard durchgereicht).
@@ -692,7 +681,6 @@ export default async function handler(req, res) {
         ? origin
         : `https://${req.headers.host}`;
 
-    const promoActive = isPromoActive();
     const invalidItemIds = [];
     const lineItems = itemsFromBody
       .map((item) => {
@@ -704,15 +692,10 @@ export default async function handler(req, res) {
         }
 
         const { product } = resolved;
-        // Alle Produktpreise sind Vielfache von 50 Cent -> x0,8 ergibt
-        // immer volle Cent; Math.round ist nur Absicherung.
-        const unitAmount = promoActive
-          ? Math.round((product.price * (100 - PROMO_PERCENT)) / 100)
-          : product.price;
         return {
           price_data: {
             currency,
-            unit_amount: unitAmount,
+            unit_amount: product.price,
             product_data: { name: product.name },
           },
           quantity: normalizeQuantity(item?.quantity),
