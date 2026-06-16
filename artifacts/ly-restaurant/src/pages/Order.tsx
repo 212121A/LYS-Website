@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { ShoppingCart, Plus, Minus, Trash2, Phone, ArrowRight, X, Flame, Leaf, Download, Info } from "lucide-react";
 import { menuCategories, formatPrice, MenuItem } from "@/data/menu";
+import { MIN_ORDER_VALUE_EUR } from "@/lib/orderRules";
 import { useLanguage } from "@/i18n/LanguageContext";
 import menuT from "@/i18n/menuTranslations";
 import {
@@ -20,6 +21,8 @@ import {
   isBoxBaseId,
   BOX_SAUCE_LABEL,
   BOX_SAUCES,
+  NO_SAUCE_LABEL,
+  NO_VEGGIES_LABEL,
   friedRiceCartId,
   friedRiceCode,
   friedRiceDisplayName,
@@ -107,6 +110,10 @@ export default function Order() {
   const [pendingBox, setPendingBox] = useState<PendingBox | null>(null);
   const [pendingFriedRice, setPendingFriedRice] = useState<PendingFriedRice | null>(null);
   const [sauceChoice, setSauceChoice] = useState<BoxSauce | null>(null);
+  const [noVeggiesChoice, setNoVeggiesChoice] = useState(false);
+  // Modifikatoren fuer Hauptgerichte (c/s/b/e/m): inline pro Basis-ID gemerkt.
+  const [dishNoSauce, setDishNoSauce] = useState<Record<string, boolean>>({});
+  const [dishNoVeggies, setDishNoVeggies] = useState<Record<string, boolean>>({});
   const [pendingBowl, setPendingBowl] = useState<PendingBowl | null>(null);
   const [bowlFruitChoice, setBowlFruitChoice] = useState<BowlFruit[]>([]);
   const [bowlToppingChoice, setBowlToppingChoice] = useState<BowlTopping[]>([]);
@@ -151,11 +158,21 @@ export default function Order() {
 
   const getBoxType = (baseId: string): BoxType => boxTypeChoice[baseId] ?? "nudel";
 
-  const addRiceNoodleMainDishToCart = (item: MenuItem, type: BoxType) => {
+  const addRiceNoodleMainDishToCart = (
+    item: MenuItem,
+    type: BoxType,
+    noSauce: boolean,
+    noVeggies: boolean,
+  ) => {
     const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
-    const code = riceNoodleMainDishCode(item.number, type);
-    const displayName = riceNoodleMainDishDisplayName(translatedName, type);
-    const cartId = riceNoodleMainDishCartId(item.id, type);
+    const code = riceNoodleMainDishCode(item.number, type, noSauce, noVeggies);
+    const displayName = riceNoodleMainDishDisplayName(
+      translatedName,
+      type,
+      noSauce,
+      noVeggies,
+    );
+    const cartId = riceNoodleMainDishCartId(item.id, type, noSauce, noVeggies);
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
@@ -181,12 +198,13 @@ export default function Order() {
     size: BoxSize,
     type: BoxType,
     sauce: BoxSauce,
+    noVeggies: boolean,
   ) => {
     const priceForSize =
       size === "small" && item.priceSmall !== undefined ? item.priceSmall : item.price;
-    const code = boxCode(item.id, size, type, sauce);
-    const displayName = boxDisplayName(item.id, size, type, sauce) ?? item.name;
-    const cartId = boxCartId(item.id, size, type, sauce);
+    const code = boxCode(item.id, size, type, sauce, noVeggies);
+    const displayName = boxDisplayName(item.id, size, type, sauce, noVeggies) ?? item.name;
+    const cartId = boxCartId(item.id, size, type, sauce, noVeggies);
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
@@ -209,11 +227,11 @@ export default function Order() {
     });
   };
 
-  const addFriedRiceToCart = (item: MenuItem, sauce: BoxSauce) => {
+  const addFriedRiceToCart = (item: MenuItem, sauce: BoxSauce, noVeggies: boolean) => {
     const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
-    const code = friedRiceCode(item.number, sauce);
-    const displayName = friedRiceDisplayName(translatedName, sauce);
-    const cartId = friedRiceCartId(item.id, sauce);
+    const code = friedRiceCode(item.number, sauce, noVeggies);
+    const displayName = friedRiceDisplayName(translatedName, sauce, noVeggies);
+    const cartId = friedRiceCartId(item.id, sauce, noVeggies);
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
@@ -343,17 +361,24 @@ export default function Order() {
       const type = getBoxType(item.id);
       setPendingBox({ item, size: effectiveSize, type });
       setSauceChoice(null);
+      setNoVeggiesChoice(false);
       return;
     }
 
     if (isRiceNoodleMainDishBaseId(item.id)) {
-      addRiceNoodleMainDishToCart(item, getBoxType(item.id));
+      addRiceNoodleMainDishToCart(
+        item,
+        getBoxType(item.id),
+        !!dishNoSauce[item.id],
+        !!dishNoVeggies[item.id],
+      );
       return;
     }
 
     if (isFriedRiceBaseId(item.id)) {
       setPendingFriedRice({ item });
       setSauceChoice(null);
+      setNoVeggiesChoice(false);
       return;
     }
 
@@ -402,15 +427,16 @@ export default function Order() {
   const confirmSauce = () => {
     if (!sauceChoice) return;
     if (pendingBox) {
-      addBoxToCart(pendingBox.item, pendingBox.size, pendingBox.type, sauceChoice);
+      addBoxToCart(pendingBox.item, pendingBox.size, pendingBox.type, sauceChoice, noVeggiesChoice);
     } else if (pendingFriedRice) {
-      addFriedRiceToCart(pendingFriedRice.item, sauceChoice);
+      addFriedRiceToCart(pendingFriedRice.item, sauceChoice, noVeggiesChoice);
     } else {
       return;
     }
     setPendingBox(null);
     setPendingFriedRice(null);
     setSauceChoice(null);
+    setNoVeggiesChoice(false);
   };
 
   const confirmMilkOption = () => {
@@ -474,6 +500,7 @@ export default function Order() {
     setPendingBox(null);
     setPendingFriedRice(null);
     setSauceChoice(null);
+    setNoVeggiesChoice(false);
   };
 
   const sauceHeading =
@@ -502,6 +529,8 @@ export default function Order() {
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const belowMinimum = total < MIN_ORDER_VALUE_EUR;
+  const missingToMinimum = MIN_ORDER_VALUE_EUR - total;
   const getItemLabel = (item: MenuItem) => {
     const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
     return item.number ? `${item.number} ${translatedName}` : translatedName;
@@ -517,7 +546,7 @@ export default function Order() {
   };
 
   const goToCheckout = () => {
-    if (cart.length === 0) return;
+    if (cart.length === 0 || belowMinimum) return;
     localStorage.setItem("lys_cart", JSON.stringify(cart));
     navigate("/checkout");
   };
@@ -681,6 +710,45 @@ export default function Order() {
                               ))}
                             </div>
                           )}
+                          {isRiceNoodleMainDishBaseId(item.id) && (
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setDishNoSauce((prev) => ({ ...prev, [item.id]: !prev[item.id] }))
+                                }
+                                aria-pressed={!!dishNoSauce[item.id]}
+                                data-testid={`button-dish-nosauce-${item.id}`}
+                                className={`px-3 py-1 rounded-full border text-[11px] font-medium transition-colors ${
+                                  dishNoSauce[item.id]
+                                    ? "border-primary bg-primary/10 text-foreground"
+                                    : "border-border text-muted-foreground hover:text-foreground"
+                                }`}
+                              >
+                                {NO_SAUCE_LABEL}
+                              </button>
+                              {!item.veggieMix && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setDishNoVeggies((prev) => ({
+                                      ...prev,
+                                      [item.id]: !prev[item.id],
+                                    }))
+                                  }
+                                  aria-pressed={!!dishNoVeggies[item.id]}
+                                  data-testid={`button-dish-noveggies-${item.id}`}
+                                  className={`px-3 py-1 rounded-full border text-[11px] font-medium transition-colors ${
+                                    dishNoVeggies[item.id]
+                                      ? "border-primary bg-primary/10 text-foreground"
+                                      : "border-border text-muted-foreground hover:text-foreground"
+                                  }`}
+                                >
+                                  {NO_VEGGIES_LABEL}
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         <div className="shrink-0 text-right">
@@ -806,10 +874,20 @@ export default function Order() {
                         </div>
                       </div>
 
+                      {belowMinimum && (
+                        <p
+                          data-testid="text-min-order-hint"
+                          className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"
+                        >
+                          Mindestbestellwert {formatPrice(MIN_ORDER_VALUE_EUR)} – es fehlen noch {formatPrice(missingToMinimum)}.
+                        </p>
+                      )}
+
                       <button
                         onClick={goToCheckout}
+                        disabled={belowMinimum}
                         data-testid="button-submit-order"
-                        className="mt-4 w-full bg-primary text-primary-foreground py-3 rounded-xl font-medium text-sm hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-[0.99] flex items-center justify-center gap-2"
+                        className="mt-4 w-full bg-primary text-primary-foreground py-3 rounded-xl font-medium text-sm hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:active:scale-100"
                       >
                         {t.order.checkout} <ArrowRight size={15} />
                       </button>
@@ -916,6 +994,37 @@ export default function Order() {
                   </button>
                 );
               })}
+              {!(pendingBox?.item.veggieMix ?? pendingFriedRice?.item.veggieMix) && (
+                <div className="pt-2">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    Gemüse
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setNoVeggiesChoice((prev) => !prev)}
+                    aria-pressed={noVeggiesChoice}
+                    data-testid="button-sauce-noveggies"
+                    className={`w-full flex items-center gap-3 text-left rounded-xl border px-4 py-3.5 transition-colors ${
+                      noVeggiesChoice
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-background hover:border-primary/40 hover:bg-primary/5"
+                    }`}
+                  >
+                    <span
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                        noVeggiesChoice ? "border-primary bg-primary" : "border-muted-foreground/40"
+                      }`}
+                    >
+                      {noVeggiesChoice && (
+                        <span className="w-2 h-2 rounded-sm bg-primary-foreground" />
+                      )}
+                    </span>
+                    <span className="text-base font-medium text-foreground">
+                      {NO_VEGGIES_LABEL}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
             <div className="flex shrink-0 items-stretch border-t border-border bg-card">
               <button
@@ -1420,8 +1529,9 @@ export default function Order() {
       {cart.length > 0 && (
         <button
           onClick={goToCheckout}
+          disabled={belowMinimum}
           data-testid="button-mobile-cart-checkout"
-          className="lg:hidden fixed bottom-3 inset-x-3 z-50 bg-primary text-primary-foreground px-4 py-3.5 rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-between gap-3 active:scale-[0.99] transition-transform"
+          className="lg:hidden fixed bottom-3 inset-x-3 z-50 bg-primary text-primary-foreground px-4 py-3.5 rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-between gap-3 active:scale-[0.99] transition-transform disabled:opacity-60 disabled:active:scale-100"
           style={{ paddingBottom: "calc(0.875rem + env(safe-area-inset-bottom, 0px))" }}
         >
           <span className="flex items-center gap-2.5 min-w-0">
@@ -1434,7 +1544,13 @@ export default function Order() {
             <span className="font-semibold text-base tabular-nums">{formatPrice(total)}</span>
           </span>
           <span className="flex items-center gap-2 font-medium text-sm shrink-0">
-            {t.order.checkout} <ArrowRight size={16} />
+            {belowMinimum ? (
+              `Noch ${formatPrice(missingToMinimum)}`
+            ) : (
+              <>
+                {t.order.checkout} <ArrowRight size={16} />
+              </>
+            )}
           </span>
         </button>
       )}

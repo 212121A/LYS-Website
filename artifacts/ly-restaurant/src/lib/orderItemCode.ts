@@ -11,7 +11,15 @@
 
 export type BoxSize = "small" | "large";
 export type BoxType = "nudel" | "reis";
-export type BoxSauce = "soja" | "suesssauer" | "curry" | "matcha" | "mango";
+export type BoxSauce = "soja" | "suesssauer" | "curry" | "matcha" | "mango" | "keine";
+
+/**
+ * Suffix-Bezeichnungen fuer optionale Modifikatoren. Werden sowohl im
+ * Anzeigenamen (per " • ") als auch im Kitchen-Dashboard-Code (per "-")
+ * angehaengt – analog zum bestehenden Soßen-Suffix.
+ */
+export const NO_SAUCE_LABEL = "Ohne Soße";
+export const NO_VEGGIES_LABEL = "Ohne Gemüse";
 export type BowlFruit = "banane" | "erdbeere" | "blaubeere" | "himbeere" | "mango";
 export type BowlTopping = "honig" | "agave" | "matcha" | "granola" | "schoko-kokos";
 export type MenuMilk = "kuhmilch" | "sojamilch" | "hafermilch" | "kokosmilch";
@@ -103,6 +111,7 @@ export const BOX_SAUCE_LABEL: Record<BoxSauce, string> = {
   curry: "Thaicurry mit Kokosmilch",
   matcha: "Matcha Soße",
   mango: "Mango Soße",
+  keine: NO_SAUCE_LABEL,
 };
 
 /**
@@ -116,10 +125,18 @@ export const BOX_SAUCE_CODE: Record<BoxSauce, string> = {
   curry: "Thaicurry mit Kokosmilch",
   matcha: "Matcha Soße",
   mango: "Mango Soße",
+  keine: NO_SAUCE_LABEL,
 };
 
-/** Auswahl-Reihenfolge im Dialog (stabile Reihenfolge). */
-export const BOX_SAUCES: BoxSauce[] = ["soja", "suesssauer", "curry", "matcha", "mango"];
+/** Auswahl-Reihenfolge im Dialog (stabile Reihenfolge). "keine" steht am Ende. */
+export const BOX_SAUCES: BoxSauce[] = [
+  "soja",
+  "suesssauer",
+  "curry",
+  "matcha",
+  "mango",
+  "keine",
+];
 
 /** Basis-IDs der Box-Items (aus `src/data/menu.ts`, Kategorie "nudel-reisboxen"). */
 const BOX_INGREDIENT_DIGIT: Record<string, 1 | 2 | 3 | 4 | 5 | 6 | 7> = {
@@ -153,13 +170,16 @@ export function boxCode(
   size: BoxSize,
   type: BoxType,
   sauce?: BoxSauce,
+  noVeggies = false,
 ): string | null {
   const digit = BOX_INGREDIENT_DIGIT[baseId];
   if (!digit) return null;
   const sizePrefix = size === "small" ? "K" : "G";
   const typePrefix = type === "nudel" ? "N" : "R";
-  const base = `${sizePrefix}${typePrefix}${digit}`;
-  return sauce ? `${base}-${BOX_SAUCE_CODE[sauce]}` : base;
+  let code = `${sizePrefix}${typePrefix}${digit}`;
+  if (sauce) code += `-${BOX_SAUCE_CODE[sauce]}`;
+  if (noVeggies) code += `-${NO_VEGGIES_LABEL}`;
+  return code;
 }
 
 /** Menschenlesbarer Name der Box-Variante (deutsch, für Rechnung/Dashboard). */
@@ -168,24 +188,30 @@ export function boxDisplayName(
   size: BoxSize,
   type: BoxType,
   sauce?: BoxSauce,
+  noVeggies = false,
 ): string | null {
   const digit = BOX_INGREDIENT_DIGIT[baseId];
   if (!digit) return null;
   const sizeLabel = size === "small" ? "Kleine" : "Große";
   const typeLabel = type === "nudel" ? "Nudelbox" : "Reisbox";
-  const base = `${sizeLabel} ${typeLabel} ${BOX_INGREDIENT_LABEL[digit]}`;
-  return sauce ? `${base} • ${BOX_SAUCE_LABEL[sauce]}` : base;
+  let name = `${sizeLabel} ${typeLabel} ${BOX_INGREDIENT_LABEL[digit]}`;
+  if (sauce) name += ` • ${BOX_SAUCE_LABEL[sauce]}`;
+  if (noVeggies) name += ` • ${NO_VEGGIES_LABEL}`;
+  return name;
 }
 
-/** Eindeutige Cart-ID über Varianten: id + size + type (+ sauce). */
+/** Eindeutige Cart-ID über Varianten: id + size + type (+ sauce) (+ ohne Gemüse). */
 export function boxCartId(
   baseId: string,
   size: BoxSize,
   type: BoxType,
   sauce?: BoxSauce,
+  noVeggies = false,
 ): string {
-  const base = `${baseId}-${size}-${type}`;
-  return sauce ? `${base}-${sauce}` : base;
+  let id = `${baseId}-${size}-${type}`;
+  if (sauce) id += `-${sauce}`;
+  if (noVeggies) id += "-ohnegemuese";
+  return id;
 }
 
 const RICE_NOODLE_MAIN_DISH_BASE_IDS = new Set([
@@ -240,17 +266,38 @@ export function isRiceNoodleMainDishBaseId(baseId: string): boolean {
 export function riceNoodleMainDishCode(
   itemNumber: string | undefined,
   type: BoxType,
+  noSauce = false,
+  noVeggies = false,
 ): string | null {
   if (!itemNumber) return null;
-  return `${itemNumber}-${type === "nudel" ? "Nudel" : "Reis"}`;
+  let code = `${itemNumber}-${type === "nudel" ? "Nudel" : "Reis"}`;
+  if (noSauce) code += `-${NO_SAUCE_LABEL}`;
+  if (noVeggies) code += `-${NO_VEGGIES_LABEL}`;
+  return code;
 }
 
-export function riceNoodleMainDishDisplayName(itemName: string, type: BoxType): string {
-  return `${itemName} • ${type === "nudel" ? "Nudel" : "Reis"}`;
+export function riceNoodleMainDishDisplayName(
+  itemName: string,
+  type: BoxType,
+  noSauce = false,
+  noVeggies = false,
+): string {
+  let name = `${itemName} • ${type === "nudel" ? "Nudel" : "Reis"}`;
+  if (noSauce) name += ` • ${NO_SAUCE_LABEL}`;
+  if (noVeggies) name += ` • ${NO_VEGGIES_LABEL}`;
+  return name;
 }
 
-export function riceNoodleMainDishCartId(baseId: string, type: BoxType): string {
-  return `${baseId}-${type}`;
+export function riceNoodleMainDishCartId(
+  baseId: string,
+  type: BoxType,
+  noSauce = false,
+  noVeggies = false,
+): string {
+  let id = `${baseId}-${type}`;
+  if (noSauce) id += "-keinesosse";
+  if (noVeggies) id += "-ohnegemuese";
+  return id;
 }
 
 const FRIED_RICE_BASE_IDS = new Set([
@@ -268,17 +315,35 @@ export function isFriedRiceBaseId(baseId: string): boolean {
   return FRIED_RICE_BASE_IDS.has(baseId);
 }
 
-export function friedRiceCode(itemNumber: string | undefined, sauce: BoxSauce): string | null {
+export function friedRiceCode(
+  itemNumber: string | undefined,
+  sauce: BoxSauce,
+  noVeggies = false,
+): string | null {
   if (!itemNumber) return null;
-  return `${itemNumber}-${BOX_SAUCE_CODE[sauce]}`;
+  let code = `${itemNumber}-${BOX_SAUCE_CODE[sauce]}`;
+  if (noVeggies) code += `-${NO_VEGGIES_LABEL}`;
+  return code;
 }
 
-export function friedRiceDisplayName(itemName: string, sauce: BoxSauce): string {
-  return `${itemName} • ${BOX_SAUCE_LABEL[sauce]}`;
+export function friedRiceDisplayName(
+  itemName: string,
+  sauce: BoxSauce,
+  noVeggies = false,
+): string {
+  let name = `${itemName} • ${BOX_SAUCE_LABEL[sauce]}`;
+  if (noVeggies) name += ` • ${NO_VEGGIES_LABEL}`;
+  return name;
 }
 
-export function friedRiceCartId(baseId: string, sauce: BoxSauce): string {
-  return `${baseId}-${sauce}`;
+export function friedRiceCartId(
+  baseId: string,
+  sauce: BoxSauce,
+  noVeggies = false,
+): string {
+  let id = `${baseId}-${sauce}`;
+  if (noVeggies) id += "-ohnegemuese";
+  return id;
 }
 
 const BOWL_BASE_IDS = new Set([

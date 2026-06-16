@@ -4,6 +4,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ArrowLeft, Lock, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getOrderingStatus, getPickupSlots, ASAP_PICKUP_VALUE } from "@/lib/openingHours";
+import { MIN_ORDER_VALUE_EUR } from "@/lib/orderRules";
 
 interface CartItem {
   id: string;
@@ -143,6 +144,29 @@ export default function Checkout() {
         <div className="text-center">
           <p className="text-muted-foreground mb-4">{t.checkout.cartEmpty}</p>
           <Link href="/order" className="text-primary font-medium hover:underline">{t.checkout.cartEmptyLink}</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (subtotal < MIN_ORDER_VALUE_EUR) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="max-w-md text-center bg-card border border-border rounded-2xl p-8">
+          <h1 className="font-serif text-2xl font-bold text-foreground mb-2">
+            Mindestbestellwert {fmt(MIN_ORDER_VALUE_EUR)}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-5">
+            Der Mindestbestellwert für Online-Bestellungen liegt bei {fmt(MIN_ORDER_VALUE_EUR)}.
+            Aktuell im Warenkorb: {fmt(subtotal)} – es fehlen noch {fmt(MIN_ORDER_VALUE_EUR - subtotal)}.
+          </p>
+          <Link
+            href="/order"
+            data-testid="link-back-order-min"
+            className="text-primary font-medium hover:underline"
+          >
+            {t.checkout.backToOrder}
+          </Link>
         </div>
       </div>
     );

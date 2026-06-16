@@ -67,6 +67,10 @@ function isOrderingOpen(now = new Date()) {
   return p.minutes >= win.open && p.minutes < win.close - LAST_ORDER_OFFSET_MINUTES;
 }
 
+// Mindestbestellwert (Cent). Spiegelt MIN_ORDER_VALUE_EUR im Frontend
+// (artifacts/ly-restaurant/src/lib/orderRules.ts). Server erzwingt autoritativ.
+const MIN_ORDER_CENTS = 2000;
+
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
 // number = Menue-Abkuerzung (wird ans Kitchen-Dashboard durchgereicht).
@@ -195,28 +199,37 @@ const PRODUCTS = {
   "kids-schoko": { number: "32", name: "Schoko Latte", price: 450 },
 };
 
-// Box-Soßen: Cart-IDs wie `box-huehnchen-large-nudel-soja` werden auf die
-// Basis-Box gemappt. Preis bleibt identisch (Soßen sind inklusive), Name und
-// Kitchen-Dashboard-Kürzel bekommen ein Suffix mit der gewählten Soße.
-// Soßen-Suffix wird 1:1 an den Kitchen-Dashboard-Code angehaengt
-// (z.B. "GN4-Sojasoße"), damit keine Kurzcodes (S/SS/C) missverstanden
-// werden koennen.
-const BOX_SAUCE_SUFFIXES = {
-  "-soja": { code: "Sojasoße", label: "Sojasoße" },
-  "-suesssauer": { code: "Süßsauersoße", label: "Süßsauersoße" },
-  "-curry": { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
-  "-matcha": { code: "Matcha Soße", label: "Matcha Soße" },
-  "-mango": { code: "Mango Soße", label: "Mango Soße" },
-};
+// Soßen + Modifikatoren: Cart-IDs wie `box-huehnchen-large-nudel-soja` oder
+// `c2-nudel-keinesosse-ohnegemuese` werden auf die Basis gemappt. Preis bleibt
+// identisch (Soßen sind inklusive, "ohne" kostet nichts), Name und
+// Kitchen-Dashboard-Kürzel bekommen ein 1:1 angehaengtes Suffix
+// (z.B. "GN4-Sojasoße", "c2-Nudel-Ohne Soße-Ohne Gemüse").
+const NO_SAUCE_LABEL = "Ohne Soße";
+const NO_VEGGIES_LABEL = "Ohne Gemüse";
+const NO_VEGGIES_SUFFIX = "-ohnegemuese";
+const NO_SAUCE_SUFFIX = "-keinesosse";
 
-/** Gebratener Reis + Soße (Cart-ID z.B. a4-curry) — gleiche Codes wie Box-Soßen. */
-const FRIED_RICE_SAUCE = {
+/** Soßen-Token (Box + Gebratener Reis) → Kitchen-Code/Label. */
+const SAUCE_BY_TOKEN = {
   soja: { code: "Sojasoße", label: "Sojasoße" },
   suesssauer: { code: "Süßsauersoße", label: "Süßsauersoße" },
   curry: { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
   matcha: { code: "Matcha Soße", label: "Matcha Soße" },
   mango: { code: "Mango Soße", label: "Mango Soße" },
+  keine: { code: NO_SAUCE_LABEL, label: NO_SAUCE_LABEL },
 };
+
+const NO_VEGGIES_MOD = { code: NO_VEGGIES_LABEL, label: NO_VEGGIES_LABEL };
+const NO_SAUCE_MOD = { code: NO_SAUCE_LABEL, label: NO_SAUCE_LABEL };
+
+/** Haengt Code-/Namens-Suffixe an ein Basisprodukt an (Soße, "ohne ..."). */
+function withSuffixes(base, suffixes) {
+  return {
+    number: `${base.number}${suffixes.map((s) => `-${s.code}`).join("")}`,
+    name: `${base.name}${suffixes.map((s) => ` • ${s.label}`).join("")}`,
+    price: base.price,
+  };
+}
 
 const BOWL_FRUITS = {
   banane: "Banane",
@@ -545,26 +558,40 @@ function resolveMilkOptionProduct(id) {
 }
 
 function resolveFriedRice(id) {
-  const m = id.match(/^a([1-7])-(soja|suesssauer|curry|matcha|mango)$/);
+  let rest = id;
+  let noVeggies = false;
+  if (rest.endsWith(NO_VEGGIES_SUFFIX)) {
+    noVeggies = true;
+    rest = rest.slice(0, -NO_VEGGIES_SUFFIX.length);
+  }
+  const m = rest.match(/^a([1-7])-(soja|suesssauer|curry|matcha|mango|keine)$/);
   if (!m) return null;
   const baseId = `a${m[1]}`;
-  const sauce = FRIED_RICE_SAUCE[m[2]];
+  const sauce = SAUCE_BY_TOKEN[m[2]];
   const base = PRODUCTS[baseId];
   if (!base || !sauce) return null;
-  return {
-    product: {
-      number: `${base.number}-${sauce.code}`,
-      name: `${base.name} • ${sauce.label}`,
-      price: base.price,
-    },
-    sauce: null,
-  };
+  const suffixes = [sauce];
+  if (noVeggies) suffixes.push(NO_VEGGIES_MOD);
+  return { product: withSuffixes(base, suffixes), sauce: null };
 }
 
 function resolveRiceNoodleMain(id) {
-  if (!id.endsWith("-nudel") && !id.endsWith("-reis")) return null;
-  const type = id.endsWith("-nudel") ? "nudel" : "reis";
-  const baseId = id.slice(0, -(type.length + 1));
+  // Modifikatoren vom Ende abtrennen (Reihenfolge: ...-keinesosse-ohnegemuese).
+  let rest = id;
+  let noVeggies = false;
+  let noSauce = false;
+  if (rest.endsWith(NO_VEGGIES_SUFFIX)) {
+    noVeggies = true;
+    rest = rest.slice(0, -NO_VEGGIES_SUFFIX.length);
+  }
+  if (rest.endsWith(NO_SAUCE_SUFFIX)) {
+    noSauce = true;
+    rest = rest.slice(0, -NO_SAUCE_SUFFIX.length);
+  }
+
+  if (!rest.endsWith("-nudel") && !rest.endsWith("-reis")) return null;
+  const type = rest.endsWith("-nudel") ? "nudel" : "reis";
+  const baseId = rest.slice(0, -(type.length + 1));
   if (!baseId || baseId.startsWith("box-")) return null;
   if (/^a[1-7]$/.test(baseId)) return null;
 
@@ -572,14 +599,36 @@ function resolveRiceNoodleMain(id) {
   if (!base) return null;
 
   const typeLabel = type === "nudel" ? "Nudel" : "Reis";
-  return {
-    product: {
-      number: `${base.number}-${typeLabel}`,
-      name: `${base.name} • ${typeLabel}`,
-      price: base.price,
-    },
-    sauce: null,
-  };
+  const suffixes = [{ code: typeLabel, label: typeLabel }];
+  if (noSauce) suffixes.push(NO_SAUCE_MOD);
+  if (noVeggies) suffixes.push(NO_VEGGIES_MOD);
+  return { product: withSuffixes(base, suffixes), sauce: null };
+}
+
+/** Box mit optionaler Soße (inkl. "keine") und optionalem "ohne Gemüse". */
+function resolveBox(id) {
+  if (!id.startsWith("box-")) return null;
+  let rest = id;
+  let noVeggies = false;
+  if (rest.endsWith(NO_VEGGIES_SUFFIX)) {
+    noVeggies = true;
+    rest = rest.slice(0, -NO_VEGGIES_SUFFIX.length);
+  }
+  let sauce = null;
+  const tokens = Object.keys(SAUCE_BY_TOKEN).sort((a, b) => b.length - a.length);
+  for (const token of tokens) {
+    if (rest.endsWith(`-${token}`)) {
+      sauce = SAUCE_BY_TOKEN[token];
+      rest = rest.slice(0, -(token.length + 1));
+      break;
+    }
+  }
+  const base = PRODUCTS[rest];
+  if (!base) return null;
+  const suffixes = [];
+  if (sauce) suffixes.push(sauce);
+  if (noVeggies) suffixes.push(NO_VEGGIES_MOD);
+  return { product: withSuffixes(base, suffixes), sauce: null };
 }
 
 function resolveProduct(id) {
@@ -587,25 +636,8 @@ function resolveProduct(id) {
   const direct = PRODUCTS[id];
   if (direct) return { product: direct, sauce: null };
 
-  const suffixEntries = Object.entries(BOX_SAUCE_SUFFIXES).sort(
-    (a, b) => b[0].length - a[0].length,
-  );
-  for (const [suffix, sauce] of suffixEntries) {
-    if (id.endsWith(suffix)) {
-      const baseId = id.slice(0, -suffix.length);
-      if (!baseId.startsWith("box-")) continue;
-      const base = PRODUCTS[baseId];
-      if (!base) continue;
-      return {
-        product: {
-          number: `${base.number}-${sauce.code}`,
-          name: `${base.name} • ${sauce.label}`,
-          price: base.price,
-        },
-        sauce,
-      };
-    }
-  }
+  const box = resolveBox(id);
+  if (box) return box;
 
   const smoothie = resolveSmoothieProduct(id);
   if (smoothie) return { product: smoothie, sauce: null };
@@ -785,6 +817,18 @@ export default async function handler(req, res) {
 
     if (lineItems.length === 0) {
       return res.status(400).json({ error: "No valid items" });
+    }
+
+    // Mindestbestellwert auf die Waren-Summe (ohne Liefergebuehr) erzwingen.
+    const subtotalCents = lineItems.reduce(
+      (sum, li) => sum + li.price_data.unit_amount * li.quantity,
+      0,
+    );
+    if (subtotalCents < MIN_ORDER_CENTS) {
+      const minEur = (MIN_ORDER_CENTS / 100).toFixed(2).replace(".", ",");
+      return res
+        .status(400)
+        .json({ error: `Mindestbestellwert ${minEur} € nicht erreicht.` });
     }
 
     if (orderType === "delivery") {

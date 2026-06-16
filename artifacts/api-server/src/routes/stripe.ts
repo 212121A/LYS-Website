@@ -2,6 +2,10 @@ import { Router } from "express";
 import Stripe from "stripe";
 import { isOrderingOpen } from "../openingHours";
 
+// Mindestbestellwert (Cent). Spiegelt MIN_ORDER_VALUE_EUR im Frontend
+// (artifacts/ly-restaurant/src/lib/orderRules.ts).
+const MIN_ORDER_CENTS = 2000;
+
 const router = Router();
 
 function getStripe() {
@@ -97,6 +101,19 @@ router.post("/create-checkout-session", async (req, res) => {
 
     if (lineItems.length === 0) {
       return res.status(400).json({ error: "No valid items" });
+    }
+
+    // Mindestbestellwert auf die Waren-Summe (ohne Liefergebuehr) erzwingen.
+    const subtotalCents = lineItems.reduce(
+      (sum: number, li: { price_data: { unit_amount: number }; quantity: number }) =>
+        sum + li.price_data.unit_amount * li.quantity,
+      0,
+    );
+    if (subtotalCents < MIN_ORDER_CENTS) {
+      const minEur = (MIN_ORDER_CENTS / 100).toFixed(2).replace(".", ",");
+      return res
+        .status(400)
+        .json({ error: `Mindestbestellwert ${minEur} € nicht erreicht.` });
     }
 
     if (orderType === "delivery") {
