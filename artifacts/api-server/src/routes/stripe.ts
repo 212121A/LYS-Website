@@ -4,7 +4,7 @@ import { isOrderingOpen } from "../openingHours";
 
 // Mindestbestellwert (Cent). Spiegelt MIN_ORDER_VALUE_EUR im Frontend
 // (artifacts/ly-restaurant/src/lib/orderRules.ts).
-const MIN_ORDER_CENTS = 2000;
+const MIN_ORDER_CENTS = 1000;
 
 const router = Router();
 

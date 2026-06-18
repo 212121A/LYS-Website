@@ -69,7 +69,7 @@ function isOrderingOpen(now = new Date()) {
 
 // Mindestbestellwert (Cent). Spiegelt MIN_ORDER_VALUE_EUR im Frontend
 // (artifacts/ly-restaurant/src/lib/orderRules.ts). Server erzwingt autoritativ.
-const MIN_ORDER_CENTS = 2000;
+const MIN_ORDER_CENTS = 1000;
 
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
