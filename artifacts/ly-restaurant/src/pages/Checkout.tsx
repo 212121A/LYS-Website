@@ -1,11 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js";
 import { ArrowLeft, Lock, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getOrderingStatus, getPickupSlots, ASAP_PICKUP_VALUE } from "@/lib/openingHours";
@@ -26,14 +21,6 @@ const API_BASE_URL = (
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "sb";
 const CHECKOUT_CONTEXT_KEY = "lys_checkout_context";
 
-// Stripe.js einmalig (Modul-Ebene) laden, nicht bei jedem Render. Ohne
-// Publishable Key kann Embedded Checkout nicht initialisieren -> stripePromise
-// bleibt null und der Pay-Button zeigt einen Fallback-Hinweis.
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ?? "";
-const stripePromise = STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(STRIPE_PUBLISHABLE_KEY)
-  : null;
-
 // PayPal ist noch nicht produktionsreif: Der Preis kommt aktuell aus dem Browser
 // (keine serverseitige Preishoheit) und PayPal-Bestellungen erreichen das
 // Küchen-Dashboard nicht. Bis zur sauberen serverseitigen Anbindung kurz vor
@@ -50,8 +37,7 @@ export default function Checkout() {
     "stripe",
   );
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const [isStartingCheckout, setIsStartingCheckout] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
 
   // Öffnungsstatus + Abhol-Slots einmalig beim Mount berechnen (Europe/Berlin).
   const orderingStatus = useMemo(() => getOrderingStatus(), []);
@@ -95,17 +81,9 @@ export default function Checkout() {
   };
 
   const handleStripeCheckout = async () => {
-    if (isStartingCheckout || clientSecret) return;
+    if (isRedirectingToStripe) return;
     setCheckoutError(null);
-
-    if (!stripePromise) {
-      setCheckoutError(
-        "Online-Zahlung ist gerade nicht verfügbar. Bitte zahle an der Theke oder ruf uns an.",
-      );
-      return;
-    }
-
-    setIsStartingCheckout(true);
+    setIsRedirectingToStripe(true);
     localStorage.setItem(
       CHECKOUT_CONTEXT_KEY,
       JSON.stringify({
@@ -145,21 +123,18 @@ export default function Checkout() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "Checkout konnte nicht gestartet werden.");
+        throw new Error(data?.error ?? "Checkout session konnte nicht erstellt werden.");
       }
 
       const data = await response.json();
-      if (!data?.client_secret || typeof data.client_secret !== "string") {
-        throw new Error("Stripe Checkout konnte nicht initialisiert werden.");
+      if (!data?.url || typeof data.url !== "string") {
+        throw new Error("Stripe Checkout URL fehlt.");
       }
 
-      // Embedded Checkout inline mounten (kein Redirect auf eine fremde
-      // Domain mehr) — Ladefehler bleiben so in unserer UI sichtbar.
-      setClientSecret(data.client_secret);
+      window.location.href = data.url;
     } catch (error: any) {
-      setCheckoutError(error?.message ?? "Fehler beim Starten der Zahlung.");
-    } finally {
-      setIsStartingCheckout(false);
+      setCheckoutError(error?.message ?? "Fehler beim Starten von Stripe Checkout.");
+      setIsRedirectingToStripe(false);
     }
   };
 
@@ -382,33 +357,22 @@ export default function Checkout() {
                 )}
 
                 {(!PAYPAL_ENABLED || paymentMethod === "stripe") ? (
-                  clientSecret && stripePromise ? (
-                    <div id="lys-embedded-checkout">
-                      <EmbeddedCheckoutProvider
-                        stripe={stripePromise}
-                        options={{ clientSecret }}
-                      >
-                        <EmbeddedCheckout />
-                      </EmbeddedCheckoutProvider>
-                    </div>
-                  ) : (
                   <>
                     <button
                       type="button"
                       onClick={handleStripeCheckout}
-                      disabled={isStartingCheckout}
+                      disabled={isRedirectingToStripe}
                       className="w-full bg-primary text-primary-foreground py-4 rounded-full font-medium text-base hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <Lock size={16} />
-                      {isStartingCheckout
-                        ? "Zahlung wird vorbereitet..."
+                      {isRedirectingToStripe
+                        ? "Weiterleitung zu Stripe..."
                         : `Mit Karte /  Apple Pay bezahlen (${fmt(subtotal)})`}
                     </button>
                     <p className="mt-3 text-xs text-muted-foreground">
-                      Apple Pay wird bei unterstuetzten Geraeten automatisch angezeigt.
+                      Apple Pay wird bei unterstuetzten Geraeten automatisch in Stripe Checkout angezeigt.
                     </p>
                   </>
-                  )
                 ) : (
                   <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "EUR" }}>
                     <PayPalButtons
