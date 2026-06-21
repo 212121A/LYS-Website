@@ -1525,8 +1525,15 @@ export default function Order() {
         </div>
       )}
 
-      {/* Mobile sticky cart bar — visible whenever cart has items, always reachable while scrolling */}
-      {cart.length > 0 && (
+      {/* Mobile sticky cart bar — visible whenever cart has items, always reachable
+          while scrolling. Ausgeblendet, solange ein Auswahl-Dialog offen ist, sonst
+          verdeckt die Leiste auf dem Handy die unteren Dialog-Optionen. */}
+      {cart.length > 0 &&
+        !pendingBox &&
+        !pendingFriedRice &&
+        !pendingBowl &&
+        !pendingMilkOption &&
+        !pendingSmoothie && (
         <button
           onClick={goToCheckout}
           disabled={belowMinimum}
