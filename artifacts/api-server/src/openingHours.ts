@@ -1,11 +1,12 @@
 /**
  * Bestellannahme-Fenster (Europe/Berlin) — spiegelt
  * artifacts/ly-restaurant/src/lib/openingHours.ts. Der Server hat Autoritaet:
- * Annahme nur innerhalb der Oeffnungszeiten und bis 30 Min vor Ladenschluss;
+ * Annahme ab 2 Std vor Oeffnung (Vorbestellung) bis 30 Min vor Ladenschluss;
  * gesetzliche Feiertage (Baden-Wuerttemberg) gelten wie Sonntag.
  */
 
 const LAST_ORDER_OFFSET_MINUTES = 30;
+const PRE_ORDER_LEAD_MINUTES = 120;
 
 interface OpeningWindow {
   open: number; // Minuten seit Mitternacht
@@ -97,7 +98,7 @@ export function isOrderingOpen(now: Date = new Date()): boolean {
     : OPENING_HOURS[p.weekday];
   if (!window) return false;
   return (
-    p.minutes >= window.open &&
+    p.minutes >= window.open - PRE_ORDER_LEAD_MINUTES &&
     p.minutes < window.close - LAST_ORDER_OFFSET_MINUTES
   );
 }

@@ -20,6 +20,12 @@ const SLOT_STEP_MINUTES = 15;
 /** Annahmeschluss: letzte Bestellung 30 Min vor Ladenschluss. */
 const LAST_ORDER_OFFSET_MINUTES = 30;
 
+/** Vorbestellung: Annahme startet bereits 2 Std vor Öffnung. */
+const PRE_ORDER_LEAD_MINUTES = 120;
+
+/** Frühester wählbarer Abhol-Slot ab Öffnung + 30 Min (11:30 bzw. 13:30). */
+const PICKUP_OPEN_OFFSET_MINUTES = 30;
+
 interface OpeningWindow {
   open: number; // Minuten seit Mitternacht
   close: number;
@@ -142,9 +148,9 @@ function formatHHMM(totalMinutes: number): string {
 
 /**
  * Bestellannahme-Status für den Checkout:
- * - "open": Bestellungen werden angenommen.
+ * - "open": Bestellungen werden angenommen (inkl. Vorbestellung ab 2 Std vor Öffnung).
  * - "ordering-closed": Laden noch offen, aber Annahmeschluss erreicht (letzte 30 Min).
- * - "closed": außerhalb der Öffnungszeiten.
+ * - "closed": außerhalb des Annahmefensters.
  */
 export type OrderingStatus = "open" | "ordering-closed" | "closed";
 
@@ -152,7 +158,10 @@ export function getOrderingStatus(now: Date = new Date()): OrderingStatus {
   const parts = berlinNow(now);
   const window = windowFor(parts);
   if (!window) return "closed";
-  if (parts.minutes < window.open || parts.minutes >= window.close) {
+  if (
+    parts.minutes < window.open - PRE_ORDER_LEAD_MINUTES ||
+    parts.minutes >= window.close
+  ) {
     return "closed";
   }
   if (parts.minutes >= window.close - LAST_ORDER_OFFSET_MINUTES) {
@@ -163,8 +172,8 @@ export function getOrderingStatus(now: Date = new Date()): OrderingStatus {
 
 /**
  * Liste wählbarer Abhol-Slots ("HH:MM") für HEUTE.
- * Frühester Slot = max(Öffnung, jetzt + 20 Min), aufgerundet auf die nächste
- * Viertelstunde; Schrittweite 15 Min bis Ladenschluss (inkl.).
+ * Frühester Slot = max(Öffnung + 30 Min, jetzt + 20 Min), aufgerundet auf die
+ * nächste Viertelstunde; Schrittweite 15 Min bis Ladenschluss (inkl.).
  * Leer, wenn (jetzt + 20 Min) bereits nach Ladenschluss liegt.
  */
 export function getPickupSlots(now: Date = new Date()): string[] {
@@ -172,7 +181,10 @@ export function getPickupSlots(now: Date = new Date()): string[] {
   const window = windowFor(parts);
   if (!window) return [];
 
-  const earliestRaw = Math.max(window.open, parts.minutes + LEAD_MINUTES);
+  const earliestRaw = Math.max(
+    window.open + PICKUP_OPEN_OFFSET_MINUTES,
+    parts.minutes + LEAD_MINUTES,
+  );
   const earliest =
     Math.ceil(earliestRaw / SLOT_STEP_MINUTES) * SLOT_STEP_MINUTES;
 

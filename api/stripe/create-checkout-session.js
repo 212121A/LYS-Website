@@ -2,9 +2,10 @@ import Stripe from "stripe";
 
 // Bestellannahme-Fenster (Europe/Berlin) — spiegelt
 // artifacts/ly-restaurant/src/lib/openingHours.ts. Server hat Autoritaet:
-// Annahme nur innerhalb der Oeffnungszeiten und bis 30 Min vor Ladenschluss;
+// Annahme ab 2 Std vor Oeffnung (Vorbestellung) bis 30 Min vor Ladenschluss;
 // gesetzliche Feiertage (Baden-Wuerttemberg) gelten wie Sonntag.
 const LAST_ORDER_OFFSET_MINUTES = 30;
+const PRE_ORDER_LEAD_MINUTES = 120;
 const OPENING_HOURS = {
   0: { open: 13 * 60, close: 20 * 60 }, // So
   1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
@@ -64,7 +65,10 @@ function isOrderingOpen(now = new Date()) {
     ? OPENING_HOURS[0]
     : OPENING_HOURS[p.weekday];
   if (!win) return false;
-  return p.minutes >= win.open && p.minutes < win.close - LAST_ORDER_OFFSET_MINUTES;
+  return (
+    p.minutes >= win.open - PRE_ORDER_LEAD_MINUTES &&
+    p.minutes < win.close - LAST_ORDER_OFFSET_MINUTES
+  );
 }
 
 // Mindestbestellwert (Cent). Spiegelt MIN_ORDER_VALUE_EUR im Frontend
