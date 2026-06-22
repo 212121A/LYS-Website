@@ -934,11 +934,15 @@ export default async function handler(req, res) {
     }
 
     const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      success_url: `${normalizedOrigin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${normalizedOrigin}/cancel`,
+      // Embedded Checkout laeuft auf unserer Domain. Nach Abschluss leitet
+      // Stripe das Top-Window auf return_url um (ersetzt success_url).
+      // cancel_url ist im embedded-Modus nicht erlaubt — Abbruch bedeutet, der
+      // Kunde bleibt einfach auf /checkout.
+      return_url: `${normalizedOrigin}/success?session_id={CHECKOUT_SESSION_ID}`,
       customer_email:
         typeof customer.email === "string" ? customer.email : undefined,
       metadata: sessionMetadata,
@@ -991,7 +995,8 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      url: session.url,
+      client_secret: session.client_secret,
+      session_id: session.id,
       pending_order: {
         status: pendingOrderStatus,
         error: pendingOrderError,
