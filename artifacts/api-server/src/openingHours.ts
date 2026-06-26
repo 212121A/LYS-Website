@@ -14,7 +14,7 @@ interface OpeningWindow {
 }
 
 const OPENING_HOURS: Record<number, OpeningWindow> = {
-  0: { open: 13 * 60, close: 20 * 60 }, // So
+  0: { open: 16 * 60, close: 21 * 60 }, // So
   1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
   2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di
   3: { open: 11 * 60, close: 21 * 60 + 30 }, // Mi

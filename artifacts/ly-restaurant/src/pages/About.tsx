@@ -16,7 +16,7 @@ export default function About() {
   const schedule = [
     { day: t.about.mondayFriday, hours: "11:00 – 21:30 Uhr", closed: false },
     { day: t.about.saturdayHours, hours: "11:00 – 22:00 Uhr", closed: false },
-    { day: t.about.sundayClosed, hours: "13:00 – 20:00 Uhr", closed: false },
+    { day: t.about.sundayClosed, hours: "16:00 – 21:00 Uhr", closed: false },
   ];
 
   return (

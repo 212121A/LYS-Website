@@ -138,7 +138,7 @@ export default function Home() {
                   <br />
                   Fr–Sa: bis 22:00
                 </p>
-                <p className="text-xs text-muted-foreground">So & Feiertage: 13:00–20:00 Uhr</p>
+                <p className="text-xs text-muted-foreground">So & Feiertage: 16:00–21:00 Uhr</p>
               </div>
             </div>
           </div>

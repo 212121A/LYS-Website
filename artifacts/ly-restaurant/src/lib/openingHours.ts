@@ -5,7 +5,7 @@
  * des Nutzers), damit die Slots für den Laden in Schwäbisch Gmünd korrekt sind.
  *
  * Gesetzliche Feiertage in Baden-Württemberg werden automatisch erkannt; an
- * Feiertagen gelten die Sonntags-Zeiten (13:00–20:00).
+ * Feiertagen gelten die Sonntags-Zeiten (16:00–21:00).
  */
 
 /** Fester, zeitzonen-/sprachunabhängiger Wert für „ASAP" (so liest ihn die Küche). */
@@ -33,11 +33,11 @@ interface OpeningWindow {
 
 /**
  * Bestellannahme-Zeitfenster je Wochentag (0 = So … 6 = Sa) — identisch zu den
- * Öffnungszeiten: Mo–Do 11:00–21:30, Fr–Sa 11:00–22:00, So 13:00–20:00.
+ * Öffnungszeiten: Mo–Do 11:00–21:30, Fr–Sa 11:00–22:00, So 16:00–21:00.
  * An Feiertagen gilt das Sonntags-Fenster (siehe windowFor).
  */
 const OPENING_HOURS: Record<number, OpeningWindow> = {
-  0: { open: 13 * 60, close: 20 * 60 }, // So
+  0: { open: 16 * 60, close: 21 * 60 }, // So
   1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
   2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di
   3: { open: 11 * 60, close: 21 * 60 + 30 }, // Mi
