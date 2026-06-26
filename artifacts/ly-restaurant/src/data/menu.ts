@@ -233,7 +233,7 @@ export const menuCategories: MenuCategory[] = [
     id: "bowls",
     name: "Bowls",
     nameKey: "catBowls",
-    subtitle: "Frische saisonale Früchte inklusive\nZum Beispiel: Banane, Erdbeere, Blaubeere, Himbeere, Mango\nToppings: • Honig (+0,5) • Agavendicksaft (0,5) • Matcha (+2) • Granola (+2) • Schoko/Kokos (+1)",
+    subtitle: "Frische saisonale Früchte inklusive\nZum Beispiel: Banane, Erdbeere, Blaubeere, Himbeere, Mango\nToppings: • Honig (+0,5) • Agavendicksaft (0,5) • Matcha (+2) • Granola (+2) • Schoko (+1) • Kokos (+1)",
     items: [
       { id: "bowl-oats1", number: "24", name: "Overnight Oats mit Haferflocken & Milch", nameKey: "bowlOats1", price: 6.5, vegetarian: true, category: "bowls" },
       { id: "bowl-joghurt", number: "25", name: "Joghurt Bowl", nameKey: "bowlJoghurt", price: 6.5, vegetarian: true, category: "bowls" },

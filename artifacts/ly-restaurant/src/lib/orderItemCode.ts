@@ -21,7 +21,7 @@ export type BoxSauce = "soja" | "suesssauer" | "curry" | "matcha" | "mango" | "k
 export const NO_SAUCE_LABEL = "Ohne Soße";
 export const NO_VEGGIES_LABEL = "Ohne Gemüse";
 export type BowlFruit = "banane" | "erdbeere" | "blaubeere" | "himbeere" | "mango";
-export type BowlTopping = "honig" | "agave" | "matcha" | "granola" | "schoko-kokos";
+export type BowlTopping = "honig" | "agave" | "matcha" | "granola" | "schoko" | "kokos";
 export type MenuMilk = "kuhmilch" | "sojamilch" | "hafermilch" | "kokosmilch";
 export type MatchaStyle = "classic" | "frappe" | "protein";
 export type SmoothieFruit =
@@ -69,7 +69,8 @@ export const BOWL_TOPPING_LABEL: Record<BowlTopping, string> = {
   agave: "Agavendicksaft",
   matcha: "Matcha",
   granola: "Granola",
-  "schoko-kokos": "Schoko/Kokos",
+  schoko: "Schoko",
+  kokos: "Kokos",
 };
 
 export const BOWL_TOPPING_SURCHARGE: Record<BowlTopping, number> = {
@@ -77,7 +78,8 @@ export const BOWL_TOPPING_SURCHARGE: Record<BowlTopping, number> = {
   agave: 0.5,
   matcha: 2,
   granola: 2,
-  "schoko-kokos": 1,
+  schoko: 1,
+  kokos: 1,
 };
 
 export const BOWL_TOPPINGS: BowlTopping[] = [
@@ -85,7 +87,8 @@ export const BOWL_TOPPINGS: BowlTopping[] = [
   "agave",
   "matcha",
   "granola",
-  "schoko-kokos",
+  "schoko",
+  "kokos",
 ];
 
 export const BOWL_FRUIT_LABEL: Record<BowlFruit, string> = {
