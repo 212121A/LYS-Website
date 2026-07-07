@@ -771,6 +771,15 @@ export default function Order() {
                                 {t.order.large} {formatPrice(item.price)}
                               </button>
                             </div>
+                          ) : isBox ? (
+                            <button
+                              onClick={() => addToCart(item, "large")}
+                              data-testid={`button-add-${item.id}-large`}
+                              className="flex items-center justify-end gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors border border-primary/20"
+                            >
+                              <Plus size={10} />
+                              {t.order.large} {formatPrice(item.price)}
+                            </button>
                           ) : (
                             <div className="flex flex-col items-end gap-2">
                               <span className="font-semibold text-foreground text-sm">{formatPrice(item.price)}</span>
