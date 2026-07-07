@@ -7,7 +7,7 @@ import Stripe from "stripe";
 const LAST_ORDER_OFFSET_MINUTES = 30;
 const PRE_ORDER_LEAD_MINUTES = 120;
 const OPENING_HOURS = {
-  0: { open: 13 * 60, close: 20 * 60 }, // So
+  0: { open: 16 * 60, close: 21 * 60 }, // So
   1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
   2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di
   3: { open: 11 * 60, close: 21 * 60 + 30 }, // Mi
@@ -248,6 +248,10 @@ const BOWL_TOPPINGS = {
   agave: "Agavendicksaft",
   matcha: "Matcha",
   granola: "Granola",
+  schoko: "Schoko",
+  kokos: "Kokos",
+  // Legacy: früher ein kombiniertes Topping; bleibt für alte Warenkörbe
+  // (localStorage) bestellbar, das Frontend erzeugt es nicht mehr.
   "schoko-kokos": "Schoko/Kokos",
 };
 
@@ -256,6 +260,8 @@ const BOWL_TOPPING_PRICE = {
   agave: 50,
   matcha: 200,
   granola: 200,
+  schoko: 100,
+  kokos: 100,
   "schoko-kokos": 100,
 };
 
