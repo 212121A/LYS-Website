@@ -22,14 +22,6 @@ export default function Success() {
       return;
     }
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !supabaseAnonKey) {
-      setIsLoading(false);
-      setErrorMessage(FALLBACK_MESSAGE);
-      return;
-    }
-
     let isActive = true;
     const timeoutIds: number[] = [];
 
@@ -45,25 +37,19 @@ export default function Success() {
         attempts++;
 
         try {
-          const encodedSessionId = encodeURIComponent(sessionId);
-          const url = `${supabaseUrl}/rest/v1/orders?stripe_session_id=eq.${encodedSessionId}&select=order_number`;
-
+          // P1-7: über den Server-Endpoint (service_role) statt direkter
+          // anon-Supabase-Query — die RLS blockiert anon auf status='neu',
+          // dadurch erschien die Nummer bisher nie.
           const res = await fetch(
-            url,
-            {
-              headers: {
-                apikey: supabaseAnonKey,
-                Authorization: `Bearer ${supabaseAnonKey}`,
-                "Content-Type": "application/json",
-              },
-            },
+            `/api/stripe/order-number?session_id=${encodeURIComponent(sessionId)}`,
+            { headers: { "Content-Type": "application/json" } },
           );
 
-          const data = (await res.json()) as Array<{ order_number?: string | number }>;
+          const data = (await res.json()) as { order_number?: string | number | null };
 
-          if (data && data.length > 0 && data[0].order_number) {
+          if (data && data.order_number) {
             if (!isActive) return;
-            setOrderNumber(String(data[0].order_number));
+            setOrderNumber(String(data.order_number));
             setIsLoading(false);
             setErrorMessage(null);
             return;
