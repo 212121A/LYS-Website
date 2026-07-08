@@ -6,46 +6,25 @@
 // serverseitig mit dem service_role-Key (RLS-unabhängig) und macht damit auch
 // den Weg frei, den anon-Lockdown (Migration 006) scharf zu schalten.
 
+import { checkRateLimitDistributed, clientIpOf } from "./_rateLimit.js";
+
 // Nur cs_-Session-IDs zulassen (cs_test_/cs_live_/cs_counter_...).
 const SESSION_ID_RE = /^cs_[A-Za-z0-9_]{8,200}$/;
 
-// In-Memory Rate Limit (pro Function-Instance). Poll = 15 Requests/Session →
-// 30/min lässt normalen Betrieb durch, bremst Enumeration.
+// Rate Limit: 30 Requests / 60 s / IP (Poll ≈ 15/Session → normal ok, bremst
+// Enumeration). Verteilt über Upstash, sonst In-Memory (siehe ./_rateLimit.js).
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
-const rateLimitBuckets = new Map();
-
-function getClientIp(req) {
-  const fwd = req.headers["x-forwarded-for"];
-  if (typeof fwd === "string" && fwd.length > 0) return fwd.split(",")[0].trim();
-  if (Array.isArray(fwd) && fwd.length > 0) return String(fwd[0]).split(",")[0].trim();
-  return req.socket?.remoteAddress || "unknown";
-}
-
-function checkRateLimit(req) {
-  const ip = getClientIp(req);
-  const now = Date.now();
-  const bucket = rateLimitBuckets.get(ip);
-  if (!bucket || now >= bucket.resetAt) {
-    rateLimitBuckets.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    if (rateLimitBuckets.size > 5000) {
-      for (const [k, b] of rateLimitBuckets) if (now >= b.resetAt) rateLimitBuckets.delete(k);
-    }
-    return { allowed: true };
-  }
-  if (bucket.count >= RATE_LIMIT_MAX) {
-    return { allowed: false, retryAfterSec: Math.ceil((bucket.resetAt - now) / 1000) };
-  }
-  bucket.count += 1;
-  return { allowed: true };
-}
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const rl = checkRateLimit(req);
+  const rl = await checkRateLimitDistributed(`order-number:${clientIpOf(req)}`, {
+    max: RATE_LIMIT_MAX,
+    windowMs: RATE_LIMIT_WINDOW_MS,
+  });
   if (!rl.allowed) {
     res.setHeader("Retry-After", String(rl.retryAfterSec));
     return res.status(429).json({ order_number: null });
