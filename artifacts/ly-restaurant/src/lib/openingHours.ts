@@ -18,10 +18,10 @@ const LEAD_MINUTES = 20;
 const SLOT_STEP_MINUTES = 15;
 
 /** Annahmeschluss: letzte Bestellung 30 Min vor Ladenschluss. */
-const LAST_ORDER_OFFSET_MINUTES = 30;
+export const LAST_ORDER_OFFSET_MINUTES = 30;
 
 /** Vorbestellung: Annahme startet bereits 2 Std vor Öffnung. */
-const PRE_ORDER_LEAD_MINUTES = 120;
+export const PRE_ORDER_LEAD_MINUTES = 120;
 
 /** Frühester wählbarer Abhol-Slot ab Öffnung + 30 Min (11:30 bzw. 13:30). */
 const PICKUP_OPEN_OFFSET_MINUTES = 30;
@@ -36,7 +36,7 @@ interface OpeningWindow {
  * Öffnungszeiten: Mo–Do 11:00–21:30, Fr–Sa 11:00–22:00, So 16:00–21:00.
  * An Feiertagen gilt das Sonntags-Fenster (siehe windowFor).
  */
-const OPENING_HOURS: Record<number, OpeningWindow> = {
+export const OPENING_HOURS: Record<number, OpeningWindow> = {
   0: { open: 16 * 60, close: 21 * 60 }, // So
   1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
   2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di

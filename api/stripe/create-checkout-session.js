@@ -4,9 +4,9 @@ import Stripe from "stripe";
 // artifacts/ly-restaurant/src/lib/openingHours.ts. Server hat Autoritaet:
 // Annahme ab 2 Std vor Oeffnung (Vorbestellung) bis 30 Min vor Ladenschluss;
 // gesetzliche Feiertage (Baden-Wuerttemberg) gelten wie Sonntag.
-const LAST_ORDER_OFFSET_MINUTES = 30;
-const PRE_ORDER_LEAD_MINUTES = 120;
-const OPENING_HOURS = {
+export const LAST_ORDER_OFFSET_MINUTES = 30;
+export const PRE_ORDER_LEAD_MINUTES = 120;
+export const OPENING_HOURS = {
   0: { open: 16 * 60, close: 21 * 60 }, // So
   1: { open: 11 * 60, close: 21 * 60 + 30 }, // Mo
   2: { open: 11 * 60, close: 21 * 60 + 30 }, // Di
@@ -78,7 +78,7 @@ const MIN_ORDER_CENTS = 1000;
 // Server-seitige Preisautoritaet: alle Preise sind in Cent (EUR).
 // Cart-IDs aus dem Frontend werden gegen diese Whitelist validiert.
 // number = Menue-Abkuerzung (wird ans Kitchen-Dashboard durchgereicht).
-const PRODUCTS = {
+export const PRODUCTS = {
   v1: { number: "1", name: "Nem Ran", price: 400 },
   v2: { number: "2", name: "Mini Frühlingsrollen (vegan)", price: 200 },
 
@@ -255,7 +255,7 @@ const BOWL_TOPPINGS = {
   "schoko-kokos": "Schoko/Kokos",
 };
 
-const BOWL_TOPPING_PRICE = {
+export const BOWL_TOPPING_PRICE = {
   honig: 50,
   agave: 50,
   matcha: 200,
@@ -272,7 +272,7 @@ const MENU_MILKS = {
   kokosmilch: "Kokosmilch",
 };
 
-const MATCHA_MILK_SURCHARGE = {
+export const MATCHA_MILK_SURCHARGE = {
   kuhmilch: 0,
   sojamilch: 50,
   hafermilch: 50,
@@ -285,7 +285,7 @@ const MATCHA_STYLE_LABEL = {
   protein: "Proteinmatcha",
 };
 
-const MATCHA_STYLE_SURCHARGE = {
+export const MATCHA_STYLE_SURCHARGE = {
   classic: 0,
   frappe: 100,
   protein: 200,
