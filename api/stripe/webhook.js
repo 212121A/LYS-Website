@@ -49,6 +49,28 @@ function supabaseHeaders(env) {
   }
 }
 
+// Best-effort Ops-Event fuer den Health-Hub (P2-1). Blockiert nie und wirft nie —
+// ein fehlgeschlagenes Logging darf Bestellung/Mail nicht gefaehrden. Die Tabelle
+// ops_events wird separat angelegt (sql/bestell-db/ops_events_und_grants.sql im
+// Health-Hub-Repo); bis dahin laeuft der Insert ins Leere (gefangen).
+async function logOpsEvent(eventType, detail) {
+  const env = supabaseEnv()
+  if (!env) return
+  try {
+    await fetch(`${env.url}/rest/v1/ops_events`, {
+      method: "POST",
+      headers: { ...supabaseHeaders(env), Prefer: "return=minimal" },
+      body: JSON.stringify({
+        source: "website-webhook",
+        event_type: eventType,
+        detail: detail ?? {},
+      }),
+    })
+  } catch (err) {
+    console.error("[ops_events] Logging fehlgeschlagen:", err?.message ?? err)
+  }
+}
+
 // Echte Bestellnummer aus Supabase holen (von n8n via order_counter erzeugt
 // und nach orders.order_number geschrieben — dieselbe Quelle wie die
 // Success-Seite). Kurzes Polling, weil n8n die Zeile erst ~Sekunden nach dem
@@ -145,6 +167,7 @@ async function createFallbackOrder(session) {
       orderNumber,
       session.id,
     )
+    await logOpsEvent("n8n_fallback_used", { session: session.id, orderNumber: String(orderNumber) })
     return { orderNumber: String(orderNumber) }
   } catch (err) {
     console.error("[reconciler] Fallback-Insert fehlgeschlagen:", err?.message ?? err)
@@ -268,6 +291,7 @@ export default async function handler(req, res) {
         // Transienter Fehler (Supabase/RPC nicht erreichbar): 500 → Stripe
         // stellt den Event erneut zu (bis zu 3 Tage). Mail wurde noch nicht
         // verschickt, es doppelt sich also nichts.
+        await logOpsEvent("order_reconcile_failed", { session: session.id })
         return res
           .status(500)
           .json({ error: "Order-Reconciliation fehlgeschlagen — bitte Retry" })
@@ -327,6 +351,10 @@ export default async function handler(req, res) {
       } catch (err) {
         // Don't fail the webhook on mail-send error — Stripe would retry the whole event
         console.error("Failed to send confirmation email:", err)
+        await logOpsEvent("resend_failed", {
+          session: session.id,
+          error: String(err?.message ?? err),
+        })
       }
     }
   }
