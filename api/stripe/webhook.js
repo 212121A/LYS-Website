@@ -34,6 +34,21 @@ function parseItems(metadata) {
   return []
 }
 
+function supabaseEnv() {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return null
+  return { url, key }
+}
+
+function supabaseHeaders(env) {
+  return {
+    apikey: env.key,
+    Authorization: `Bearer ${env.key}`,
+    "Content-Type": "application/json",
+  }
+}
+
 // Echte Bestellnummer aus Supabase holen (von n8n via order_counter erzeugt
 // und nach orders.order_number geschrieben — dieselbe Quelle wie die
 // Success-Seite). Kurzes Polling, weil n8n die Zeile erst ~Sekunden nach dem
@@ -41,19 +56,18 @@ function parseItems(metadata) {
 // ~10s Webhook-Timeout. Gibt null zurueck, wenn (noch) nicht vorhanden — dann
 // wird KEINE (falsche) Nummer in die Mail geschrieben.
 async function fetchOrderNumber(sessionId, attempts = 5, delayMs = 1200) {
-  const url = process.env.SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) {
+  const env = supabaseEnv()
+  if (!env) {
     console.warn("[order_number] Supabase env fehlt — kann Nummer nicht lesen")
     return null
   }
-  const endpoint = `${url}/rest/v1/orders?stripe_session_id=eq.${encodeURIComponent(
+  const endpoint = `${env.url}/rest/v1/orders?stripe_session_id=eq.${encodeURIComponent(
     sessionId,
   )}&select=order_number`
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(endpoint, {
-        headers: { apikey: key, Authorization: `Bearer ${key}` },
+        headers: { apikey: env.key, Authorization: `Bearer ${env.key}` },
       })
       if (res.ok) {
         const rows = await res.json()
@@ -69,6 +83,73 @@ async function fetchOrderNumber(sessionId, attempts = 5, delayMs = 1200) {
   }
   console.warn("[order_number] nicht rechtzeitig gefunden fuer session", sessionId)
   return null
+}
+
+// Nummernvergabe wie alle anderen Kanaele: dieselbe RPC, nie selbst zaehlen.
+// Live-RPC liefert eine Zeile { order_number } (der n8n-BNR-Knoten liest genau
+// das) — zur Sicherheit auch Skalar/current_number akzeptieren.
+async function drawOrderNumber(env) {
+  const res = await fetch(`${env.url}/rest/v1/rpc/next_order_number`, {
+    method: "POST",
+    headers: supabaseHeaders(env),
+    body: "{}",
+  })
+  if (!res.ok) throw new Error(`next_order_number RPC ${res.status}`)
+  const data = await res.json()
+  const row = Array.isArray(data) ? data[0] : data
+  const num =
+    typeof row === "number" ? row : (row?.order_number ?? row?.current_number)
+  if (num === undefined || num === null) {
+    throw new Error("next_order_number: keine Nummer in der Antwort")
+  }
+  return num
+}
+
+// P0-2-Fallback: n8n (/stripe-order-paid) hat die Bestellung nicht angelegt —
+// ohne diesen Insert waere Geld eingezogen, aber die Kueche blind. Spalten
+// exakt wie der n8n-Website-Insert. Idempotent ueber den partiellen
+// Unique-Index orders_stripe_session_id_unique: verliert dieser Insert das
+// Rennen gegen ein spaetes n8n, antwortet PostgREST 409 und die n8n-Zeile gilt.
+async function createFallbackOrder(session) {
+  const env = supabaseEnv()
+  if (!env) {
+    // Misskonfiguration, kein transienter Fehler — kein Stripe-Retry-Sturm.
+    console.error("[reconciler] Supabase env fehlt — Fallback-Insert unmoeglich")
+    return { orderNumber: null }
+  }
+  try {
+    const orderNumber = await drawOrderNumber(env)
+    const items = parseItems(session.metadata || {})
+    const res = await fetch(`${env.url}/rest/v1/orders`, {
+      method: "POST",
+      headers: { ...supabaseHeaders(env), Prefer: "return=minimal" },
+      body: JSON.stringify({
+        order_number: orderNumber,
+        items: JSON.stringify(items),
+        pickup_time: session.metadata?.pickup_time || "",
+        status: "neu",
+        source: "website",
+        stripe_session_id: session.id,
+      }),
+    })
+    if (res.status === 409) {
+      console.log("[reconciler] n8n war schneller — Duplikat ignoriert:", session.id)
+      return { orderNumber: await fetchOrderNumber(session.id, 1, 0) }
+    }
+    if (!res.ok) {
+      const text = await res.text().catch(() => "")
+      throw new Error(`orders-Insert ${res.status}: ${text.slice(0, 300)}`)
+    }
+    console.warn(
+      "[reconciler] n8n-Ausfall ueberbrueckt — Fallback-Order angelegt:",
+      orderNumber,
+      session.id,
+    )
+    return { orderNumber: String(orderNumber) }
+  } catch (err) {
+    console.error("[reconciler] Fallback-Insert fehlgeschlagen:", err?.message ?? err)
+    return { retry: true }
+  }
 }
 
 function formatEuros(cents) {
@@ -176,6 +257,24 @@ export default async function handler(req, res) {
     const session = event.data.object
     console.log("Payment confirmed:", session.id)
 
+    // P0-2: Erst sicherstellen, dass die Bestellung existiert — VOR der Mail.
+    // Normalfall: n8n legt sie an, wir finden sie per Polling. Faellt n8n aus,
+    // legen wir sie selbst an. Nur Website-Sessions (metadata.app) — der
+    // geteilte Stripe-Account liefert hier auch Terminal-Events an.
+    let orderNumber = await fetchOrderNumber(session.id, 4, 1000)
+    if (!orderNumber && session.metadata?.app === "lys-website") {
+      const fallback = await createFallbackOrder(session)
+      if (fallback.retry) {
+        // Transienter Fehler (Supabase/RPC nicht erreichbar): 500 → Stripe
+        // stellt den Event erneut zu (bis zu 3 Tage). Mail wurde noch nicht
+        // verschickt, es doppelt sich also nichts.
+        return res
+          .status(500)
+          .json({ error: "Order-Reconciliation fehlgeschlagen — bitte Retry" })
+      }
+      orderNumber = fallback.orderNumber
+    }
+
     const email = session.customer_details?.email || session.customer_email
     const apiKey = process.env.RESEND_API_KEY
     const fromAddress = process.env.RESEND_FROM_EMAIL
@@ -191,7 +290,6 @@ export default async function handler(req, res) {
       try {
         const metadata = session.metadata || {}
         const items = parseItems(metadata)
-        const orderNumber = await fetchOrderNumber(session.id)
         const total = formatEuros(session.amount_total)
         const name = metadata.customerName || session.customer_details?.name || ""
         const note = metadata.note || ""
