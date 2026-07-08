@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { checkRateLimitDistributed, clientIpOf } from "./_rateLimit.js";
 
 // Bestellannahme-Fenster (Europe/Berlin) — spiegelt
 // artifacts/ly-restaurant/src/lib/openingHours.ts. Server hat Autoritaet:
@@ -667,49 +668,11 @@ function resolveProduct(id) {
   return null;
 }
 
-// In-Memory Rate Limit (pro Function-Instance / pro Vercel-Region).
-// Vercel KV waere robuster, vermeidet aber zusaetzliches Setup.
-// Limit: max 20 Requests pro 60 Sekunden pro IP.
+// Rate Limit: max 20 Requests / 60 s / IP. Verteilt über Upstash, sobald
+// UPSTASH_REDIS_REST_URL/_TOKEN gesetzt sind — sonst In-Memory pro Instanz
+// (siehe ./_rateLimit.js).
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 20;
-const rateLimitBuckets = new Map();
-
-function getClientIp(req) {
-  const fwd = req.headers["x-forwarded-for"];
-  if (typeof fwd === "string" && fwd.length > 0) {
-    return fwd.split(",")[0].trim();
-  }
-  if (Array.isArray(fwd) && fwd.length > 0) {
-    return String(fwd[0]).split(",")[0].trim();
-  }
-  return req.socket?.remoteAddress || "unknown";
-}
-
-function checkRateLimit(req) {
-  const ip = getClientIp(req);
-  const now = Date.now();
-  const bucket = rateLimitBuckets.get(ip);
-
-  if (!bucket || now >= bucket.resetAt) {
-    rateLimitBuckets.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    cleanupExpiredBuckets(now);
-    return { allowed: true };
-  }
-
-  if (bucket.count >= RATE_LIMIT_MAX) {
-    return { allowed: false, retryAfterSec: Math.ceil((bucket.resetAt - now) / 1000) };
-  }
-
-  bucket.count += 1;
-  return { allowed: true };
-}
-
-function cleanupExpiredBuckets(now) {
-  if (rateLimitBuckets.size < 1000) return;
-  for (const [ip, bucket] of rateLimitBuckets) {
-    if (now >= bucket.resetAt) rateLimitBuckets.delete(ip);
-  }
-}
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -756,7 +719,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const rate = checkRateLimit(req);
+  const rate = await checkRateLimitDistributed(`checkout:${clientIpOf(req)}`, {
+    max: RATE_LIMIT_MAX,
+    windowMs: RATE_LIMIT_WINDOW_MS,
+  });
   if (!rate.allowed) {
     res.setHeader("Retry-After", String(rate.retryAfterSec));
     return res.status(429).json({ error: "Zu viele Anfragen. Bitte warte kurz." });
