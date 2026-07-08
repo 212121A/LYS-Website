@@ -852,43 +852,49 @@ export default async function handler(req, res) {
       });
     }
 
-    const normalizedItems = itemsFromBody.map((item) => {
-      const id = typeof item?.id === "string" ? item.id : "";
-      const resolved = resolveProduct(id);
-      const product = resolved?.product;
-      const number =
-        (typeof item?.number === "string" && item.number.trim()) ||
-        product?.number ||
-        "";
-      const baseName =
-        (typeof item?.name === "string" && item.name.trim()) ||
-        product?.name ||
-        id;
-      // Abkuerzung ans Kitchen-Dashboard durchreichen: einerseits als
-      // eigenes Feld `number`, andererseits dem Display-Name voranstellen
-      // (z.B. "01 Matcha Latte (warm/kalt)"), damit sie auch dann sichtbar
-      // ist, wenn das Dashboard nur `name` rendert.
-      const displayName = number ? `${number} ${baseName}` : baseName;
-      return {
-        id,
-        number,
-        name: displayName,
-        quantity: normalizeQuantity(item?.quantity),
-      };
-    });
+    // P1-4: name/number kommen AUSSCHLIESSLICH aus der Server-Whitelist —
+    // resolveProduct liefert sie inkl. aller Modifikator-Suffixe ("Ohne Soße",
+    // Bowl-Toppings). Client-Werte hier zu bevorzugen hieße: billig zahlen,
+    // teure Ware in der Kueche deklarieren. Ungueltige IDs wurden oben bereits
+    // mit 400 abgelehnt (gleiche itemsFromBody-Quelle) — defensiv skippen.
+    const normalizedItems = itemsFromBody
+      .map((item) => {
+        const id = typeof item?.id === "string" ? item.id : "";
+        const product = resolveProduct(id)?.product;
+        if (!product) return null;
+        const number = product.number || "";
+        // Abkuerzung ans Kitchen-Dashboard durchreichen: einerseits als
+        // eigenes Feld `number`, andererseits dem Display-Name voranstellen
+        // (z.B. "01 Matcha Latte (warm/kalt)"), damit sie auch dann sichtbar
+        // ist, wenn das Dashboard nur `name` rendert.
+        const displayName = number ? `${number} ${product.name}` : product.name;
+        return {
+          id,
+          number,
+          name: displayName,
+          quantity: normalizeQuantity(item?.quantity),
+        };
+      })
+      .filter(Boolean);
+
+    // P1-4: KEIN Spread von requestMetadata mehr — nur diese Whitelist-Keys
+    // erreichen die Stripe-Metadata. Sonst koennte der Client beliebige Keys
+    // (inkl. items!) injizieren; das Kuechen-JSON entsteht ausschliesslich
+    // server-seitig aus normalizedItems.
+    const metaString = (value) =>
+      typeof value === "string" ? value.slice(0, 500) : undefined;
 
     const sessionMetadata = {
-      ...requestMetadata,
       customerName:
-        requestMetadata.customerName ??
+        metaString(requestMetadata.customerName) ??
         (typeof customer.name === "string" ? customer.name : "unknown"),
       customerPhone:
-        requestMetadata.customerPhone ??
+        metaString(requestMetadata.customerPhone) ??
         (typeof customer.phone === "string" ? customer.phone : "unknown"),
-      orderType: requestMetadata.orderType ?? String(orderType),
-      note: requestMetadata.note ?? (typeof note === "string" ? note : ""),
+      orderType: metaString(requestMetadata.orderType) ?? String(orderType),
+      note: metaString(requestMetadata.note) ?? (typeof note === "string" ? note : ""),
       address:
-        requestMetadata.address ??
+        metaString(requestMetadata.address) ??
         (orderType === "delivery"
           ? JSON.stringify({
               street: address?.street ?? "",
@@ -896,8 +902,8 @@ export default async function handler(req, res) {
               city: address?.city ?? "",
             })
           : ""),
-      pickup_time: requestMetadata.pickup_time ?? "",
-      app: requestMetadata.app ?? "lys-website",
+      pickup_time: metaString(requestMetadata.pickup_time) ?? "",
+      app: metaString(requestMetadata.app) ?? "lys-website",
     };
 
     // Stripe-Metadata erlaubt max 500 Zeichen pro Wert (und max 50 Keys).
@@ -905,10 +911,10 @@ export default async function handler(req, res) {
     // direkt parsen kann ([{id,name,quantity}, ...]). Wenn der JSON-String
     // > 500 Zeichen ist, auf items_1, items_2, ... aufteilen. Jedes Chunk
     // ist selbst ein gueltiges JSON-Array, damit Konsumenten die Chunks
-    // einzeln parsen und zusammenfuehren koennen.
-    if (requestMetadata.items) {
-      sessionMetadata.items = String(requestMetadata.items).slice(0, 500);
-    } else {
+    // einzeln parsen und zusammenfuehren koennen. (P1-4: der fruehere
+    // requestMetadata.items-Override ist entfernt — Kuechen-Items kommen
+    // IMMER aus normalizedItems.)
+    {
       const fullJson = JSON.stringify(normalizedItems);
       if (fullJson.length <= 500) {
         sessionMetadata.items = fullJson;
