@@ -117,19 +117,6 @@ export const DISH_GROUPS: DishGroup[] = [
     ],
   },
   {
-    title: "LYS Special – Matcha-Soße",
-    note: "Matcha-Soße: 7, 15, 16, e, g",
-    items: [
-      { ref: "M1", name: "Gemüse", codes: ["7", "15", "16", "e", "g"] },
-      { ref: "M2", name: "Hähnchenfleisch", codes: ["7", "15", "16", "e", "g"] },
-      { ref: "M3", name: "Paniertes Hähnchenfleisch", codes: ["1", "1a", "7", "15", "16", "e", "g"] },
-      { ref: "M4", name: "Fisch", codes: ["1", "1a", "4", "7", "15", "16", "e", "g"] },
-      { ref: "M5", name: "Ente", codes: ["1", "1a", "7", "15", "16", "e", "g"] },
-      { ref: "M6", name: "Garnelen", codes: ["4", "7", "15", "16", "e", "g"] },
-      { ref: "M7", name: "Tofu", codes: ["6", "7", "15", "16", "e", "g"] },
-    ],
-  },
-  {
     title: "LYS Special – Mango-Soße",
     note: "Mango-Soße: 7, 15, 16, g",
     items: [
@@ -225,7 +212,6 @@ export const DISH_GROUPS: DishGroup[] = [
       { ref: "25", name: "Joghurt Bowl", codes: ["7"] },
       { ref: "26", name: "Protein Bowl", codes: [] },
       { ref: "27", name: "Acai Bowl", codes: [], note: "ggf. 1 (bei Granola)" },
-      { ref: "28", name: "Smoothie Bowl", codes: [], note: "ggf. 1 (bei Granola)" },
       { ref: "29", name: "Chia Pudding", codes: ["7"] },
     ],
   },

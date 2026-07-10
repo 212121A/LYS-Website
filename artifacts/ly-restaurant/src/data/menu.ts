@@ -99,22 +99,6 @@ export const menuCategories: MenuCategory[] = [
     ],
   },
   {
-    id: "matcha-sosse",
-    name: "LYS Special: Matcha Soße",
-    nameKey: "catMatchaSauce",
-    subtitle: "Wahlweise mit Reis oder Nudeln",
-    subtitleKey: "subtitleRiceNoodles",
-    items: [
-      { id: "m1", number: "m1", name: "Gemüse", nameKey: "itemGemuse", price: 7, vegetarian: true, veggieMix: true, category: "matcha-sosse" },
-      { id: "m2", number: "m2", name: "Hähnchenfleisch mit Gemüse", nameKey: "itemHuhn", price: 9, halal: true, category: "matcha-sosse" },
-      { id: "m3", number: "m3", name: "Paniertes Hähnchenfleisch mit Gemüse", nameKey: "itemHuhnPaniert", price: 10.5, halal: true, category: "matcha-sosse" },
-      { id: "m4", number: "m4", name: "Fisch mit Gemüse", nameKey: "itemFisch", price: 10.5, category: "matcha-sosse" },
-      { id: "m5", number: "m5", name: "Ente mit Gemüse", nameKey: "itemEnte", price: 11.5, halal: true, category: "matcha-sosse" },
-      { id: "m6", number: "m6", name: "Garnelen mit Gemüse", nameKey: "itemGarnelen", price: 11.5, category: "matcha-sosse" },
-      { id: "m7", number: "m7", name: "Tofu mit Gemüse", nameKey: "itemTofu", price: 8.5, vegetarian: true, category: "matcha-sosse" },
-    ],
-  },
-  {
     id: "mango-sosse",
     name: "LYS Special: Mango Soße",
     nameKey: "catMangoSauce",
@@ -134,7 +118,7 @@ export const menuCategories: MenuCategory[] = [
     id: "gebratener-reis",
     name: "Gebratener Reis",
     nameKey: "catFriedRice",
-    subtitle: "Soßen frei wählbar: Thai Curry, Süß-Sauer, Soja, Erdnuss, Matcha, Mango",
+    subtitle: "Soßen frei wählbar: Thai Curry, Süß-Sauer, Soja, Erdnuss, Mango",
     subtitleKey: "subtitleFriedRice",
     items: [
       { id: "a1", number: "a1", name: "Mit Ei & Gemüse", nameKey: "reisMitEi", price: 7, vegetarian: true, category: "gebratener-reis" },
@@ -150,7 +134,7 @@ export const menuCategories: MenuCategory[] = [
     id: "nudel-reisboxen",
     name: "Nudel- & Reisboxen",
     nameKey: "catBoxes",
-    subtitle: "Soßen frei wählbar: Thai Curry, Süß-Sauer, Soja, Erdnuss, Matcha, Mango · Soßen kombinierbar",
+    subtitle: "Soßen frei wählbar: Thai Curry, Süß-Sauer, Soja, Erdnuss, Mango · Soßen kombinierbar",
     subtitleKey: "subtitleBoxes",
     items: [
       { id: "box-gemuse", name: "Gemüse", nameKey: "boxGemuse", price: 5, priceSmall: 4, vegetarian: true, veggieMix: true, category: "nudel-reisboxen" },
@@ -239,7 +223,6 @@ export const menuCategories: MenuCategory[] = [
       { id: "bowl-joghurt", number: "25", name: "Joghurt Bowl", nameKey: "bowlJoghurt", price: 6.5, vegetarian: true, category: "bowls" },
       { id: "bowl-protein", number: "26", name: "Protein Bowl", nameKey: "bowlProtein", price: 6.5, vegetarian: true, category: "bowls" },
       { id: "bowl-acai", number: "27", name: "Acai Bowl", nameKey: "bowlAcai", price: 6.5, vegetarian: true, category: "bowls" },
-      { id: "bowl-smoothie", number: "28", name: "Smoothie Bowl", nameKey: "bowlSmoothie", price: 6.5, vegetarian: true, category: "bowls" },
       { id: "bowl-chia", number: "29", name: "Chia Pudding", nameKey: "bowlChia", price: 6.5, vegetarian: true, category: "bowls" },
     ],
   },

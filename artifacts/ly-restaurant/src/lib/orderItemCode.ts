@@ -11,7 +11,7 @@
 
 export type BoxSize = "small" | "large";
 export type BoxType = "nudel" | "reis";
-export type BoxSauce = "soja" | "suesssauer" | "curry" | "matcha" | "mango" | "keine";
+export type BoxSauce = "soja" | "suesssauer" | "curry" | "mango" | "keine";
 
 /**
  * Suffix-Bezeichnungen fuer optionale Modifikatoren. Werden sowohl im
@@ -112,7 +112,6 @@ export const BOX_SAUCE_LABEL: Record<BoxSauce, string> = {
   soja: "Sojasoße",
   suesssauer: "Süßsauersoße",
   curry: "Thaicurry mit Kokosmilch",
-  matcha: "Matcha Soße",
   mango: "Mango Soße",
   keine: NO_SAUCE_LABEL,
 };
@@ -126,7 +125,6 @@ export const BOX_SAUCE_CODE: Record<BoxSauce, string> = {
   soja: "Sojasoße",
   suesssauer: "Süßsauersoße",
   curry: "Thaicurry mit Kokosmilch",
-  matcha: "Matcha Soße",
   mango: "Mango Soße",
   keine: NO_SAUCE_LABEL,
 };
@@ -136,7 +134,6 @@ export const BOX_SAUCES: BoxSauce[] = [
   "soja",
   "suesssauer",
   "curry",
-  "matcha",
   "mango",
   "keine",
 ];
@@ -354,7 +351,6 @@ const BOWL_BASE_IDS = new Set([
   "bowl-joghurt",
   "bowl-protein",
   "bowl-acai",
-  "bowl-smoothie",
   "bowl-chia",
 ]);
 

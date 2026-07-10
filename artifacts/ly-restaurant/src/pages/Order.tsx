@@ -137,7 +137,6 @@ export default function Order() {
     { id: "suesssauer", label: mt.catSweetSour },
     { id: "soja", label: mt.catSoy },
     { id: "erdnuss", label: mt.catPeanut },
-    { id: "matcha-sosse", label: mt.catMatchaSauce },
     { id: "mango-sosse", label: mt.catMangoSauce },
     { id: "gebratener-reis", label: mt.catFriedRice },
     { id: "nudel-reisboxen", label: mt.catBoxes },

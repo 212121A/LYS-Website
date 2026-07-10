@@ -115,14 +115,6 @@ export const PRODUCTS = {
   e6: { number: "e6", name: "Garnelen Erdnuss", price: 1150 },
   e7: { number: "e7", name: "Tofu Erdnuss", price: 850 },
 
-  m1: { number: "m1", name: "Gemüse Matcha Soße", price: 700 },
-  m2: { number: "m2", name: "Hähnchenfleisch Matcha Soße", price: 900 },
-  m3: { number: "m3", name: "Paniertes Hähnchenfleisch Matcha Soße", price: 1050 },
-  m4: { number: "m4", name: "Fisch Matcha Soße", price: 1050 },
-  m5: { number: "m5", name: "Ente Matcha Soße", price: 1150 },
-  m6: { number: "m6", name: "Garnelen Matcha Soße", price: 1150 },
-  m7: { number: "m7", name: "Tofu Matcha Soße", price: 850 },
-
   m8: { number: "m8", name: "Gemüse Mango Soße", price: 700 },
   m9: { number: "m9", name: "Hähnchenfleisch Mango Soße", price: 900 },
   m10: { number: "m10", name: "Paniertes Hähnchenfleisch Mango Soße", price: 1050 },
@@ -195,7 +187,6 @@ export const PRODUCTS = {
   "bowl-joghurt": { number: "25", name: "Joghurt Bowl", price: 650 },
   "bowl-protein": { number: "26", name: "Protein Bowl", price: 650 },
   "bowl-acai": { number: "27", name: "Acai Bowl", price: 650 },
-  "bowl-smoothie": { number: "28", name: "Smoothie Bowl", price: 650 },
   "bowl-chia": { number: "29", name: "Chia Pudding", price: 650 },
 
   "kem-matcha": { number: "30", name: "Matcha Latte mit Matcha Eis", price: 650 },
@@ -219,7 +210,6 @@ const SAUCE_BY_TOKEN = {
   soja: { code: "Sojasoße", label: "Sojasoße" },
   suesssauer: { code: "Süßsauersoße", label: "Süßsauersoße" },
   curry: { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
-  matcha: { code: "Matcha Soße", label: "Matcha Soße" },
   mango: { code: "Mango Soße", label: "Mango Soße" },
   keine: { code: NO_SAUCE_LABEL, label: NO_SAUCE_LABEL },
 };
@@ -443,7 +433,6 @@ function parseBowlRest(rest) {
 
 function resolveBowlProduct(id) {
   const bases = [
-    "bowl-smoothie",
     "bowl-oats1",
     "bowl-joghurt",
     "bowl-protein",
