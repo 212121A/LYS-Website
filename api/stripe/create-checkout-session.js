@@ -195,6 +195,65 @@ export const PRODUCTS = {
   "kids-schoko": { number: "32", name: "Schoko Latte", price: 450 },
 };
 
+// ── USt-Autorität der Website ───────────────────────────────────────────────
+// Speisen 7 % (ermäßigt), Getränke 19 % (Regelsatz). Gespiegelt an der
+// Terminal-Autorität lys-terminal/artifacts/api-server/src/lib/products.ts —
+// derselbe Artikel muss in beiden Kanälen gleich besteuert werden.
+//
+// Bewusst eine EXPLIZITE Getränke-Liste statt Präfix-Matching: `m8`…`m14` sind
+// Speisen (Mango-Soße), `m-latte`…`m-vani` sind Getränke. Wer hier über das
+// Präfix rät, bucht falsche Steuern.
+//
+// Milchmischgetränke (>75 % Milch, z.B. Latte to-go) KÖNNTEN 7 % sein —
+// bewusst pauschal 19 %, identisch zum Terminal. Einzelfälle hier umstellen.
+export const DRINK_IDS = new Set([
+  "g-soft",
+  "g-wasser",
+  "m-latte",
+  "m-dau",
+  "m-xoai",
+  "m-rasp",
+  "m-vietquat",
+  "m-dua-ananas",
+  "m-vani",
+  "m-dua-cloud",
+  "cp-den",
+  "cp-sua-da",
+  "cp-den-da",
+  "cp-nau-da",
+  "cp-dua",
+  "cp-bac-xiu",
+  "t-chanh-leo",
+  "t-vai",
+  "t-dao",
+  "t-chanh-simple",
+  "soda-chanh",
+  "soda-dao",
+  "soda-vai",
+  "soda-dua",
+  "smoothie-all",
+  "kem-matcha",
+  "kem-vani",
+  "kids-schoko",
+]);
+
+// Stripe-Tax-Rate-IDs, beide `inclusive` — die Menüpreise sind brutto, der
+// Betrag den der Kunde zahlt aendert sich durch die Steuer nicht. Anzulegen
+// unter Dashboard -> Produktkatalog -> Steuersaetze, IDs dann als Vercel-ENV.
+// Fehlt die ENV, bricht der Checkout hart ab: lieber keine Bestellung als eine
+// Bestellung ohne ausgewiesene USt.
+function taxRateId(rate) {
+  const envVar =
+    rate === "standard" ? "STRIPE_TAX_RATE_STANDARD" : "STRIPE_TAX_RATE_REDUCED";
+  const id = process.env[envVar];
+  if (!id) throw new Error(`${envVar} not set`);
+  return id;
+}
+
+function taxRateIdFor(baseId) {
+  return taxRateId(DRINK_IDS.has(baseId) ? "standard" : "reduced");
+}
+
 // Soßen + Modifikatoren: Cart-IDs wie `box-huehnchen-large-nudel-soja` oder
 // `c2-nudel-keinesosse-ohnegemuese` werden auf die Basis gemappt. Preis bleibt
 // identisch (Soßen sind inklusive, "ohne" kostet nichts), Name und
@@ -631,8 +690,38 @@ function resolveBox(id) {
   return { product: withSuffixes(base, suffixes), sauce: null };
 }
 
-function resolveProduct(id) {
+/**
+ * Basis-Artikel einer Cart-ID: laengster PRODUCTS-Key, dessen Modifikatoren die
+ * ID nur noch anhaengt (`c2-nudel-keinesosse` -> `c2`, `cp-nau-da-hafermilch`
+ * -> `cp-nau-da`). Aus PRODUCTS abgeleitet statt parallel gepflegt, damit die
+ * USt-Zuordnung nicht von der Preistabelle wegdriften kann.
+ */
+function baseIdOf(cartId) {
+  if (PRODUCTS[cartId]) return cartId;
+  let best = null;
+  for (const key of Object.keys(PRODUCTS)) {
+    if (!cartId.startsWith(`${key}-`)) continue;
+    if (!best || key.length > best.length) best = key;
+  }
+  return best;
+}
+
+export function resolveProduct(id) {
   if (typeof id !== "string" || id.length === 0) return null;
+
+  const resolved = resolveProductVariant(id);
+  if (!resolved) return null;
+
+  const baseId = baseIdOf(id);
+  // Jeder Resolver schlaegt seine Basis in PRODUCTS nach — findet baseIdOf hier
+  // nichts, ist die Preistabelle inkonsistent und wir wuessten den Steuersatz
+  // nicht. Dann lieber 500 als eine falsch besteuerte Bestellung.
+  if (!baseId) throw new Error(`No PRODUCTS base for cart id "${id}"`);
+
+  return { ...resolved, baseId };
+}
+
+function resolveProductVariant(id) {
   const direct = PRODUCTS[id];
   if (direct) return { product: direct, sauce: null };
 
@@ -762,7 +851,7 @@ export default async function handler(req, res) {
           return null;
         }
 
-        const { product } = resolved;
+        const { product, baseId } = resolved;
         return {
           price_data: {
             currency,
@@ -770,6 +859,7 @@ export default async function handler(req, res) {
             product_data: { name: product.name },
           },
           quantity: normalizeQuantity(item?.quantity),
+          tax_rates: [taxRateIdFor(baseId)],
         };
       })
       .filter(Boolean);
@@ -797,6 +887,10 @@ export default async function handler(req, res) {
     }
 
     if (orderType === "delivery") {
+      // Liefergebuehr als Nebenleistung muesste bei gemischtem Warenkorb
+      // anteilig auf 7/19 % aufgeteilt werden. Da die Website aktuell nur
+      // "pickup" anbietet (Checkout.tsx sendet orderType hart als "pickup"),
+      // hier bewusst der Regelsatz: nie zu wenig USt ausweisen.
       lineItems.push({
         price_data: {
           currency,
@@ -804,6 +898,7 @@ export default async function handler(req, res) {
           product_data: { name: "Delivery fee" },
         },
         quantity: 1,
+        tax_rates: [taxRateId("standard")],
       });
     }
 

@@ -25,6 +25,8 @@ import {
 } from "../artifacts/ly-restaurant/src/lib/openingHours.ts";
 import {
   PRODUCTS,
+  DRINK_IDS,
+  resolveProduct,
   OPENING_HOURS as SRV_HOURS,
   LAST_ORDER_OFFSET_MINUTES as SRV_LAST_ORDER,
   PRE_ORDER_LEAD_MINUTES as SRV_PRE_ORDER,
@@ -124,6 +126,84 @@ function checkSurcharges(label, feMap, srvMap) {
 checkSurcharges("Bowl-Topping", BOWL_TOPPING_SURCHARGE, BOWL_TOPPING_PRICE);
 checkSurcharges("Matcha-Milch", FE_MATCHA_MILK, SRV_MATCHA_MILK);
 checkSurcharges("Matcha-Style", FE_MATCHA_STYLE, SRV_MATCHA_STYLE);
+
+// ── 4) USt-Klassifikation: Getränke-Kategorie ⇔ DRINK_IDS ───────────────────
+// Ein neues Getränk im Menü, das niemand in DRINK_IDS einträgt, würde still
+// mit 7 % statt 19 % verkauft. Das faellt hier auf, nicht beim Finanzamt.
+const DRINK_CATEGORIES = new Set([
+  "getraenke",
+  "matcha",
+  "ca-phe",
+  "tra-eistee",
+  "soda",
+  "sinh-to",
+  "kem",
+  "kids",
+]);
+
+for (const cat of menuCategories) {
+  const shouldBeDrink = DRINK_CATEGORIES.has(cat.id);
+  for (const item of cat.items) {
+    const isDrink = DRINK_IDS.has(item.id);
+    expect(
+      isDrink === shouldBeDrink,
+      shouldBeDrink
+        ? `USt: "${item.id}" (${cat.id}, Nr. ${item.number}) ist ein Getränk, fehlt aber in DRINK_IDS → würde mit 7 % statt 19 % verkauft`
+        : `USt: "${item.id}" (${cat.id}, Nr. ${item.number}) ist eine Speise, steht aber in DRINK_IDS → würde mit 19 % statt 7 % verkauft`
+    );
+  }
+}
+
+for (const id of DRINK_IDS) {
+  expect(
+    PRODUCTS[id] !== undefined,
+    `USt: DRINK_IDS-Eintrag "${id}" existiert nicht in PRODUCTS (tote Zeile)`
+  );
+}
+
+// Cart-IDs mit Modifikatoren muessen auf dieselbe Basis (und damit denselben
+// Steuersatz) zurueckfallen wie das nackte Item. Kritisch: "m8…m14" sind
+// Speisen (Mango-Soße), "m-latte…" sind Getränke — reines Präfix-Matching
+// wuerde hier falsch besteuern.
+const VAT_CASES = [
+  ["v1", "speise"],
+  ["c2-nudel-keinesosse-ohnegemuese", "speise"],
+  ["m8", "speise"],
+  ["m8-reis", "speise"],
+  ["m14-nudel-ohnegemuese", "speise"],
+  ["a3-curry-ohnegemuese", "speise"],
+  ["box-gemuse-large-nudel-soja", "speise"],
+  ["box-huehnchen-small-reis", "speise"],
+  ["bowl-acai", "speise"],
+  ["bowl-acai-banane-ohne-topping", "speise"],
+  ["g-soft", "getraenk"],
+  ["m-latte", "getraenk"],
+  ["m-latte-hafermilch", "getraenk"],
+  ["m-dua-cloud-sojamilch", "getraenk"],
+  ["cp-den-da", "getraenk"],
+  ["cp-nau-da-hafermilch", "getraenk"],
+  ["smoothie-all-banane-kokosmilch-honig", "getraenk"],
+  ["smoothie-all-banane-kokosmilch-honig-protein", "getraenk"],
+  ["kem-matcha-hafermilch", "getraenk"],
+  ["kids-schoko", "getraenk"],
+];
+
+for (const [cartId, expected] of VAT_CASES) {
+  let resolved = null;
+  try {
+    resolved = resolveProduct(cartId);
+  } catch (err) {
+    expect(false, `USt: resolveProduct("${cartId}") wirft: ${err.message}`);
+    continue;
+  }
+  expect(resolved, `USt: Cart-ID "${cartId}" nicht aufloesbar (400-Risiko)`);
+  if (!resolved) continue;
+  const actual = DRINK_IDS.has(resolved.baseId) ? "getraenk" : "speise";
+  expect(
+    actual === expected,
+    `USt: "${cartId}" → Basis "${resolved.baseId}" = ${actual}, erwartet ${expected}`
+  );
+}
 
 // ── Ergebnis ────────────────────────────────────────────────────────────────
 if (failures.length === 0) {
