@@ -196,46 +196,18 @@ export const PRODUCTS = {
 };
 
 // ── USt-Autorität der Website ───────────────────────────────────────────────
-// Speisen 7 % (ermäßigt), Getränke 19 % (Regelsatz). Gespiegelt an der
-// Terminal-Autorität lys-terminal/artifacts/api-server/src/lib/products.ts —
-// derselbe Artikel muss in beiden Kanälen gleich besteuert werden.
+// Vorgabe Alex (2026-07-24): **nur GD1 (Softgetränke) und GD2 (Wasser)** laufen
+// mit 19 %. Die komplette restliche Karte — inkl. Matcha, Cà phê, Trà, Soda,
+// Smoothies, Kem und Kids — mit 7 %.
 //
-// Bewusst eine EXPLIZITE Getränke-Liste statt Präfix-Matching: `m8`…`m14` sind
-// Speisen (Mango-Soße), `m-latte`…`m-vani` sind Getränke. Wer hier über das
-// Präfix rät, bucht falsche Steuern.
+// Whitelist statt Ausschlussliste: ein neu aufgenommener Artikel bekommt damit
+// automatisch 7 % und nicht versehentlich den Regelsatz. Der Contract-Test
+// erzwingt, dass die Kategorie "getraenke" (GD1/GD2) hier deckungsgleich ist.
 //
-// Milchmischgetränke (>75 % Milch, z.B. Latte to-go) KÖNNTEN 7 % sein —
-// bewusst pauschal 19 %, identisch zum Terminal. Einzelfälle hier umstellen.
-export const DRINK_IDS = new Set([
-  "g-soft",
-  "g-wasser",
-  "m-latte",
-  "m-dau",
-  "m-xoai",
-  "m-rasp",
-  "m-vietquat",
-  "m-dua-ananas",
-  "m-vani",
-  "m-dua-cloud",
-  "cp-den",
-  "cp-sua-da",
-  "cp-den-da",
-  "cp-nau-da",
-  "cp-dua",
-  "cp-bac-xiu",
-  "t-chanh-leo",
-  "t-vai",
-  "t-dao",
-  "t-chanh-simple",
-  "soda-chanh",
-  "soda-dao",
-  "soda-vai",
-  "soda-dua",
-  "smoothie-all",
-  "kem-matcha",
-  "kem-vani",
-  "kids-schoko",
-]);
+// ⚠️ Weicht bewusst von lys-terminal/artifacts/api-server/src/lib/products.ts
+// ab (dort sind alle Getränke NORMAL/19 %). Solange das so steht, besteuern
+// Website und Terminal denselben Artikel unterschiedlich.
+export const STANDARD_RATE_IDS = new Set(["g-soft", "g-wasser"]);
 
 // Stripe-Tax-Rate-IDs, beide `inclusive` — die Menüpreise sind brutto, der
 // Betrag den der Kunde zahlt aendert sich durch die Steuer nicht. Anzulegen
@@ -251,7 +223,7 @@ function taxRateId(rate) {
 }
 
 function taxRateIdFor(baseId) {
-  return taxRateId(DRINK_IDS.has(baseId) ? "standard" : "reduced");
+  return taxRateId(STANDARD_RATE_IDS.has(baseId) ? "standard" : "reduced");
 }
 
 // Soßen + Modifikatoren: Cart-IDs wie `box-huehnchen-large-nudel-soja` oder

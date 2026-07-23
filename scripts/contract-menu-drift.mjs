@@ -25,7 +25,7 @@ import {
 } from "../artifacts/ly-restaurant/src/lib/openingHours.ts";
 import {
   PRODUCTS,
-  DRINK_IDS,
+  STANDARD_RATE_IDS,
   resolveProduct,
   OPENING_HOURS as SRV_HOURS,
   LAST_ORDER_OFFSET_MINUTES as SRV_LAST_ORDER,
@@ -127,37 +127,29 @@ checkSurcharges("Bowl-Topping", BOWL_TOPPING_SURCHARGE, BOWL_TOPPING_PRICE);
 checkSurcharges("Matcha-Milch", FE_MATCHA_MILK, SRV_MATCHA_MILK);
 checkSurcharges("Matcha-Style", FE_MATCHA_STYLE, SRV_MATCHA_STYLE);
 
-// ── 4) USt-Klassifikation: Getränke-Kategorie ⇔ DRINK_IDS ───────────────────
-// Ein neues Getränk im Menü, das niemand in DRINK_IDS einträgt, würde still
-// mit 7 % statt 19 % verkauft. Das faellt hier auf, nicht beim Finanzamt.
-const DRINK_CATEGORIES = new Set([
-  "getraenke",
-  "matcha",
-  "ca-phe",
-  "tra-eistee",
-  "soda",
-  "sinh-to",
-  "kem",
-  "kids",
-]);
+// ── 4) USt-Klassifikation: nur GD1/GD2 mit 19 %, Rest der Karte 7 % ─────────
+// Vorgabe Alex (2026-07-24). Der Regelsatz gilt ausschliesslich fuer die
+// Kategorie "getraenke" (Softgetränke GD1, Wasser GD2). Kommt dort ein Artikel
+// dazu, muss er in STANDARD_RATE_IDS — sonst liefe er still mit 7 %.
+const STANDARD_RATE_CATEGORY = "getraenke";
 
 for (const cat of menuCategories) {
-  const shouldBeDrink = DRINK_CATEGORIES.has(cat.id);
+  const shouldBeStandard = cat.id === STANDARD_RATE_CATEGORY;
   for (const item of cat.items) {
-    const isDrink = DRINK_IDS.has(item.id);
+    const isStandard = STANDARD_RATE_IDS.has(item.id);
     expect(
-      isDrink === shouldBeDrink,
-      shouldBeDrink
-        ? `USt: "${item.id}" (${cat.id}, Nr. ${item.number}) ist ein Getränk, fehlt aber in DRINK_IDS → würde mit 7 % statt 19 % verkauft`
-        : `USt: "${item.id}" (${cat.id}, Nr. ${item.number}) ist eine Speise, steht aber in DRINK_IDS → würde mit 19 % statt 7 % verkauft`
+      isStandard === shouldBeStandard,
+      shouldBeStandard
+        ? `USt: "${item.id}" (${cat.id}, Nr. ${item.number}) gehoert zum Regelsatz, fehlt aber in STANDARD_RATE_IDS → liefe mit 7 % statt 19 %`
+        : `USt: "${item.id}" (${cat.id}, Nr. ${item.number}) steht in STANDARD_RATE_IDS, gehoert aber zum ermaessigten Satz → liefe mit 19 % statt 7 %`
     );
   }
 }
 
-for (const id of DRINK_IDS) {
+for (const id of STANDARD_RATE_IDS) {
   expect(
     PRODUCTS[id] !== undefined,
-    `USt: DRINK_IDS-Eintrag "${id}" existiert nicht in PRODUCTS (tote Zeile)`
+    `USt: STANDARD_RATE_IDS-Eintrag "${id}" existiert nicht in PRODUCTS (tote Zeile)`
   );
 }
 
@@ -166,26 +158,29 @@ for (const id of DRINK_IDS) {
 // Speisen (Mango-Soße), "m-latte…" sind Getränke — reines Präfix-Matching
 // wuerde hier falsch besteuern.
 const VAT_CASES = [
-  ["v1", "speise"],
-  ["c2-nudel-keinesosse-ohnegemuese", "speise"],
-  ["m8", "speise"],
-  ["m8-reis", "speise"],
-  ["m14-nudel-ohnegemuese", "speise"],
-  ["a3-curry-ohnegemuese", "speise"],
-  ["box-gemuse-large-nudel-soja", "speise"],
-  ["box-huehnchen-small-reis", "speise"],
-  ["bowl-acai", "speise"],
-  ["bowl-acai-banane-ohne-topping", "speise"],
-  ["g-soft", "getraenk"],
-  ["m-latte", "getraenk"],
-  ["m-latte-hafermilch", "getraenk"],
-  ["m-dua-cloud-sojamilch", "getraenk"],
-  ["cp-den-da", "getraenk"],
-  ["cp-nau-da-hafermilch", "getraenk"],
-  ["smoothie-all-banane-kokosmilch-honig", "getraenk"],
-  ["smoothie-all-banane-kokosmilch-honig-protein", "getraenk"],
-  ["kem-matcha-hafermilch", "getraenk"],
-  ["kids-schoko", "getraenk"],
+  ["v1", 7],
+  ["c2-nudel-keinesosse-ohnegemuese", 7],
+  ["m8", 7],
+  ["m8-reis", 7],
+  ["m14-nudel-ohnegemuese", 7],
+  ["a3-curry-ohnegemuese", 7],
+  ["box-gemuse-large-nudel-soja", 7],
+  ["box-huehnchen-small-reis", 7],
+  ["bowl-acai", 7],
+  ["bowl-acai-banane-ohne-topping", 7],
+  ["m-latte", 7],
+  ["m-latte-hafermilch", 7],
+  ["m-dua-cloud-sojamilch", 7],
+  ["cp-den-da", 7],
+  ["cp-nau-da-hafermilch", 7],
+  ["t-dao", 7],
+  ["soda-chanh", 7],
+  ["smoothie-all-banane-kokosmilch-honig", 7],
+  ["smoothie-all-banane-kokosmilch-honig-protein", 7],
+  ["kem-matcha-hafermilch", 7],
+  ["kids-schoko", 7],
+  ["g-soft", 19],
+  ["g-wasser", 19],
 ];
 
 for (const [cartId, expected] of VAT_CASES) {
@@ -198,10 +193,10 @@ for (const [cartId, expected] of VAT_CASES) {
   }
   expect(resolved, `USt: Cart-ID "${cartId}" nicht aufloesbar (400-Risiko)`);
   if (!resolved) continue;
-  const actual = DRINK_IDS.has(resolved.baseId) ? "getraenk" : "speise";
+  const actual = STANDARD_RATE_IDS.has(resolved.baseId) ? 19 : 7;
   expect(
     actual === expected,
-    `USt: "${cartId}" → Basis "${resolved.baseId}" = ${actual}, erwartet ${expected}`
+    `USt: "${cartId}" → Basis "${resolved.baseId}" = ${actual} %, erwartet ${expected} %`
   );
 }
 
