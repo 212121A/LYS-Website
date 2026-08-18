@@ -11,7 +11,7 @@
 
 export type BoxSize = "small" | "large";
 export type BoxType = "nudel" | "reis";
-export type BoxSauce = "soja" | "suesssauer" | "curry" | "mango" | "keine";
+export type BoxSauce = "soja" | "suesssauer" | "curry" | "mango" | "sambaloelek" | "keine";
 
 /**
  * Suffix-Bezeichnungen fuer optionale Modifikatoren. Werden sowohl im
@@ -23,7 +23,7 @@ export const NO_VEGGIES_LABEL = "Ohne Gemüse";
 export type BowlFruit = "banane" | "erdbeere" | "blaubeere" | "himbeere" | "mango";
 export type BowlTopping = "honig" | "agave" | "matcha" | "granola" | "schoko" | "kokos";
 export type MenuMilk = "kuhmilch" | "sojamilch" | "hafermilch" | "kokosmilch";
-export type MatchaStyle = "classic" | "frappe" | "protein";
+export type MatchaStyle = "classic" | "protein";
 export type SmoothieFruit =
   | "banane"
   | "erdbeere"
@@ -52,17 +52,15 @@ export const MATCHA_MILK_SURCHARGE: Record<MenuMilk, number> = {
 
 export const MATCHA_STYLE_LABEL: Record<MatchaStyle, string> = {
   classic: "Classic",
-  frappe: "Frappe",
   protein: "Proteinmatcha",
 };
 
 export const MATCHA_STYLE_SURCHARGE: Record<MatchaStyle, number> = {
   classic: 0,
-  frappe: 1,
   protein: 2,
 };
 
-export const MATCHA_STYLES: MatchaStyle[] = ["classic", "frappe", "protein"];
+export const MATCHA_STYLES: MatchaStyle[] = ["classic", "protein"];
 
 export const BOWL_TOPPING_LABEL: Record<BowlTopping, string> = {
   honig: "Honig",
@@ -113,8 +111,12 @@ export const BOX_SAUCE_LABEL: Record<BoxSauce, string> = {
   suesssauer: "Süßsauersoße",
   curry: "Thaicurry mit Kokosmilch",
   mango: "Mango Soße",
+  sambaloelek: "Sambal Oelek",
   keine: NO_SAUCE_LABEL,
 };
+
+/** Scharfe Soßen — im Auswahl-Dialog mit Chili-Icon markiert. */
+export const SPICY_BOX_SAUCES: ReadonlySet<BoxSauce> = new Set<BoxSauce>(["sambaloelek"]);
 
 /**
  * Soßen-Suffix für das Kitchen-Dashboard. Vollständig ausgeschrieben,
@@ -126,17 +128,26 @@ export const BOX_SAUCE_CODE: Record<BoxSauce, string> = {
   suesssauer: "Süßsauersoße",
   curry: "Thaicurry mit Kokosmilch",
   mango: "Mango Soße",
+  sambaloelek: "Sambal Oelek",
   keine: NO_SAUCE_LABEL,
 };
 
-/** Auswahl-Reihenfolge im Dialog (stabile Reihenfolge). "keine" steht am Ende. */
+/** Auswahl-Reihenfolge im Dialog (stabile Reihenfolge). "keine" steht am Ende.
+ *  Mehrere Soßen sind kombinierbar; "keine" schließt die übrigen aus. */
 export const BOX_SAUCES: BoxSauce[] = [
   "soja",
   "suesssauer",
   "curry",
   "mango",
+  "sambaloelek",
   "keine",
 ];
+
+/** Bringt eine Auswahl in `BOX_SAUCES`-Reihenfolge — damit dieselbe Kombination
+ *  immer denselben Code, Namen und dieselbe Cart-ID ergibt. */
+function orderedSauces(sauces: BoxSauce[]): BoxSauce[] {
+  return BOX_SAUCES.filter((s) => sauces.includes(s));
+}
 
 /** Basis-IDs der Box-Items (aus `src/data/menu.ts`, Kategorie "nudel-reisboxen"). */
 const BOX_INGREDIENT_DIGIT: Record<string, 1 | 2 | 3 | 4 | 5 | 6 | 7> = {
@@ -169,7 +180,7 @@ export function boxCode(
   baseId: string,
   size: BoxSize,
   type: BoxType,
-  sauce?: BoxSauce,
+  sauces: BoxSauce[] = [],
   noVeggies = false,
 ): string | null {
   const digit = BOX_INGREDIENT_DIGIT[baseId];
@@ -177,7 +188,7 @@ export function boxCode(
   const sizePrefix = size === "small" ? "K" : "G";
   const typePrefix = type === "nudel" ? "N" : "R";
   let code = `${sizePrefix}${typePrefix}${digit}`;
-  if (sauce) code += `-${BOX_SAUCE_CODE[sauce]}`;
+  for (const sauce of orderedSauces(sauces)) code += `-${BOX_SAUCE_CODE[sauce]}`;
   if (noVeggies) code += `-${NO_VEGGIES_LABEL}`;
   return code;
 }
@@ -187,7 +198,7 @@ export function boxDisplayName(
   baseId: string,
   size: BoxSize,
   type: BoxType,
-  sauce?: BoxSauce,
+  sauces: BoxSauce[] = [],
   noVeggies = false,
 ): string | null {
   const digit = BOX_INGREDIENT_DIGIT[baseId];
@@ -195,21 +206,22 @@ export function boxDisplayName(
   const sizeLabel = size === "small" ? "Kleine" : "Große";
   const typeLabel = type === "nudel" ? "Nudelbox" : "Reisbox";
   let name = `${sizeLabel} ${typeLabel} ${BOX_INGREDIENT_LABEL[digit]}`;
-  if (sauce) name += ` • ${BOX_SAUCE_LABEL[sauce]}`;
+  for (const sauce of orderedSauces(sauces)) name += ` • ${BOX_SAUCE_LABEL[sauce]}`;
   if (noVeggies) name += ` • ${NO_VEGGIES_LABEL}`;
   return name;
 }
 
-/** Eindeutige Cart-ID über Varianten: id + size + type (+ sauce) (+ ohne Gemüse). */
+/** Eindeutige Cart-ID über Varianten: id + size + type (+ Soßen) (+ ohne Gemüse).
+ *  Die Soßen-Token liest der Stripe-Endpunkt wieder aus (`resolveBox`). */
 export function boxCartId(
   baseId: string,
   size: BoxSize,
   type: BoxType,
-  sauce?: BoxSauce,
+  sauces: BoxSauce[] = [],
   noVeggies = false,
 ): string {
   let id = `${baseId}-${size}-${type}`;
-  if (sauce) id += `-${sauce}`;
+  for (const sauce of orderedSauces(sauces)) id += `-${sauce}`;
   if (noVeggies) id += "-ohnegemuese";
   return id;
 }
@@ -317,31 +329,34 @@ export function isFriedRiceBaseId(baseId: string): boolean {
 
 export function friedRiceCode(
   itemNumber: string | undefined,
-  sauce: BoxSauce,
+  sauces: BoxSauce[],
   noVeggies = false,
 ): string | null {
   if (!itemNumber) return null;
-  let code = `${itemNumber}-${BOX_SAUCE_CODE[sauce]}`;
+  let code = itemNumber;
+  for (const sauce of orderedSauces(sauces)) code += `-${BOX_SAUCE_CODE[sauce]}`;
   if (noVeggies) code += `-${NO_VEGGIES_LABEL}`;
   return code;
 }
 
 export function friedRiceDisplayName(
   itemName: string,
-  sauce: BoxSauce,
+  sauces: BoxSauce[],
   noVeggies = false,
 ): string {
-  let name = `${itemName} • ${BOX_SAUCE_LABEL[sauce]}`;
+  let name = itemName;
+  for (const sauce of orderedSauces(sauces)) name += ` • ${BOX_SAUCE_LABEL[sauce]}`;
   if (noVeggies) name += ` • ${NO_VEGGIES_LABEL}`;
   return name;
 }
 
 export function friedRiceCartId(
   baseId: string,
-  sauce: BoxSauce,
+  sauces: BoxSauce[],
   noVeggies = false,
 ): string {
-  let id = `${baseId}-${sauce}`;
+  let id = baseId;
+  for (const sauce of orderedSauces(sauces)) id += `-${sauce}`;
   if (noVeggies) id += "-ohnegemuese";
   return id;
 }

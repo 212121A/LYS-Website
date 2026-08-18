@@ -21,6 +21,7 @@ import {
   isBoxBaseId,
   BOX_SAUCE_LABEL,
   BOX_SAUCES,
+  SPICY_BOX_SAUCES,
   NO_SAUCE_LABEL,
   NO_VEGGIES_LABEL,
   friedRiceCartId,
@@ -70,7 +71,7 @@ import {
 interface CartItem extends MenuItem {
   quantity: number;
   size?: BoxSize;
-  sauce?: BoxSauce;
+  sauces?: BoxSauce[];
   riceNoodleType?: BoxType;
   toppings?: BowlTopping[];
   fruits?: Array<BowlFruit | SmoothieFruit>;
@@ -109,7 +110,8 @@ export default function Order() {
   const [boxTypeChoice, setBoxTypeChoice] = useState<Record<string, BoxType>>({});
   const [pendingBox, setPendingBox] = useState<PendingBox | null>(null);
   const [pendingFriedRice, setPendingFriedRice] = useState<PendingFriedRice | null>(null);
-  const [sauceChoice, setSauceChoice] = useState<BoxSauce | null>(null);
+  // Mehrfachauswahl: Soßen sind kombinierbar. "keine" schließt die übrigen aus.
+  const [sauceChoice, setSauceChoice] = useState<BoxSauce[]>([]);
   const [noVeggiesChoice, setNoVeggiesChoice] = useState(false);
   // Modifikatoren fuer Hauptgerichte (c/s/b/e/m): inline pro Basis-ID gemerkt.
   const [dishNoSauce, setDishNoSauce] = useState<Record<string, boolean>>({});
@@ -196,14 +198,14 @@ export default function Order() {
     item: MenuItem,
     size: BoxSize,
     type: BoxType,
-    sauce: BoxSauce,
+    sauces: BoxSauce[],
     noVeggies: boolean,
   ) => {
     const priceForSize =
       size === "small" && item.priceSmall !== undefined ? item.priceSmall : item.price;
-    const code = boxCode(item.id, size, type, sauce, noVeggies);
-    const displayName = boxDisplayName(item.id, size, type, sauce, noVeggies) ?? item.name;
-    const cartId = boxCartId(item.id, size, type, sauce, noVeggies);
+    const code = boxCode(item.id, size, type, sauces, noVeggies);
+    const displayName = boxDisplayName(item.id, size, type, sauces, noVeggies) ?? item.name;
+    const cartId = boxCartId(item.id, size, type, sauces, noVeggies);
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
@@ -220,17 +222,17 @@ export default function Order() {
           price: priceForSize,
           quantity: 1,
           size,
-          sauce,
+          sauces,
         },
       ];
     });
   };
 
-  const addFriedRiceToCart = (item: MenuItem, sauce: BoxSauce, noVeggies: boolean) => {
+  const addFriedRiceToCart = (item: MenuItem, sauces: BoxSauce[], noVeggies: boolean) => {
     const translatedName = mt[item.nameKey as keyof typeof mt] || item.name;
-    const code = friedRiceCode(item.number, sauce, noVeggies);
-    const displayName = friedRiceDisplayName(translatedName, sauce, noVeggies);
-    const cartId = friedRiceCartId(item.id, sauce, noVeggies);
+    const code = friedRiceCode(item.number, sauces, noVeggies);
+    const displayName = friedRiceDisplayName(translatedName, sauces, noVeggies);
+    const cartId = friedRiceCartId(item.id, sauces, noVeggies);
 
     setCart((prev) => {
       const existing = prev.find((i) => i.id === cartId);
@@ -245,7 +247,7 @@ export default function Order() {
           name: displayName,
           number: code ?? item.number,
           quantity: 1,
-          sauce,
+          sauces,
         },
       ];
     });
@@ -359,7 +361,7 @@ export default function Order() {
       const effectiveSize: BoxSize = size ?? "large";
       const type = getBoxType(item.id);
       setPendingBox({ item, size: effectiveSize, type });
-      setSauceChoice(null);
+      setSauceChoice([]);
       setNoVeggiesChoice(false);
       return;
     }
@@ -376,7 +378,7 @@ export default function Order() {
 
     if (isFriedRiceBaseId(item.id)) {
       setPendingFriedRice({ item });
-      setSauceChoice(null);
+      setSauceChoice([]);
       setNoVeggiesChoice(false);
       return;
     }
@@ -423,8 +425,19 @@ export default function Order() {
     });
   };
 
+  /** "keine" ist exklusiv: wählt man sie, fliegen die übrigen Soßen raus — und umgekehrt. */
+  const toggleSauce = (sauce: BoxSauce) => {
+    setSauceChoice((prev) => {
+      if (sauce === "keine") return prev.includes("keine") ? [] : ["keine"];
+      const withoutNone = prev.filter((s) => s !== "keine");
+      return withoutNone.includes(sauce)
+        ? withoutNone.filter((s) => s !== sauce)
+        : [...withoutNone, sauce];
+    });
+  };
+
   const confirmSauce = () => {
-    if (!sauceChoice) return;
+    if (sauceChoice.length === 0) return;
     if (pendingBox) {
       addBoxToCart(pendingBox.item, pendingBox.size, pendingBox.type, sauceChoice, noVeggiesChoice);
     } else if (pendingFriedRice) {
@@ -434,7 +447,7 @@ export default function Order() {
     }
     setPendingBox(null);
     setPendingFriedRice(null);
-    setSauceChoice(null);
+    setSauceChoice([]);
     setNoVeggiesChoice(false);
   };
 
@@ -498,7 +511,7 @@ export default function Order() {
   const cancelSauce = () => {
     setPendingBox(null);
     setPendingFriedRice(null);
-    setSauceChoice(null);
+    setSauceChoice([]);
     setNoVeggiesChoice(false);
   };
 
@@ -827,7 +840,7 @@ export default function Order() {
                       {cart.map((item) => {
                         const primary = getCartPrimaryLabel(item);
                         const details = item.number
-                          ? item.sauce || item.riceNoodleType || item.toppings || item.milk || item.fruits
+                          ? item.sauces?.length || item.riceNoodleType || item.toppings || item.milk || item.fruits
                             ? item.name
                             : mt[item.nameKey as keyof typeof mt] || item.name
                           : item.size
@@ -962,7 +975,7 @@ export default function Order() {
                 Soße auswählen
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Welche Soße möchtest du dazu?
+                Welche Soße möchtest du dazu? Mehrere Soßen kombinierbar.
               </p>
               {sauceHeading && (
                 <p className="mt-2 text-sm font-medium text-foreground">
@@ -973,12 +986,12 @@ export default function Order() {
             <div className="border-t border-border" />
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-5">
               {BOX_SAUCES.map((s) => {
-                const active = sauceChoice === s;
+                const active = sauceChoice.includes(s);
                 return (
                   <button
                     key={s}
                     type="button"
-                    onClick={() => setSauceChoice(s)}
+                    onClick={() => toggleSauce(s)}
                     aria-pressed={active}
                     data-testid={`button-sauce-${s}`}
                     className={`w-full flex items-center gap-3 text-left rounded-xl border px-4 py-3.5 transition-colors ${
@@ -988,51 +1001,50 @@ export default function Order() {
                     }`}
                   >
                     <span
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
-                        active ? "border-primary" : "border-muted-foreground/40"
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                        active ? "border-primary bg-primary" : "border-muted-foreground/40"
                       }`}
                     >
-                      {active && (
-                        <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-                      )}
+                      {active && <span className="w-2 h-2 rounded-sm bg-primary-foreground" />}
                     </span>
                     <span className="text-base font-medium text-foreground">
                       {BOX_SAUCE_LABEL[s]}
                     </span>
+                    {SPICY_BOX_SAUCES.has(s) && (
+                      <Flame size={16} className="text-orange-500 shrink-0" />
+                    )}
                   </button>
                 );
               })}
-              {!(pendingBox?.item.veggieMix ?? pendingFriedRice?.item.veggieMix) && (
-                <div className="pt-2">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    Gemüse
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setNoVeggiesChoice((prev) => !prev)}
-                    aria-pressed={noVeggiesChoice}
-                    data-testid="button-sauce-noveggies"
-                    className={`w-full flex items-center gap-3 text-left rounded-xl border px-4 py-3.5 transition-colors ${
-                      noVeggiesChoice
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-background hover:border-primary/40 hover:bg-primary/5"
+              <div className="pt-2">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Gemüse
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setNoVeggiesChoice((prev) => !prev)}
+                  aria-pressed={noVeggiesChoice}
+                  data-testid="button-sauce-noveggies"
+                  className={`w-full flex items-center gap-3 text-left rounded-xl border px-4 py-3.5 transition-colors ${
+                    noVeggiesChoice
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-background hover:border-primary/40 hover:bg-primary/5"
+                  }`}
+                >
+                  <span
+                    className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                      noVeggiesChoice ? "border-primary bg-primary" : "border-muted-foreground/40"
                     }`}
                   >
-                    <span
-                      className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
-                        noVeggiesChoice ? "border-primary bg-primary" : "border-muted-foreground/40"
-                      }`}
-                    >
-                      {noVeggiesChoice && (
-                        <span className="w-2 h-2 rounded-sm bg-primary-foreground" />
-                      )}
-                    </span>
-                    <span className="text-base font-medium text-foreground">
-                      {NO_VEGGIES_LABEL}
-                    </span>
-                  </button>
-                </div>
-              )}
+                    {noVeggiesChoice && (
+                      <span className="w-2 h-2 rounded-sm bg-primary-foreground" />
+                    )}
+                  </span>
+                  <span className="text-base font-medium text-foreground">
+                    {NO_VEGGIES_LABEL}
+                  </span>
+                </button>
+              </div>
             </div>
             <div className="flex shrink-0 items-stretch border-t border-border bg-card">
               <button
@@ -1047,7 +1059,7 @@ export default function Order() {
               <button
                 type="button"
                 onClick={confirmSauce}
-                disabled={!sauceChoice}
+                disabled={sauceChoice.length === 0}
                 className="flex-1 py-4 text-base font-semibold text-primary hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 data-testid="button-sauce-confirm"
               >

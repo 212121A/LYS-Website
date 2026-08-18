@@ -236,14 +236,36 @@ const NO_VEGGIES_LABEL = "Ohne Gemüse";
 const NO_VEGGIES_SUFFIX = "-ohnegemuese";
 const NO_SAUCE_SUFFIX = "-keinesosse";
 
-/** Soßen-Token (Box + Gebratener Reis) → Kitchen-Code/Label. */
+/** Soßen-Token (Box + Gebratener Reis) → Kitchen-Code/Label. Mehrere Soßen sind
+ *  kombinierbar; die Cart-ID haengt sie in dieser Reihenfolge an. */
 const SAUCE_BY_TOKEN = {
   soja: { code: "Sojasoße", label: "Sojasoße" },
   suesssauer: { code: "Süßsauersoße", label: "Süßsauersoße" },
   curry: { code: "Thaicurry mit Kokosmilch", label: "Thaicurry mit Kokosmilch" },
   mango: { code: "Mango Soße", label: "Mango Soße" },
+  sambaloelek: { code: "Sambal Oelek", label: "Sambal Oelek" },
   keine: { code: NO_SAUCE_LABEL, label: NO_SAUCE_LABEL },
 };
+
+/** Laengste Token zuerst, damit kein kuerzeres Token faelschlich zuschlaegt. */
+const SAUCE_TOKENS = Object.keys(SAUCE_BY_TOKEN).sort((a, b) => b.length - a.length);
+
+/**
+ * Knabbert alle Soßen-Token vom Ende einer Cart-ID ab. Rueckgabe in der
+ * urspruenglichen Anhaenge-Reihenfolge, damit Code und Anzeigename mit dem
+ * Frontend uebereinstimmen.
+ */
+function takeSauceSuffixes(id) {
+  let rest = id;
+  const sauces = [];
+  for (;;) {
+    const token = SAUCE_TOKENS.find((t) => rest.endsWith(`-${t}`));
+    if (!token) break;
+    sauces.unshift(SAUCE_BY_TOKEN[token]);
+    rest = rest.slice(0, -(token.length + 1));
+  }
+  return { rest, sauces };
+}
 
 const NO_VEGGIES_MOD = { code: NO_VEGGIES_LABEL, label: NO_VEGGIES_LABEL };
 const NO_SAUCE_MOD = { code: NO_SAUCE_LABEL, label: NO_SAUCE_LABEL };
@@ -303,13 +325,11 @@ export const MATCHA_MILK_SURCHARGE = {
 
 const MATCHA_STYLE_LABEL = {
   classic: "Classic",
-  frappe: "Frappe",
   protein: "Proteinmatcha",
 };
 
 export const MATCHA_STYLE_SURCHARGE = {
   classic: 0,
-  frappe: 100,
   protein: 200,
 };
 
@@ -595,13 +615,12 @@ function resolveFriedRice(id) {
     noVeggies = true;
     rest = rest.slice(0, -NO_VEGGIES_SUFFIX.length);
   }
-  const m = rest.match(/^a([1-7])-(soja|suesssauer|curry|matcha|mango|keine)$/);
-  if (!m) return null;
-  const baseId = `a${m[1]}`;
-  const sauce = SAUCE_BY_TOKEN[m[2]];
-  const base = PRODUCTS[baseId];
-  if (!base || !sauce) return null;
-  const suffixes = [sauce];
+  const taken = takeSauceSuffixes(rest);
+  if (taken.sauces.length === 0) return null;
+  if (!/^a[1-7]$/.test(taken.rest)) return null;
+  const base = PRODUCTS[taken.rest];
+  if (!base) return null;
+  const suffixes = [...taken.sauces];
   if (noVeggies) suffixes.push(NO_VEGGIES_MOD);
   return { product: withSuffixes(base, suffixes), sauce: null };
 }
@@ -645,19 +664,11 @@ function resolveBox(id) {
     noVeggies = true;
     rest = rest.slice(0, -NO_VEGGIES_SUFFIX.length);
   }
-  let sauce = null;
-  const tokens = Object.keys(SAUCE_BY_TOKEN).sort((a, b) => b.length - a.length);
-  for (const token of tokens) {
-    if (rest.endsWith(`-${token}`)) {
-      sauce = SAUCE_BY_TOKEN[token];
-      rest = rest.slice(0, -(token.length + 1));
-      break;
-    }
-  }
+  const taken = takeSauceSuffixes(rest);
+  rest = taken.rest;
   const base = PRODUCTS[rest];
   if (!base) return null;
-  const suffixes = [];
-  if (sauce) suffixes.push(sauce);
+  const suffixes = [...taken.sauces];
   if (noVeggies) suffixes.push(NO_VEGGIES_MOD);
   return { product: withSuffixes(base, suffixes), sauce: null };
 }
