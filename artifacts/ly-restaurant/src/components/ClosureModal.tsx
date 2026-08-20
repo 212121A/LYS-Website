@@ -85,22 +85,24 @@ export default function ClosureModal() {
 
           <div className="relative px-6 pb-7 pt-10 sm:px-8 sm:pb-8">
             <Dialog.Title className="font-serif text-2xl font-bold leading-tight text-white sm:text-3xl">
-              {t.closure.checkoutTitle}
+              {t.closure.modalTitle}
             </Dialog.Title>
 
-            <div className="mt-5 flex flex-wrap gap-2.5">
+            {/* Die Kacheln sind die Fortsetzung der Ueberschrift und tragen die
+                Aussage. Ohne sie liest sich der Titel wie "gerade geschlossen". */}
+            <div className="mt-3 flex flex-wrap gap-3">
               {closure.closedDays.map(dayTile).map((tile) => (
                 <div
                   key={tile.key}
-                  className="flex min-w-[4.5rem] flex-col items-center rounded-xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-sm"
+                  className="flex min-w-[6rem] flex-col items-center rounded-xl border border-white/20 bg-white/10 px-5 py-3.5 backdrop-blur-sm"
                 >
-                  <span className="text-xs font-medium uppercase tracking-wide text-white/65">
+                  <span className="text-xs font-medium uppercase tracking-wide text-white/70">
                     {tile.weekday}
                   </span>
-                  <span className="font-serif text-2xl font-bold leading-none text-white">
+                  <span className="font-serif text-4xl font-bold leading-none text-white sm:text-5xl">
                     {tile.day}
                   </span>
-                  <span className="mt-1 text-xs text-white/65">{tile.month}</span>
+                  <span className="mt-1.5 text-sm text-white/70">{tile.month}</span>
                 </div>
               ))}
             </div>
