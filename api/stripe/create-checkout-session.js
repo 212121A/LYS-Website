@@ -60,7 +60,30 @@ function isHolidayBW(year, month, day) {
   [-2, 1, 39, 50, 60].forEach((off) => days.add(rel(off)));
   return days.has(key(month, day));
 }
+// Sonderschliessungen (Renovierung, Betriebsferien, ...) — spiegelt
+// artifacts/ly-restaurant/src/lib/closures.ts. Zeitpunkte sind Ortszeit
+// Europe/Berlin als "YYYY-MM-DDTHH:MM" und werden lexikografisch verglichen.
+export const CLOSURES = [
+  // Arbeiten an den Stromleitungen: Mo 24.08. + Di 25.08.2026 geschlossen,
+  // ab Mi 26.08. wieder regulaerer Betrieb.
+  { orderStopAt: "2026-08-23T21:00", orderResumeAt: "2026-08-26T09:00" },
+];
+function berlinStamp(now) {
+  const p = berlinParts(now);
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    `${p.year}-${pad(p.month)}-${pad(p.day)}T` +
+    `${pad(Math.floor(p.minutes / 60))}:${pad(p.minutes % 60)}`
+  );
+}
+export function isTemporarilyClosed(now = new Date()) {
+  const stamp = berlinStamp(now);
+  return CLOSURES.some(
+    (c) => stamp >= c.orderStopAt && stamp < c.orderResumeAt,
+  );
+}
 function isOrderingOpen(now = new Date()) {
+  if (isTemporarilyClosed(now)) return false;
   const p = berlinParts(now);
   const win = isHolidayBW(p.year, p.month, p.day)
     ? OPENING_HOURS[0]
@@ -810,6 +833,13 @@ export default async function handler(req, res) {
 
     if (itemsFromBody.length === 0) {
       return res.status(400).json({ error: "Cart is empty" });
+    }
+
+    if (isTemporarilyClosed()) {
+      return res.status(409).json({
+        error:
+          "Wegen Arbeiten an den Stromleitungen bleibt der Laden am 24. und 25. August geschlossen. Ab Mittwoch, 26. August, nehmen wir wieder Bestellungen an.",
+      });
     }
 
     if (!isOrderingOpen()) {

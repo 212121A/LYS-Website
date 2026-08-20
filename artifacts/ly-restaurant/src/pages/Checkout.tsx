@@ -9,6 +9,7 @@ import {
 import { ArrowLeft, Lock, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getOrderingStatus, getPickupSlots, ASAP_PICKUP_VALUE } from "@/lib/openingHours";
+import { activeClosure, formatClosureDay } from "@/lib/closures";
 import { MIN_ORDER_VALUE_EUR } from "@/lib/orderRules";
 
 interface CartItem {
@@ -40,8 +41,21 @@ const stripePromise = STRIPE_PUBLISHABLE_KEY
 // Release nur Stripe anbieten. Zum Reaktivieren: auf true setzen.
 const PAYPAL_ENABLED = false;
 
+/** Platzhalter der Sonderschließungs-Texte mit den echten Daten füllen. */
+function fillClosureText(text: string, lang: string): string {
+  const closure = activeClosure();
+  if (!closure) return text;
+  const days = new Intl.ListFormat(lang, {
+    style: "long",
+    type: "conjunction",
+  }).format(closure.closedDays.map((day) => formatClosureDay(day, lang)));
+  return text
+    .replace("{days}", days)
+    .replace("{reopen}", formatClosureDay(closure.reopenDay, lang));
+}
+
 export default function Checkout() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [, navigate] = useLocation();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customer, setCustomer] = useState({ name: "", email: "", phone: "", note: "" });
@@ -198,17 +212,31 @@ export default function Checkout() {
   }
 
   if (!storeOpen) {
+    const closed = {
+      "temporarily-closed": {
+        title: t.closure.checkoutTitle,
+        desc: fillClosureText(t.closure.checkoutDesc, lang),
+      },
+      "ordering-closed": {
+        title: t.checkout.orderingClosedTitle,
+        desc: t.checkout.orderingClosedDesc,
+      },
+      closed: { title: t.checkout.closedTitle, desc: t.checkout.closedDesc },
+    }[orderingStatus];
+
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="max-w-md text-center bg-card border border-border rounded-2xl p-8">
           <Clock className="mx-auto mb-4 text-primary" size={28} />
-          <h1 className="font-serif text-2xl font-bold text-foreground mb-2">{orderingStatus === "ordering-closed" ? t.checkout.orderingClosedTitle : t.checkout.closedTitle}</h1>
-          <p className="text-sm text-muted-foreground mb-5">{orderingStatus === "ordering-closed" ? t.checkout.orderingClosedDesc : t.checkout.closedDesc}</p>
-          <div className="text-sm text-foreground space-y-1 mb-6">
-            <p>{t.contact.hoursMoSa}</p>
-            <p>{t.contact.hoursFrSa}</p>
-            <p>{t.contact.hoursSun}</p>
-          </div>
+          <h1 className="font-serif text-2xl font-bold text-foreground mb-2">{closed.title}</h1>
+          <p className="text-sm text-muted-foreground mb-5">{closed.desc}</p>
+          {orderingStatus !== "temporarily-closed" && (
+            <div className="text-sm text-foreground space-y-1 mb-6">
+              <p>{t.contact.hoursMoSa}</p>
+              <p>{t.contact.hoursFrSa}</p>
+              <p>{t.contact.hoursSun}</p>
+            </div>
+          )}
           <Link href="/order" className="text-primary font-medium hover:underline">{t.checkout.backToOrder}</Link>
         </div>
       </div>

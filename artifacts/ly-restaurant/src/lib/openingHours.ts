@@ -8,6 +8,10 @@
  * Feiertagen gelten die Sonntags-Zeiten (16:00–21:00).
  */
 
+// Endung explizit: scripts/contract-menu-drift.mjs laedt diese Datei direkt
+// mit node --experimental-strip-types, das keine Extension ergaenzt.
+import { activeClosure } from "./closures.ts";
+
 /** Fester, zeitzonen-/sprachunabhängiger Wert für „ASAP" (so liest ihn die Küche). */
 export const ASAP_PICKUP_VALUE = "So schnell wie möglich";
 
@@ -151,10 +155,16 @@ function formatHHMM(totalMinutes: number): string {
  * - "open": Bestellungen werden angenommen (inkl. Vorbestellung ab 2 Std vor Öffnung).
  * - "ordering-closed": Laden noch offen, aber Annahmeschluss erreicht (letzte 30 Min).
  * - "closed": außerhalb des Annahmefensters.
+ * - "temporarily-closed": Sonderschließung (siehe closures.ts) — schlägt alles andere.
  */
-export type OrderingStatus = "open" | "ordering-closed" | "closed";
+export type OrderingStatus =
+  | "open"
+  | "ordering-closed"
+  | "closed"
+  | "temporarily-closed";
 
 export function getOrderingStatus(now: Date = new Date()): OrderingStatus {
+  if (activeClosure(now)) return "temporarily-closed";
   const parts = berlinNow(now);
   const window = windowFor(parts);
   if (!window) return "closed";
@@ -177,6 +187,7 @@ export function getOrderingStatus(now: Date = new Date()): OrderingStatus {
  * Leer, wenn (jetzt + 20 Min) bereits nach Ladenschluss liegt.
  */
 export function getPickupSlots(now: Date = new Date()): string[] {
+  if (activeClosure(now)) return [];
   const parts = berlinNow(now);
   const window = windowFor(parts);
   if (!window) return [];
