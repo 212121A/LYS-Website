@@ -74,8 +74,15 @@ export function formatClosureDay(isoDay: string, locale: string): string {
   }).format(new Date(Date.UTC(year, month - 1, day)));
 }
 
-/** "2026-08-23T21:00" → z. B. "Sonntag, 23. August, 21:00 Uhr". */
+/** "2026-08-23T21:00" → z. B. "Sonntag, 23. August um 21:00". */
 export function formatClosureMoment(stamp: string, locale: string): string {
   const [isoDay, time] = stamp.split("T");
-  return `${formatClosureDay(isoDay, locale)}, ${time}`;
+  const [year, month, day] = isoDay.split("-").map(Number);
+  const [hour, minute] = time.split(":").map(Number);
+  // Als UTC bauen und in UTC formatieren: die Wanduhrzeit bleibt exakt die
+  // angegebene, und Intl setzt Trennzeichen und Wortstellung sprachrichtig.
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "long", day: "numeric", month: "long",
+    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, day, hour, minute)));
 }

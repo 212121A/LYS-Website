@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
-import ClosureNotice from "@/components/ClosureNotice";
+import ClosureModal from "@/components/ClosureModal";
 import Footer from "@/components/Footer";
 import RouteSeo from "@/components/RouteSeo";
 import Home from "@/pages/Home";
@@ -53,7 +53,7 @@ function Router() {
   return (
     <div className="min-h-screen flex flex-col">
       <RouteSeo />
-      <ClosureNotice />
+      <ClosureModal />
       <Navbar />
       <main className="flex-1">
         <Switch>
