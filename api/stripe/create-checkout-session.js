@@ -66,7 +66,7 @@ function isHolidayBW(year, month, day) {
 export const CLOSURES = [
   // Arbeiten an den Stromleitungen: Mo 24.08. + Di 25.08.2026 geschlossen,
   // ab Mi 26.08. wieder regulaerer Betrieb.
-  { orderStopAt: "2026-08-23T21:00", orderResumeAt: "2026-08-26T09:00" },
+  { orderStopAt: "2026-08-23T20:00", orderResumeAt: "2026-08-26T09:00" },
 ];
 function berlinStamp(now) {
   const p = berlinParts(now);
