@@ -63,11 +63,10 @@ function isHolidayBW(year, month, day) {
 // Sonderschliessungen (Renovierung, Betriebsferien, ...) — spiegelt
 // artifacts/ly-restaurant/src/lib/closures.ts. Zeitpunkte sind Ortszeit
 // Europe/Berlin als "YYYY-MM-DDTHH:MM" und werden lexikografisch verglichen.
-export const CLOSURES = [
-  // Arbeiten an den Stromleitungen: Mo 24.08. + Di 25.08.2026 geschlossen,
-  // ab Mi 26.08. wieder regulaerer Betrieb.
-  { orderStopAt: "2026-08-23T20:00", orderResumeAt: "2026-08-26T09:00" },
-];
+// Aktuell keine Schliessung. Zuletzt: Arbeiten an den Stromleitungen 24./25.08.2026,
+// am 26.08. vorzeitig aufgehoben. Neue Schliessung: Eintrag hier UND in
+// artifacts/ly-restaurant/src/lib/closures.ts ergaenzen.
+export const CLOSURES = [];
 function berlinStamp(now) {
   const p = berlinParts(now);
   const pad = (n) => String(n).padStart(2, "0");
