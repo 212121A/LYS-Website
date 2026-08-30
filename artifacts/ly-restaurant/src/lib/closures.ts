@@ -26,14 +26,23 @@ export interface Closure {
 }
 
 /**
- * Aktuell keine Schließung. Zuletzt: Arbeiten an den Stromleitungen, Mo 24.08.
- * und Di 25.08.2026, am Mi 26.08. vorzeitig aufgehoben.
+ * Arbeiten an den Stromleitungen, zweiter Termin: Mo 31.08. und Di 01.09.2026
+ * geschlossen, ab Mi 02.09. wieder regulärer Betrieb. Bestellstopp ab
+ * So 30.08. 20:00 bis Mi 02.09. 09:00 (= 2 Std vor Öffnung, ab dann greift
+ * wieder das normale Vorbestellfenster).
  *
- * Für die nächste Schließung hier einen Eintrag ergänzen und die drei anderen
- * Stellen mitziehen: api/stripe/create-checkout-session.js (Server-Autorität),
- * ElevenLabs-Agent-Prompt und die beiden n8n-Knoten (siehe Datei-Kopf).
+ * ⚠️ Der Voice-Agent sperrt bewusst erst ab So 30.08. 21:00 (Vorgabe Alex).
+ * Website und Telefon laufen hier also eine Stunde auseinander.
  */
-export const CLOSURES: Closure[] = [];
+export const CLOSURES: Closure[] = [
+  {
+    announceFrom: "2026-08-26T00:00",
+    orderStopAt: "2026-08-30T20:00",
+    orderResumeAt: "2026-09-02T09:00",
+    closedDays: ["2026-08-31", "2026-09-01"],
+    reopenDay: "2026-09-02",
+  },
+];
 
 /** Aktueller Zeitpunkt in Europe/Berlin als "YYYY-MM-DDTHH:MM". */
 export function berlinStamp(now: Date = new Date()): string {
